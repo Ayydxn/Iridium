@@ -10,6 +10,7 @@ version = "${version}"
 description = '''${description}'''
 authors = "${author}"
 logoFile = "${icon_path}"
+side = "CLIENT"
 
 [[mixins]]
 config = "${id}-common.mixins.json"

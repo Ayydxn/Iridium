@@ -14,10 +14,10 @@
   },
   "license": "${license}",
   "icon": "${icon_path}",
-  "environment": "*",
+  "environment": "client",
   "entrypoints": {
-    "main": [
-      "me.ayydan.multimodloadertemplate.fabric.ExampleModFabric"
+    "client": [
+      "me.ayydan.iridium.IridiumClientModFabric"
     ]
   },
   "mixins": [

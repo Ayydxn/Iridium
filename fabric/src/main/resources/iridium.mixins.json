@@ -1,10 +1,10 @@
 {
   "required": true,
-  "package": "me.ayydan.multimodloadertemplate.fabric.mixin",
+  "package": "me.ayydan.iridium.mixin",
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "client": [
-    "FabricExampleMixin"
+
   ],
   "mixins": [
   ],
