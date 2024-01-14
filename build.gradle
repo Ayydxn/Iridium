@@ -1,6 +1,7 @@
 plugins {
     id "architectury-plugin" version "3.4-SNAPSHOT"
     id "dev.architectury.loom" version "1.4-SNAPSHOT" apply false
+    id 'org.ajoberstar.grgit' version '5.2.1'
 }
 
 architectury {
@@ -68,7 +69,7 @@ allprojects {
         archivesName = rootProject.archives_base_name
     }
 
-    version = rootProject.mod_version
+    version = "${rootProject.mod_version}${getGitVersionMetadata()}"
     group = rootProject.maven_group
 
     repositories {
@@ -87,4 +88,25 @@ allprojects {
     java {
         withSourcesJar()
     }
+}
+
+def getGitVersionMetadata() {
+    if (project.hasProperty("build.distribution")) {
+        return ""
+    }
+
+    if (grgit != null) {
+        def head = grgit.head()
+        def id = head.abbreviatedId
+
+        // Flag the build if the build tree is not clean
+        if (!grgit.status().clean) {
+            id += "-dirty"
+        }
+
+        return "+git.${id}"
+    }
+
+    // No tracking information could be found about the build
+    return "+unknown"
 }

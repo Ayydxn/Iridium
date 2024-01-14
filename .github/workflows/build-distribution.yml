@@ -1,8 +1,12 @@
 # Automatically build the project and run any configured tests for every push and submitted pull request.
 # This can help catch issues that only occur on certain platforms or Java versions, and provides a first line of defense against bad commits.
+# This is the exact same as the build-push workflow, but it uploads the produced JAR files.
 
-name: Build Multi-Mod Loader Template
-on: [pull_request, push]
+name: Build Iridium (Distribution)
+on:
+  release:
+    types:
+      - published
 
 jobs:
   build:
@@ -13,7 +17,7 @@ jobs:
           17,    # Current Java LTS & minimum supported by Minecraft
         ]
         # Run on these operating systems
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout Repository
@@ -30,4 +34,10 @@ jobs:
         if: ${{ runner.os != 'Windows' }}
         run: chmod +x ./gradlew
       - name: Build
-        run: ./gradlew build
+        run: ./gradlew build -Pbuild.distribution=true
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Iridium CI Artifacts
+          path: build/libs/
+          retention-days: 30
