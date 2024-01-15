@@ -13,6 +13,10 @@ base {
 
 loom {
     accessWidenerPath = project(":common").loom.accessWidenerPath
+
+    neoForge {
+        accessTransformer { file('src/main/resources/META-INF/accesstransformer.cfg') }
+    }
 }
 
 configurations {
@@ -28,6 +32,10 @@ dependencies {
 
     // Remove the next line if you don't want to depend on the API
     modApi "dev.architectury:architectury-neoforge:${rootProject.architectury_version}"
+
+    modImplementation("dev.isxander.yacl:yet-another-config-lib-neoforge:${rootProject.yacl_version}") {
+        transitive = false
+    }
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive = false }

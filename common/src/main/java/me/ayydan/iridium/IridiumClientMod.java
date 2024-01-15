@@ -1,5 +1,6 @@
 package me.ayydan.iridium;
 
+import me.ayydan.iridium.options.IridiumGameOptions;
 import me.ayydan.iridium.platform.IridiumPlatformUtils;
 import me.ayydan.iridium.utils.logging.IridiumLogger;
 
@@ -8,6 +9,13 @@ public class IridiumClientMod
     private static IridiumClientMod INSTANCE;
 
     private static IridiumLogger LOGGER;
+
+    private final IridiumGameOptions iridiumGameOptions;
+
+    private IridiumClientMod()
+    {
+        this.iridiumGameOptions = IridiumGameOptions.load();
+    }
 
     public static void initialize()
     {
@@ -51,5 +59,10 @@ public class IridiumClientMod
             throw new IllegalStateException("Tried to access an instance of Iridium's core logger when wasn't available!");
 
         return LOGGER;
+    }
+
+    public IridiumGameOptions getGameOptions()
+    {
+        return this.iridiumGameOptions;
     }
 }

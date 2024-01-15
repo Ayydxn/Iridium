@@ -30,6 +30,11 @@ subprojects {
             name "Quilt"
             url "https://maven.quiltmc.org/repository/release"
         }
+
+        maven {
+            name "Xander's Maven"
+            url "https://maven.isxander.dev/releases"
+        }
     }
 
     processResources {
@@ -49,7 +54,8 @@ subprojects {
                 "fabric_loader_version": rootProject.fabric_loader_version,
                 "fabric_version": rootProject.fabric_api_version,
                 "neoforge_version": rootProject.neoforge_version,
-                "neoforge_version_range": rootProject.neoforge_version_range
+                "neoforge_version_range": rootProject.neoforge_version_range,
+                "yacl_version": rootProject.yacl_version
         ]
 
         filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', '*.mixins.json']) {

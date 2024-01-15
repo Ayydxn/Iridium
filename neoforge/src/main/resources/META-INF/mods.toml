@@ -38,3 +38,10 @@ type = "required"
 versionRange = "${architectury_version_range}"
 ordering = "AFTER"
 side = "BOTH"
+
+[[dependencies.${id}]]
+modId = "yet_another_config_lib_v3"
+type = "required"
+versionRange = "[${yacl_version},)"
+ordering = "AFTER"
+side = "CLIENT"

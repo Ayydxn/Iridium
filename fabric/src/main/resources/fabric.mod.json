@@ -28,6 +28,7 @@
     "minecraft": ">=${minecraft_version}",
     "architectury": ">=${architectury_version}",
     "fabric": ">=${fabric_version}",
-    "fabricloader": ">=${fabric_loader_version}"
+    "fabricloader": ">=${fabric_loader_version}",
+    "yet_another_config_lib_v3": ">=${yacl_version}"
   }
 }
