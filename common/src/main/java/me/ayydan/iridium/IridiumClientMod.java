@@ -1,7 +1,11 @@
 package me.ayydan.iridium;
 
+import dev.architectury.event.events.client.ClientGuiEvent;
+import dev.architectury.event.events.client.ClientTickEvent;
+import me.ayydan.iridium.hud.IridiumHudOverlay;
 import me.ayydan.iridium.options.IridiumGameOptions;
 import me.ayydan.iridium.platform.IridiumPlatformUtils;
+import me.ayydan.iridium.utils.ClientFramerateTracker;
 import me.ayydan.iridium.utils.logging.IridiumLogger;
 
 public class IridiumClientMod
@@ -11,10 +15,15 @@ public class IridiumClientMod
     private static IridiumLogger LOGGER;
 
     private final IridiumGameOptions iridiumGameOptions;
+    private final ClientFramerateTracker clientFramerateTracker;
 
     private IridiumClientMod()
     {
         this.iridiumGameOptions = IridiumGameOptions.load();
+        this.clientFramerateTracker = new ClientFramerateTracker();
+
+        ClientTickEvent.CLIENT_PRE.register(this.clientFramerateTracker::tick);
+        ClientGuiEvent.RENDER_HUD.register((graphics, tickDelta) -> new IridiumHudOverlay().render(graphics));
     }
 
     public static void initialize()
@@ -64,5 +73,10 @@ public class IridiumClientMod
     public IridiumGameOptions getGameOptions()
     {
         return this.iridiumGameOptions;
+    }
+
+    public ClientFramerateTracker getClientFramerateTracker()
+    {
+        return this.clientFramerateTracker;
     }
 }
