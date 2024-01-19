@@ -2,7 +2,7 @@ package me.ayydan.iridium;
 
 import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
-import me.ayydan.iridium.hud.IridiumHudOverlay;
+import me.ayydan.iridium.gui.hud.IridiumHudOverlay;
 import me.ayydan.iridium.options.IridiumGameOptions;
 import me.ayydan.iridium.platform.IridiumPlatformUtils;
 import me.ayydan.iridium.utils.ClientFramerateTracker;

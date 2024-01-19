@@ -6,7 +6,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import me.ayydan.iridium.IridiumClientMod;
 import me.ayydan.iridium.platform.IridiumPlatformUtils;
-import net.fabricmc.loader.api.FabricLoader;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;

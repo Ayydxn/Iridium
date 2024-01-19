@@ -1,4 +1,4 @@
-package me.ayydan.iridium.hud;
+package me.ayydan.iridium.gui.hud;
 
 import me.ayydan.iridium.IridiumClientMod;
 import me.ayydan.iridium.options.IridiumGameOptions;
@@ -32,7 +32,7 @@ public class IridiumHudOverlay
         int currentClientFPS = this.minecraftClient.getCurrentFps();
         ClientFramerateTracker clientFramerateTracker = IridiumClientMod.getInstance().getClientFramerateTracker();
 
-        Text fpsOverlayText = Text.translatable("iridium.extras.fpsOverlay", currentClientFPS, clientFramerateTracker.getAverageFPS(),
+        Text fpsOverlayText = Text.translatable("iridium.advancedGraphics.fpsOverlay", currentClientFPS, clientFramerateTracker.getAverageFPS(),
                 clientFramerateTracker.getHighestFPS(), clientFramerateTracker.getLowestFPS());
 
         int xPosition = 0;
@@ -77,7 +77,7 @@ public class IridiumHudOverlay
 
         Vec3d playerPosition = this.minecraftClient.player.getPos();
 
-        Text coordinatesOverlay = Text.translatable("iridium.extras.coordinatesOverlay", String.format("%.2f", playerPosition.getX()),
+        Text coordinatesOverlay = Text.translatable("iridium.advancedGraphics.coordinatesOverlay", String.format("%.2f", playerPosition.getX()),
                 String.format("%.2f", playerPosition.getY()), String.format("%.2f", playerPosition.getZ()));
 
         int xPosition = 0;

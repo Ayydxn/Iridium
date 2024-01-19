@@ -9,7 +9,9 @@
     "client.gui.screens.OptionsScreenMixin",
     "client.render.RenderLayersMixin",
     "client.render.WorldRendererMixin",
-    "client.MinecraftClientMixin"
+    "client.MinecraftClientMixin",
+
+    "external.yacl.YACLScreenMixin"
   ],
   "mixins": [
   ],
