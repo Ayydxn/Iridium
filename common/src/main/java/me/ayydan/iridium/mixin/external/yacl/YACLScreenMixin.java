@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(YACLScreen.class)
 public class YACLScreenMixin
 {
-    @Shadow
+    @Shadow(remap = false)
     private boolean pendingChanges;
 
     @Shadow

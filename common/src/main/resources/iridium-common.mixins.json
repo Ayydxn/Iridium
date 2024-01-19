@@ -7,6 +7,7 @@
     "block.LeavesBlockMixin",
     "client.gui.hud.InGameHudMixin",
     "client.gui.screens.OptionsScreenMixin",
+    "client.gui.screens.TitleScreenMixin",
     "client.render.RenderLayersMixin",
     "client.render.WorldRendererMixin",
     "client.MinecraftClientMixin",

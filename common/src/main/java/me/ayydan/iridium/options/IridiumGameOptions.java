@@ -83,8 +83,7 @@ public class IridiumGameOptions
             try
             {
                 iridiumGameOptions = GSON.fromJson(configFileContents.toString(), IridiumGameOptions.class);
-                if (isConfigCorrupted(iridiumGameOptions)) // If an option within the config file is set to an invalid value.
-                    isConfigCorrupted = true;
+                isConfigCorrupted = isConfigCorrupted(iridiumGameOptions);// If an option within the config file is set to an invalid value.
             }
             catch (JsonSyntaxException exception) // If the config file is corrupted on disk.
             {
@@ -144,7 +143,7 @@ public class IridiumGameOptions
         return false;
     }
 
-    public static boolean isIsConfigCorrupted()
+    public static boolean isConfigCorrupted()
     {
         return isConfigCorrupted;
     }
