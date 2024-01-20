@@ -5,6 +5,7 @@
   "minVersion": "0.8",
   "client": [
     "block.LeavesBlockMixin",
+    "client.gui.hud.DebugHudMixin",
     "client.gui.hud.InGameHudMixin",
     "client.gui.screens.OptionsScreenMixin",
     "client.gui.screens.TitleScreenMixin",

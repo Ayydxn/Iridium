@@ -40,7 +40,7 @@ subprojects {
     processResources {
         def expandProps = [
                 "name": rootProject.mod_name,
-                "version": rootProject.mod_version,
+                "version": "${rootProject.mod_version}${getGitVersionMetadata()}",
                 "description": rootProject.mod_description,
                 "id": rootProject.mod_id,
                 "author": rootProject.mod_author,
