@@ -24,7 +24,7 @@ public class CorruptedIridiumConfigScreen extends Screen
     @Override
     protected void init()
     {
-        this.addDrawable(ButtonWidget.builder(Text.translatable("iridium.options.button.close_game_and_reset_corrupt_config"), button ->
+        this.addDrawableSelectableElement(ButtonWidget.builder(Text.translatable("iridium.options.button.close_game_and_reset_corrupt_config"), button ->
         {
             IridiumGameOptions.defaults().write();
             this.client.scheduleStop();
@@ -36,20 +36,25 @@ public class CorruptedIridiumConfigScreen extends Screen
     {
         this.renderBackground(graphics, mouseX, mouseY, delta);
 
-        MultilineText screenTitle = MultilineText.create(this.client.textRenderer, Text.translatable("iridium.texts.fatal_error"), this.width - 50);
         MultilineText errorMessage = MultilineText.create(this.client.textRenderer, Text.translatable("iridium.options.texts.corrupt_config", "\n\n"),
                 this.width - 50);
 
         graphics.getMatrices().push();
         graphics.getMatrices().scale(1.5f, 1.5f, 1.5f);
 
-        // (Ayydan) I'd rather render this using GuiGraphics, but that doesn't work for some reason.
-        screenTitle.drawWithShadow(graphics, 17, 15, this.client.textRenderer.fontHeight * 2, Color.RED.getRGB());
+        graphics.drawShadowedText(this.client.textRenderer, Text.translatable("iridium.texts.fatal_error"),
+                17, 15, Color.RED.getRGB());
 
         graphics.getMatrices().pop();
 
         errorMessage.drawWithShadow(graphics, 25, 50, this.client.textRenderer.fontHeight * 2, Color.WHITE.getRGB());
 
         super.render(graphics, mouseX, mouseY, delta);
+    }
+
+    @Override
+    public boolean shouldCloseOnEsc()
+    {
+        return false;
     }
 }
