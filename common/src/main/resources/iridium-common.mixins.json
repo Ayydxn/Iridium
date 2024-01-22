@@ -11,9 +11,7 @@
     "client.gui.screens.TitleScreenMixin",
     "client.render.RenderLayersMixin",
     "client.render.WorldRendererMixin",
-    "client.MinecraftClientMixin",
-
-    "external.yacl.YACLScreenMixin"
+    "client.MinecraftClientMixin"
   ],
   "mixins": [
   ],
