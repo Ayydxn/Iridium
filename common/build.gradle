@@ -17,6 +17,16 @@ dependencies {
     // Can't always rely on 'common' builds for the latest versions of YACL being available.
     // So, we just use the Fabric version.
     modImplementation "dev.isxander.yacl:yet-another-config-lib-fabric:${rootProject.yacl_version}"
+
+    // LWJGL and Vulkan. Thanks to Minecraft, LWJGL's core is already present so we don't need to include it here.
+    implementation include("org.lwjgl:lwjgl-shaderc:${rootProject.lwjgl_version}")
+    implementation include("org.lwjgl:lwjgl-vma:${rootProject.lwjgl_version}")
+    implementation include("org.lwjgl:lwjgl-vulkan:${rootProject.lwjgl_version}")
+    runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-shaderc::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-vma::$lwjglNatives"
+    if (lwjglNatives == "natives-macos" || lwjglNatives == "natives-macos-arm64")
+        runtimeOnly "org.lwjgl:lwjgl-vulkan::$lwjglNatives"
 }
 
 publishing {

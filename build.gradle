@@ -1,7 +1,40 @@
+import org.gradle.internal.os.OperatingSystem
+
 plugins {
     id "architectury-plugin" version "3.4-SNAPSHOT"
     id "dev.architectury.loom" version "1.4-SNAPSHOT" apply false
     id 'org.ajoberstar.grgit' version '5.2.1'
+}
+
+switch (OperatingSystem.current()) {
+    case OperatingSystem.WINDOWS: {
+        def osArch = System.getProperty("os.arch")
+
+        project.ext.lwjglNatives = osArch.contains("64")
+                ? "natives-windows${osArch.startsWith("aarch64") ? "-arm64" : ""}"
+                : "natives-windows-x86"
+        break
+    }
+
+    case OperatingSystem.MAC_OS: {
+        project.ext.lwjglNatives = System.getProperty("os.arch").startsWith("aarch64") ? "natives-macos-arm64" : "natives-macos"
+        break
+    }
+
+    case OperatingSystem.LINUX: {
+        project.ext.lwjglNatives = "natives-linux"
+        def osArch = System.getProperty("os.arch")
+
+        if (osArch.startsWith("arm") || osArch.startsWith("aarch64")) {
+            project.ext.lwjglNatives += osArch.contains("64") || osArch.startsWith("armv8") ? "-arm64" : "-arm32"
+        } else if  (osArch.startsWith("ppc")) {
+            project.ext.lwjglNatives += "-ppc64le"
+        } else if  (osArch.startsWith("riscv")) {
+            project.ext.lwjglNatives += "-riscv64"
+        }
+
+        break
+    }
 }
 
 architectury {
@@ -18,23 +51,6 @@ subprojects {
     dependencies {
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
         mappings "org.quiltmc:quilt-mappings:${rootProject.minecraft_version}+build.${rootProject.quilt_mappings_version}:intermediary-v2"
-    }
-
-    repositories {
-        maven {
-            name "NeoForged"
-            url "https://maven.neoforged.net/releases/"
-        }
-
-        maven {
-            name "Quilt"
-            url "https://maven.quiltmc.org/repository/release"
-        }
-
-        maven {
-            name "Xander's Maven"
-            url "https://maven.isxander.dev/releases"
-        }
     }
 
     processResources {
@@ -84,6 +100,21 @@ allprojects {
         // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
         // See https://docs.gradle.org/current/userguide/declaring_repositories.html
         // for more information about repositories.
+
+        maven {
+            name "NeoForged"
+            url "https://maven.neoforged.net/releases/"
+        }
+
+        maven {
+            name "Quilt"
+            url "https://maven.quiltmc.org/repository/release"
+        }
+
+        maven {
+            name "Xander's Maven"
+            url "https://maven.isxander.dev/releases"
+        }
     }
 
     tasks.withType(JavaCompile) {
