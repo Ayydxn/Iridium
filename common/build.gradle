@@ -19,9 +19,9 @@ dependencies {
     modImplementation "dev.isxander.yacl:yet-another-config-lib-fabric:${rootProject.yacl_version}"
 
     // LWJGL and Vulkan. Thanks to Minecraft, LWJGL's core is already present so we don't need to include it here.
-    implementation include("org.lwjgl:lwjgl-shaderc:${rootProject.lwjgl_version}")
-    implementation include("org.lwjgl:lwjgl-vma:${rootProject.lwjgl_version}")
-    implementation include("org.lwjgl:lwjgl-vulkan:${rootProject.lwjgl_version}")
+    implementation "org.lwjgl:lwjgl-shaderc:${rootProject.lwjgl_version}"
+    implementation "org.lwjgl:lwjgl-vma:${rootProject.lwjgl_version}"
+    implementation "org.lwjgl:lwjgl-vulkan:${rootProject.lwjgl_version}"
     runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-shaderc::$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-vma::$lwjglNatives"

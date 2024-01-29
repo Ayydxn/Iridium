@@ -1,6 +1,6 @@
 package me.ayydan.iridium.render;
 
-import me.ayydan.iridium.IridiumClientMod;
+import me.ayydan.iridium.render.vulkan.VulkanContext;
 import me.ayydan.iridium.utils.logging.IridiumLogger;
 
 public class IridiumRenderer
@@ -8,9 +8,12 @@ public class IridiumRenderer
     private static IridiumRenderer INSTANCE;
     private static IridiumLogger LOGGER;
 
+    private final VulkanContext vulkanContext;
+
     private IridiumRenderer()
     {
-
+        this.vulkanContext = new VulkanContext();
+        this.vulkanContext.create();
     }
 
     public static void initialize()
@@ -37,6 +40,8 @@ public class IridiumRenderer
 
         LOGGER.info("Shutting down Iridium Renderer...");
 
+        this.vulkanContext.destroy();
+
         LOGGER = null;
         INSTANCE = null;
     }
@@ -47,5 +52,13 @@ public class IridiumRenderer
             throw new IllegalStateException("Tried to access an instance of Iridium's renderer when one wasn't available!");
 
         return INSTANCE;
+    }
+
+    public static IridiumLogger getLogger()
+    {
+        if (LOGGER == null)
+            throw new IllegalStateException("Tried to access an instance of Iridium's renderer logger when wasn't available!");
+
+        return LOGGER;
     }
 }

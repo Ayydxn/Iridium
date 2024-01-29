@@ -1,10 +1,10 @@
 {
   "required": true,
-  "package": "me.ayydan.iridium.mixin",
+  "package": "me.ayydan.iridium.fabric.mixin",
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "client": [
-
+    "blaze3d.systems.RenderSystemMixin"
   ],
   "mixins": [
   ],

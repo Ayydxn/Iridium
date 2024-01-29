@@ -1,6 +1,7 @@
 package me.ayydan.iridium.neoforge;
 
 import me.ayydan.iridium.IridiumClientMod;
+import me.ayydan.iridium.render.IridiumRenderer;
 import me.ayydan.iridium.utils.IridiumConstants;
 import net.neoforged.fml.common.Mod;
 
@@ -10,5 +11,6 @@ public class IridiumClientModNeoForge
     public IridiumClientModNeoForge()
     {
         IridiumClientMod.initialize();
+        IridiumRenderer.initialize();
     }
 }

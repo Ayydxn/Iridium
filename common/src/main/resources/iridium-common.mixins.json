@@ -4,8 +4,6 @@
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "client": [
-    "blaze3d.systems.RenderSystemMixin",
-
     "block.LeavesBlockMixin",
 
     "client.gui.hud.DebugHudMixin",

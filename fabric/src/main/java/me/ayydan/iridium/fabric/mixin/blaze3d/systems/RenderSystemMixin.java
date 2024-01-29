@@ -1,4 +1,4 @@
-package me.ayydan.iridium.mixin.blaze3d.systems;
+package me.ayydan.iridium.fabric.mixin.blaze3d.systems;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.ayydan.iridium.render.IridiumRenderSystem;
