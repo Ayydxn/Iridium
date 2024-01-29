@@ -7,10 +7,6 @@ architectury {
     neoForge()
 }
 
-base {
-    archivesName = "${rootProject.archives_base_name}-neoforge-mc${project(":common").minecraft_version}"
-}
-
 loom {
     accessWidenerPath = project(":common").loom.accessWidenerPath
 }

@@ -3,7 +3,8 @@ import org.gradle.internal.os.OperatingSystem
 plugins {
     id "architectury-plugin" version "3.4-SNAPSHOT"
     id "dev.architectury.loom" version "1.4-SNAPSHOT" apply false
-    id 'org.ajoberstar.grgit' version '5.2.1'
+    id 'org.ajoberstar.grgit' version "5.2.1"
+    id "io.github.pacifistmc.forgix" version "1.2.6"
 }
 
 switch (OperatingSystem.current()) {
@@ -41,6 +42,21 @@ architectury {
     minecraft = rootProject.minecraft_version
 }
 
+forgix {
+    group = "${rootProject.maven_group}.iridium"
+    mergedJarName = "iridium-${getIridiumVersionString()}.jar"
+    outputDir = "build/forgix"
+
+    fabric {
+        jarLocation = "build/libs/iridium-${getIridiumVersionString()}.jar"
+    }
+
+    custom {
+        projectName = "neoforge"
+        jarLocation = "build/libs/iridium-${getIridiumVersionString()}.jar"
+    }
+}
+
 subprojects {
     apply plugin: "dev.architectury.loom"
 
@@ -56,7 +72,7 @@ subprojects {
     processResources {
         def expandProps = [
                 "name": rootProject.mod_name,
-                "version": "${rootProject.mod_version}${getGitVersionMetadata()}",
+                "version": "${rootProject.mod_version}",
                 "description": rootProject.mod_description,
                 "id": rootProject.mod_id,
                 "author": rootProject.mod_author,
@@ -91,7 +107,7 @@ allprojects {
         archivesName = rootProject.archives_base_name
     }
 
-    version = "${rootProject.mod_version}${getGitVersionMetadata()}"
+    version = getIridiumVersionString()
     group = rootProject.maven_group
 
     repositories {
@@ -127,23 +143,28 @@ allprojects {
     }
 }
 
-def getGitVersionMetadata() {
-    if (project.hasProperty("build.distribution")) {
-        return ""
-    }
+tasks.mergeJars.dependsOn(build)
 
-    if (grgit != null) {
-        def head = grgit.head()
-        def id = head.abbreviatedId
+def getIridiumVersionString() {
+    StringBuilder stringBuilder = new StringBuilder()
+    boolean isADistributionBuild = project.hasProperty("build.distribution")
+    String buildID = System.getenv("GITHUB_RUN_NUMBER")
 
-        // Flag the build if the build tree is not clean
-        if (!grgit.status().clean) {
-            id += "-dirty"
+    stringBuilder.append("${rootProject.mod_version}-mc${rootProject.minecraft_version}")
+
+    if (!isADistributionBuild)
+    {
+        stringBuilder.append("+snapshot")
+
+        if (buildID != null)
+        {
+            stringBuilder.append("-build.${buildID}")
         }
-
-        return "+git.${id}"
+        else
+        {
+            stringBuilder.append("-local")
+        }
     }
 
-    // No tracking information could be found about the build
-    return "+unknown"
+    return stringBuilder.toString()
 }

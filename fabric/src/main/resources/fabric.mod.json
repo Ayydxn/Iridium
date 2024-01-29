@@ -8,8 +8,8 @@
     "${author}"
   ],
   "contact": {
-    "homepage": "https://github.com/Ayydxn/Multi-ModLoaderTemplate",
-    "sources": "https://github.com/Ayydxn/Multi-ModLoaderTemplate",
+    "homepage": "https://github.com/Ayydxn/Iridium",
+    "sources": "https://github.com/Ayydxn/Iridium/issues",
     "issues": "${issue_tracker_url}"
   },
   "license": "${license}",
