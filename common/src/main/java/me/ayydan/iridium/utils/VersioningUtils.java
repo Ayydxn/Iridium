@@ -50,7 +50,7 @@ public class VersioningUtils
     public static int getIridiumPatchVersion()
     {
         // The version string without the Git metadata stuff. (Example: 1.0.0+revision.74918ec-dirty -> 1.0.0)
-        String versionWithoutGitMetadata = StringUtils.substringBefore(CURRENT_IRIDIUM_VERSION, "+");
+        String versionWithoutGitMetadata = StringUtils.substringBefore(CURRENT_IRIDIUM_VERSION, "-");
 
         // We then get the patch version number from the metadata-stripped version string.
         String patchVersionString = StringUtils.substringAfterLast(versionWithoutGitMetadata, ".");
