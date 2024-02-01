@@ -40,11 +40,14 @@ public class DebugHudMixin
     {
         String iridiumVersion = IridiumPlatformUtils.getCurrentVersion();
 
-        if (iridiumVersion.contains("-dirty"))
+        if (iridiumVersion.contains("-local"))
+        {
             return Formatting.RED;
-
-        if (iridiumVersion.contains(".git+"))
+        }
+        else if (iridiumVersion.contains("+snapshot"))
+        {
             return Formatting.GOLD;
+        }
 
         return Formatting.GREEN;
     }

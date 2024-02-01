@@ -71,7 +71,7 @@ subprojects {
     tasks.processResources {
         val expandProps = mapOf(
                 "name" to rootProject.property("mod_name"),
-                "version" to "${rootProject.property("mod_version")}",
+                "version" to getIridiumVersionString(),
                 "description" to rootProject.property("mod_description"),
                 "id" to rootProject.property("mod_id"),
                 "author" to rootProject.property("mod_author"),
