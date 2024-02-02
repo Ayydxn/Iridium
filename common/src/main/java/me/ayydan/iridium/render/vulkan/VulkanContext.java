@@ -29,6 +29,8 @@ public class VulkanContext
 
     private VkInstance vulkanInstance;
     private long debugMessenger;
+    private VulkanPhysicalDevice vulkanPhysicalDevice;
+    private VulkanLogicalDevice vulkanLogicalDevice;
 
     static
     {
@@ -61,7 +63,7 @@ public class VulkanContext
 
             int packedIridiumVersion = VK_MAKE_VERSION(VersioningUtils.getIridiumMajorVersion(), VersioningUtils.getIridiumMinorVersion(),
                     VersioningUtils.getIridiumPatchVersion());
-            
+
             VkApplicationInfo applicationInfo = VkApplicationInfo.calloc(memoryStack)
                     .sType(VK_STRUCTURE_TYPE_APPLICATION_INFO)
                     .pApplicationName(memoryStack.UTF8("Minecraft"))
@@ -80,8 +82,8 @@ public class VulkanContext
                 VkDebugUtilsMessengerCreateInfoEXT debugUtilsMessengerCreateInfo = VkDebugUtilsMessengerCreateInfoEXT.calloc(memoryStack);
                 this.initializeDebugMessengerCreateInfo(debugUtilsMessengerCreateInfo);
 
-                instanceCreateInfo.ppEnabledLayerNames(PointerUtils.asPointerBuffer(validationLayers, memoryStack));
-                instanceCreateInfo.pNext(debugUtilsMessengerCreateInfo.address());
+                instanceCreateInfo.ppEnabledLayerNames(PointerUtils.asPointerBuffer(validationLayers, memoryStack))
+                        .pNext(debugUtilsMessengerCreateInfo.address());
             }
 
             PointerBuffer pVulkanInstance = memoryStack.callocPointer(1);
@@ -91,10 +93,21 @@ public class VulkanContext
         }
 
         this.initializeDebugMessenger();
+
+        this.vulkanPhysicalDevice = new VulkanPhysicalDevice(this.vulkanInstance);
+
+        IridiumRenderer.getLogger().info("Graphics Card Info:");
+        IridiumRenderer.getLogger().info("  Vendor: {}", this.vulkanPhysicalDevice.getVendorName());
+        IridiumRenderer.getLogger().info("  Device: {}", this.vulkanPhysicalDevice.getProperties().deviceNameString());
+        IridiumRenderer.getLogger().info("  Driver Version: {}", this.vulkanPhysicalDevice.getDriverVersion());
+
+        this.vulkanLogicalDevice = new VulkanLogicalDevice(this.vulkanPhysicalDevice.getHandle());
     }
 
     public void destroy()
     {
+        this.vulkanLogicalDevice.destroy();
+
         if (enableValidationLayers)
             VulkanDebugUtils.vkDestroyDebugUtilsMessengerEXT(this.vulkanInstance, this.debugMessenger, null);
 
@@ -132,6 +145,16 @@ public class VulkanContext
         return VK_FALSE;
     }
 
+    public static Set<String> getValidationLayers()
+    {
+        return VulkanContext.validationLayers;
+    }
+
+    public static boolean areValidationLayersEnabled()
+    {
+        return VulkanContext.enableValidationLayers;
+    }
+
     private void initializeDebugMessenger()
     {
         if (!enableValidationLayers)
@@ -151,10 +174,10 @@ public class VulkanContext
 
     private void initializeDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT debugMessengerCreateInfo)
     {
-        debugMessengerCreateInfo.sType(VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT);
-        debugMessengerCreateInfo.messageSeverity(VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT);
-        debugMessengerCreateInfo.messageType(VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT);
-        debugMessengerCreateInfo.pfnUserCallback(VulkanContext::debugMessengerCallback);
+        debugMessengerCreateInfo.sType(VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT)
+                .messageSeverity(VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
+                .messageType(VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT)
+                .pfnUserCallback(VulkanContext::debugMessengerCallback);
     }
 
     private PointerBuffer getRequiredInstanceExtensions(MemoryStack memoryStack)
@@ -174,5 +197,15 @@ public class VulkanContext
         }
 
         return glfwInstanceExtensions;
+    }
+
+    public VulkanPhysicalDevice getPhysicalDevice()
+    {
+        return this.vulkanPhysicalDevice;
+    }
+
+    public VulkanLogicalDevice getLogicalDevice()
+    {
+        return this.vulkanLogicalDevice;
     }
 }

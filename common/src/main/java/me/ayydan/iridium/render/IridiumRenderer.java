@@ -61,4 +61,9 @@ public class IridiumRenderer
 
         return LOGGER;
     }
+
+    public VulkanContext getVulkanContext()
+    {
+        return this.vulkanContext;
+    }
 }

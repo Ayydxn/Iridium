@@ -3,6 +3,8 @@ package me.ayydan.iridium.mixin.client.gui.hud;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlDebugInfo;
 import me.ayydan.iridium.platform.IridiumPlatformUtils;
+import me.ayydan.iridium.render.IridiumRenderer;
+import me.ayydan.iridium.render.vulkan.VulkanPhysicalDevice;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.debug.DebugHud;
 import net.minecraft.util.Formatting;
@@ -20,16 +22,10 @@ public class DebugHudMixin
     private ArrayList<String> addIridiumDebugInfo(Object[] elements)
     {
         ArrayList<String> iridiumDebugStrings = Lists.newArrayList((String[]) elements);
-        int framebufferWidth = MinecraftClient.getInstance().getWindow().getFramebufferWidth();
-        int framebufferHeight = MinecraftClient.getInstance().getWindow().getFramebufferHeight();
+        VulkanPhysicalDevice vulkanPhysicalDevice = IridiumRenderer.getInstance().getVulkanContext().getPhysicalDevice();
 
-        iridiumDebugStrings.set(7, String.format("Current Resolution: %d x %d", framebufferWidth, framebufferHeight));
-        iridiumDebugStrings.set(8, String.format("Vendor: %s", GlDebugInfo.getVendor()));
-        iridiumDebugStrings.set(9, String.format("Device: %s", GlDebugInfo.getRenderer()));
-        iridiumDebugStrings.add(String.format("Driver Version: %s", GlDebugInfo.getVersion()));
-
+        iridiumDebugStrings.add(String.format("Vulkan API Version: %s", vulkanPhysicalDevice.getVulkanAPIVersion()));
         iridiumDebugStrings.add("");
-
         iridiumDebugStrings.add("%sIridium Renderer (%s)".formatted(this.getVersionStringColor(), IridiumPlatformUtils.getCurrentVersion()));
 
         return iridiumDebugStrings;
