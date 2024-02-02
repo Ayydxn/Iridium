@@ -3,7 +3,6 @@ package me.ayydan.iridium.render.vulkan;
 import dev.architectury.platform.Platform;
 import me.ayydan.iridium.render.IridiumRenderer;
 import me.ayydan.iridium.render.exceptions.IridiumRendererException;
-import me.ayydan.iridium.render.vulkan.utils.VulkanDebugUtils;
 import me.ayydan.iridium.utils.PointerUtils;
 import me.ayydan.iridium.utils.VersioningUtils;
 import org.lwjgl.PointerBuffer;
@@ -15,6 +14,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import static me.ayydan.iridium.render.vulkan.VulkanValidation.vkCheckResult;
 import static org.lwjgl.glfw.GLFWVulkan.glfwGetRequiredInstanceExtensions;
 import static org.lwjgl.glfw.GLFWVulkan.glfwVulkanSupported;
 import static org.lwjgl.vulkan.EXTDebugUtils.*;
@@ -87,7 +87,7 @@ public class VulkanContext
             }
 
             PointerBuffer pVulkanInstance = memoryStack.callocPointer(1);
-            vkCreateInstance(instanceCreateInfo, null, pVulkanInstance);
+            vkCheckResult(vkCreateInstance(instanceCreateInfo, null, pVulkanInstance));
 
             this.vulkanInstance = new VkInstance(pVulkanInstance.get(0), instanceCreateInfo);
         }
@@ -166,7 +166,7 @@ public class VulkanContext
             this.initializeDebugMessengerCreateInfo(debugUtilsMessengerCreateInfo);
 
             LongBuffer pDebugMessenger = memoryStack.longs(VK_NULL_HANDLE);
-            VulkanDebugUtils.vkCreateDebugUtilsMessengerEXT(this.vulkanInstance, debugUtilsMessengerCreateInfo, null, pDebugMessenger);
+            vkCheckResult(VulkanDebugUtils.vkCreateDebugUtilsMessengerEXT(this.vulkanInstance, debugUtilsMessengerCreateInfo, null, pDebugMessenger));
 
             this.debugMessenger = pDebugMessenger.get(0);
         }

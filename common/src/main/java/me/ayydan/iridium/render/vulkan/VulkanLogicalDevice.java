@@ -1,6 +1,5 @@
 package me.ayydan.iridium.render.vulkan;
 
-import me.ayydan.iridium.render.vulkan.utils.QueueFamilyIndices;
 import me.ayydan.iridium.utils.PointerUtils;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
@@ -8,6 +7,7 @@ import org.lwjgl.vulkan.*;
 
 import java.nio.LongBuffer;
 
+import static me.ayydan.iridium.render.vulkan.VulkanValidation.vkCheckResult;
 import static org.lwjgl.vulkan.KHRDynamicRendering.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR;
 import static org.lwjgl.vulkan.KHRSynchronization2.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES_KHR;
 import static org.lwjgl.vulkan.VK10.*;
@@ -70,7 +70,7 @@ public class VulkanLogicalDevice
                 logicalDeviceCreateInfo.ppEnabledLayerNames(PointerUtils.asPointerBuffer(VulkanContext.getValidationLayers(), memoryStack));
 
             PointerBuffer pLogicalDevice = memoryStack.mallocPointer(1);
-            vkCreateDevice(physicalDevice, logicalDeviceCreateInfo, null, pLogicalDevice);
+            vkCheckResult(vkCreateDevice(physicalDevice, logicalDeviceCreateInfo, null, pLogicalDevice));
 
             VkDevice logicalDevice = new VkDevice(pLogicalDevice.get(0), physicalDevice, logicalDeviceCreateInfo, VK_API_VERSION_1_2);
 
@@ -92,7 +92,7 @@ public class VulkanLogicalDevice
             commandPoolCreateInfo.queueFamilyIndex(queueFamilyIndices.getGraphicsFamily());
             commandPoolCreateInfo.flags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
-            vkCreateCommandPool(this.logicalDevice, commandPoolCreateInfo, null, pGraphicsCommandPool);
+            vkCheckResult(vkCreateCommandPool(this.logicalDevice, commandPoolCreateInfo, null, pGraphicsCommandPool));
 
             return pGraphicsCommandPool.get(0);
         }

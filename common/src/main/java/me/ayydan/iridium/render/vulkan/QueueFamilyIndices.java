@@ -1,4 +1,4 @@
-package me.ayydan.iridium.render.vulkan.utils;
+package me.ayydan.iridium.render.vulkan;
 
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.VkPhysicalDevice;
