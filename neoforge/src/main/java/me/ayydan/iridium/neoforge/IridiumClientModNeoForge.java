@@ -11,6 +11,5 @@ public class IridiumClientModNeoForge
     public IridiumClientModNeoForge()
     {
         IridiumClientMod.initialize();
-        IridiumRenderer.initialize();
     }
 }

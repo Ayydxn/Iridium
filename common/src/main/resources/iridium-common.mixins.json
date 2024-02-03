@@ -5,6 +5,7 @@
   "minVersion": "0.8",
   "client": [
     "blaze3d.platform.GLDebugInfoMixin",
+    "blaze3d.systems.RenderSystemMixin",
 
     "block.LeavesBlockMixin",
 
