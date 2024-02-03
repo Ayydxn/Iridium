@@ -14,7 +14,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(OptionsScreen.class)
 public class OptionsScreenMixin
 {
-    @Shadow @Final private Screen parent;
+
+    @Shadow(remap = false)
+    @Final private Screen parent;
 
     @Inject(method = "init", at = @At("HEAD"), cancellable = true)
     public void openIridiumOptionsScreen(CallbackInfo ci)

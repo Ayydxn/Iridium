@@ -11,19 +11,19 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(GlDebugInfo.class)
 public class GLDebugInfoMixin
 {
-    @Redirect(method = "getVendor", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;_getString(I)Ljava/lang/String;"))
+    @Redirect(method = "getVendor", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;_getString(I)Ljava/lang/String;"), remap = false)
     private static String getVulkanPhysicalDeviceVendor(int name)
     {
         return IridiumRenderer.getInstance().getVulkanContext().getPhysicalDevice().getVendorName();
     }
 
-    @Redirect(method = "getRenderer", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;_getString(I)Ljava/lang/String;"))
+    @Redirect(method = "getRenderer", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;_getString(I)Ljava/lang/String;"), remap = false)
     private static String getVulkanPhysicalDeviceName(int name)
     {
         return IridiumRenderer.getInstance().getVulkanContext().getPhysicalDevice().getProperties().deviceNameString();
     }
 
-    @Redirect(method = "getVersion", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;_getString(I)Ljava/lang/String;"))
+    @Redirect(method = "getVersion", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;_getString(I)Ljava/lang/String;"), remap = false)
     private static String getVulkanPhysicalDeviceDriverVersion(int name)
     {
         return IridiumRenderer.getInstance().getVulkanContext().getPhysicalDevice().getDriverVersion();
