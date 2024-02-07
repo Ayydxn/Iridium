@@ -28,6 +28,9 @@ dependencies {
     runtimeOnly("org.lwjgl:lwjgl-vma::${rootProject.property("lwjgl_natives")}")
     if (rootProject.property("lwjgl_natives") == "natives-macos" || rootProject.property("lwjgl_natives") == "natives-macos-arm64")
         runtimeOnly("org.lwjgl:lwjgl-vulkan::${rootProject.property("lwjgl_natives")}")
+
+    // Maven Artifact
+    implementation("org.apache.maven:maven-artifact:${rootProject.property("maven_artifact_version")}")
 }
 
 publishing {
