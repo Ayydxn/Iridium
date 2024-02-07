@@ -13,7 +13,7 @@ import java.awt.*;
 public class IridiumHudOverlay
 {
     private final MinecraftClient minecraftClient = MinecraftClient.getInstance();
-    private final IridiumGameOptions iridiumGameOptions = IridiumClientMod.getInstance().getGameOptions();
+    private final IridiumGameOptions iridiumGameOptions = IridiumClientMod.getGameOptions();
 
     public void render(GuiGraphics guiGraphics)
     {
@@ -30,7 +30,7 @@ public class IridiumHudOverlay
     private void renderFramerateOverlay(GuiGraphics guiGraphics)
     {
         int currentClientFPS = this.minecraftClient.getCurrentFps();
-        ClientFramerateTracker clientFramerateTracker = IridiumClientMod.getInstance().getClientFramerateTracker();
+        ClientFramerateTracker clientFramerateTracker = IridiumClientMod.getClientFramerateTracker();
 
         Text fpsOverlayText = Text.translatable("iridium.advancedGraphics.fpsOverlay", currentClientFPS, clientFramerateTracker.getAverageFPS(),
                 clientFramerateTracker.getHighestFPS(), clientFramerateTracker.getLowestFPS());

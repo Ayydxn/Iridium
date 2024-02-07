@@ -22,7 +22,7 @@ public class DebugHudMixin
     private ArrayList<String> addIridiumDebugInfo(Object[] elements)
     {
         ArrayList<String> iridiumDebugStrings = Lists.newArrayList((String[]) elements);
-        VulkanPhysicalDevice vulkanPhysicalDevice = IridiumRenderer.getInstance().getVulkanContext().getPhysicalDevice();
+        VulkanPhysicalDevice vulkanPhysicalDevice = IridiumRenderer.getVulkanContext().getPhysicalDevice();
 
         iridiumDebugStrings.add(String.format("Vulkan API Version: %s", vulkanPhysicalDevice.getVulkanAPIVersion()));
         iridiumDebugStrings.add("");

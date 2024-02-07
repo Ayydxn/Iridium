@@ -6,7 +6,6 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforgespi.language.IModInfo;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 
 import java.nio.file.Path;

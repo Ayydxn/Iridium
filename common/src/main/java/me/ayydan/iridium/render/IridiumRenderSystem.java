@@ -1,9 +1,20 @@
 package me.ayydan.iridium.render;
 
+import dev.architectury.platform.Platform;
+import me.ayydan.iridium.subsystems.IridiumSubsystemManager;
+
 public class IridiumRenderSystem
 {
     public static void initRenderer()
     {
-        IridiumRenderer.initialize();
+        if (Platform.isNeoForge())
+        {
+            IridiumSubsystemManager.initialize();
+            IridiumSubsystemManager.getInstance().addSubsystem(new IridiumRendererSubsystem());
+        }
+        else
+        {
+            IridiumSubsystemManager.getInstance().addSubsystem(new IridiumRendererSubsystem());
+        }
     }
 }
