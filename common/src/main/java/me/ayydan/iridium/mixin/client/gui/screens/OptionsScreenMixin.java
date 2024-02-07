@@ -14,8 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(OptionsScreen.class)
 public class OptionsScreenMixin
 {
-
-    @Shadow(remap = false)
+    @Shadow
     @Final private Screen parent;
 
     @Inject(method = "init", at = @At("HEAD"), cancellable = true)
