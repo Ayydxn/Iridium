@@ -1,6 +1,7 @@
 package me.ayydan.iridium.render;
 
 import me.ayydan.iridium.render.vulkan.VulkanContext;
+import me.ayydan.iridium.shader.IridiumShaderCompiler;
 import me.ayydan.iridium.subsystems.IridiumSubsystem;
 import me.ayydan.iridium.utils.logging.IridiumLogger;
 import net.minecraft.client.MinecraftClient;
@@ -21,11 +22,15 @@ public class IridiumRendererSubsystem extends IridiumSubsystem
 
         this.vulkanContext = new VulkanContext();
         this.vulkanContext.create();
+
+        IridiumShaderCompiler.initialize();
     }
 
     @Override
     public void shutdown()
     {
+        IridiumShaderCompiler.getInstance().shutdown();
+
         this.vulkanContext.destroy();
     }
 
