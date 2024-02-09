@@ -1,8 +1,7 @@
 package me.ayydan.iridium;
 
+import dev.architectury.platform.Platform;
 import me.ayydan.iridium.options.IridiumGameOptions;
-import me.ayydan.iridium.platform.IridiumPlatformUtils;
-import me.ayydan.iridium.render.IridiumRendererSubsystem;
 import me.ayydan.iridium.subsystems.IridiumSubsystemManager;
 import me.ayydan.iridium.utils.ClientFramerateTracker;
 import me.ayydan.iridium.utils.logging.IridiumLogger;
@@ -11,7 +10,10 @@ public class IridiumClientMod
 {
     public static void initialize()
     {
-        IridiumSubsystemManager.initialize();
+        // (Ayydan) By the time this function is called in the NeoForge, the subsystem manager would've already been initialized.
+        if (!Platform.isNeoForge())
+            IridiumSubsystemManager.initialize();
+
         IridiumSubsystemManager.getInstance().addSubsystem(new IridiumCoreSubsystem());
     }
 

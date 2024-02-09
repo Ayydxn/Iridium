@@ -41,6 +41,9 @@ public class IridiumSubsystemManager
 
             iridiumSubsystem.shutdown();
         }
+
+        LOGGER = null;
+        INSTANCE = null;
     }
 
     public void addSubsystem(IridiumSubsystem iridiumSubsystem)

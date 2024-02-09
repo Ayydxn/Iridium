@@ -28,7 +28,7 @@ dependencies {
     // Remove the next line if you don't want to depend on the API
     modApi("dev.architectury:architectury-fabric:${rootProject.property("architectury_version")}")
 
-    modImplementation("dev.isxander.yacl:yet-another-config-lib-fabric:${rootProject.property("yacl_version")}")
+    modRuntimeOnly("dev.isxander.yacl:yet-another-config-lib-fabric:${rootProject.property("yacl_version")}")
     include("dev.isxander.yacl:yet-another-config-lib-fabric:${rootProject.property("yacl_version")}")
 
     // LWJGL and Vulkan. Thanks to Minecraft, LWJGL's core is already present, so we don't need to include it here.
@@ -47,7 +47,7 @@ dependencies {
         runtimeOnly("org.lwjgl:lwjgl-vulkan::${rootProject.property("lwjgl_natives")}")
 
     // Maven Artifact
-    modRuntimeOnly("org.apache.maven:maven-artifact:${rootProject.property("maven_artifact_version")}")
+    runtimeOnly("org.apache.maven:maven-artifact:${rootProject.property("maven_artifact_version")}")
     include("org.apache.maven:maven-artifact:${rootProject.property("maven_artifact_version")}")
 
     common(project(":common", configuration = "namedElements")) { isTransitive = false }

@@ -5,6 +5,7 @@ import me.ayydan.iridium.render.IridiumRenderer;
 import me.ayydan.iridium.render.exceptions.IridiumRendererException;
 import me.ayydan.iridium.utils.PointerUtils;
 import me.ayydan.iridium.utils.VersioningUtils;
+import net.minecraft.client.MinecraftClient;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
@@ -31,6 +32,7 @@ public class VulkanContext
     private long debugMessenger;
     private VulkanPhysicalDevice vulkanPhysicalDevice;
     private VulkanLogicalDevice vulkanLogicalDevice;
+    private VulkanSwapChain vulkanSwapChain;
 
     static
     {
@@ -102,10 +104,17 @@ public class VulkanContext
         IridiumRenderer.getLogger().info("  Driver Version: {}", this.vulkanPhysicalDevice.getDriverVersion());
 
         this.vulkanLogicalDevice = new VulkanLogicalDevice(this.vulkanPhysicalDevice.getHandle());
+
+        this.vulkanSwapChain = new VulkanSwapChain(this);
+        this.vulkanSwapChain.initialize();
+        this.vulkanSwapChain.create(MinecraftClient.getInstance().getWindow().getWidth(), MinecraftClient.getInstance().getWindow().getHeight(),
+                MinecraftClient.getInstance().options.getEnableVsync().get());
     }
 
     public void destroy()
     {
+        this.vulkanSwapChain.destroy();
+
         this.vulkanLogicalDevice.destroy();
 
         if (enableValidationLayers)
@@ -199,6 +208,11 @@ public class VulkanContext
         return glfwInstanceExtensions;
     }
 
+    public VkInstance getVulkanInstance()
+    {
+        return this.vulkanInstance;
+    }
+
     public VulkanPhysicalDevice getPhysicalDevice()
     {
         return this.vulkanPhysicalDevice;
@@ -207,5 +221,10 @@ public class VulkanContext
     public VulkanLogicalDevice getLogicalDevice()
     {
         return this.vulkanLogicalDevice;
+    }
+
+    public VulkanSwapChain getSwapChain()
+    {
+        return this.vulkanSwapChain;
     }
 }

@@ -1,7 +1,6 @@
 package me.ayydan.iridium.neoforge;
 
-import me.ayydan.iridium.IridiumCoreSubsystem;
-import me.ayydan.iridium.subsystems.IridiumSubsystemManager;
+import me.ayydan.iridium.IridiumClientMod;
 import me.ayydan.iridium.utils.IridiumConstants;
 import net.neoforged.fml.common.Mod;
 
@@ -10,6 +9,6 @@ public class IridiumClientModNeoForge
 {
     public IridiumClientModNeoForge()
     {
-        IridiumSubsystemManager.getInstance().addSubsystem(new IridiumCoreSubsystem());
+        IridiumClientMod.initialize();
     }
 }

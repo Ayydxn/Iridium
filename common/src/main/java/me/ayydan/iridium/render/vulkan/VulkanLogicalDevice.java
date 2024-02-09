@@ -32,6 +32,11 @@ public class VulkanLogicalDevice
         vkDestroyDevice(this.logicalDevice, null);
     }
 
+    public void waitIdle()
+    {
+        vkDeviceWaitIdle(this.logicalDevice);
+    }
+
     private VkDevice createLogicalDevice(VkPhysicalDevice physicalDevice)
     {
         try (MemoryStack memoryStack = MemoryStack.stackPush())
@@ -43,10 +48,10 @@ public class VulkanLogicalDevice
 
             for (int i = 0; i < queueFamilies.length; i++)
             {
-                VkDeviceQueueCreateInfo deviceQueueCreateInfo = VkDeviceQueueCreateInfo.calloc(memoryStack);
-                deviceQueueCreateInfo.sType(VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO);
-                deviceQueueCreateInfo.queueFamilyIndex(queueFamilies[i]);
-                deviceQueueCreateInfo.pQueuePriorities(memoryStack.floats(1.0f));
+                VkDeviceQueueCreateInfo deviceQueueCreateInfo = VkDeviceQueueCreateInfo.calloc(memoryStack)
+                    .sType(VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO)
+                    .queueFamilyIndex(queueFamilies[i])
+                    .pQueuePriorities(memoryStack.floats(1.0f));
 
                 deviceQueueCreateInfos.put(i, deviceQueueCreateInfo);
             }
@@ -87,10 +92,10 @@ public class VulkanLogicalDevice
             QueueFamilyIndices queueFamilyIndices = QueueFamilyIndices.findQueueFamilies(physicalDevice);
             LongBuffer pGraphicsCommandPool = memoryStack.mallocLong(1);
 
-            VkCommandPoolCreateInfo commandPoolCreateInfo = VkCommandPoolCreateInfo.calloc(memoryStack);
-            commandPoolCreateInfo.sType(VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO);
-            commandPoolCreateInfo.queueFamilyIndex(queueFamilyIndices.getGraphicsFamily());
-            commandPoolCreateInfo.flags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+            VkCommandPoolCreateInfo commandPoolCreateInfo = VkCommandPoolCreateInfo.calloc(memoryStack)
+                .sType(VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO)
+                .queueFamilyIndex(queueFamilyIndices.getGraphicsFamily())
+                .flags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
             vkCheckResult(vkCreateCommandPool(this.logicalDevice, commandPoolCreateInfo, null, pGraphicsCommandPool));
 
@@ -105,6 +110,11 @@ public class VulkanLogicalDevice
         vkGetDeviceQueue(logicalDevice, queueFamilyIndex, 0, pQueue);
 
         return new VkQueue(pQueue.get(0), logicalDevice);
+    }
+
+    public VkDevice getHandle()
+    {
+        return this.logicalDevice;
     }
 
     public VkQueue getGraphicsQueue()

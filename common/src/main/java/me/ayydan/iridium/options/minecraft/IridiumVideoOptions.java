@@ -12,6 +12,7 @@ import dev.isxander.yacl3.gui.controllers.slider.IntegerSliderController;
 import me.ayydan.iridium.gui.screens.IridiumOptionsScreen;
 import me.ayydan.iridium.options.IridiumGameOptions;
 import me.ayydan.iridium.options.OptionPerformanceImpact;
+import me.ayydan.iridium.render.IridiumRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.pack.PackScreen;
 import net.minecraft.client.option.AttackIndicator;
@@ -177,7 +178,11 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Varies.getText()))
                         .build())
-                .binding(true, () -> this.client.options.getEnableVsync().get(), newValue -> this.client.options.getEnableVsync().set(newValue))
+                .binding(true, () -> this.client.options.getEnableVsync().get(), newValue ->
+                {
+                    this.client.options.getEnableVsync().set(newValue);
+                    IridiumRenderer.getVulkanContext().getSwapChain().enableVSync(newValue);
+                })
                 .customController(BooleanController::new)
                 .build();
 

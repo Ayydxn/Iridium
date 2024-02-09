@@ -6,13 +6,40 @@ import me.ayydan.iridium.utils.logging.IridiumLogger;
 
 public class IridiumRenderer
 {
+    private static final IridiumRendererSubsystem RENDERER_SUBSYSTEM = (IridiumRendererSubsystem) IridiumSubsystemManager.getInstance().getSubsystemInstance(IridiumRendererSubsystem.class);
+
+    public static void beginFrame()
+    {
+        RENDERER_SUBSYSTEM.beginFrame();
+    }
+
+    public static void endFrame()
+    {
+        RENDERER_SUBSYSTEM.endFrame();
+    }
+
     public static IridiumLogger getLogger()
     {
-        return ((IridiumRendererSubsystem) IridiumSubsystemManager.getInstance().getSubsystemInstance(IridiumRendererSubsystem.class)).getLogger();
+        return RENDERER_SUBSYSTEM.getLogger();
     }
 
     public static VulkanContext getVulkanContext()
     {
-        return ((IridiumRendererSubsystem) IridiumSubsystemManager.getInstance().getSubsystemInstance(IridiumRendererSubsystem.class)).getVulkanContext();
+        return RENDERER_SUBSYSTEM.getVulkanContext();
+    }
+
+    public static boolean isCurrentFrameBeingSkipped()
+    {
+        return RENDERER_SUBSYSTEM.isCurrentFrameBeingSkipped();
+    }
+
+    public static int getCurrentFrameIndex()
+    {
+        return RENDERER_SUBSYSTEM.currentFrameIndex;
+    }
+
+    public static void setCurrentFrameIndex(int currentFrameIndex)
+    {
+        RENDERER_SUBSYSTEM.currentFrameIndex = currentFrameIndex;
     }
 }
