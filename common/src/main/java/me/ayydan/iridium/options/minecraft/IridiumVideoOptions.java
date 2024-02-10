@@ -233,11 +233,18 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append(OptionPerformanceImpact.Varies.getText()))
                         .build())
                 .binding(Binding.minecraft(this.client.options.getFov()))
-                .customController(option -> new IntegerSliderController(option, 30, 110, 1, value -> switch (value)
+                .customController(option -> new IntegerSliderController(option, 30, 110, 1, value ->
                 {
-                    case 70 -> Text.translatable("iridium.options.graphics.fov.normal", value);
-                    case 110 -> Text.translatable("iridium.options.graphics.fov.quakePro", value);
-                    default -> Text.literal(String.valueOf(value));
+                    if (value == 70)
+                    {
+                        return Text.translatable("iridium.options.graphics.fov.normal", value);
+                    }
+                    else if (value == 110)
+                    {
+                        return Text.translatable("iridium.options.graphics.fov.quakePro", value);
+                    }
+
+                    return Text.literal(String.valueOf(value));
                 }))
                 .flag(OptionFlag.WORLD_RENDER_UPDATE)
                 .build();

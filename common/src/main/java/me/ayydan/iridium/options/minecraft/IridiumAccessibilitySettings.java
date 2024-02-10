@@ -76,7 +76,8 @@ public class IridiumAccessibilitySettings extends IridiumMinecraftOptions
                         if (resourcePackManager.enablePackProfile("high_contrast"))
                             this.client.options.updateResourcePacks(resourcePackManager);
                     }
-                    else if (isHighContrastPackEnabled && !newValue && resourcePackManager.disablePackProfile(highContrastPackName))
+
+                    if (isHighContrastPackEnabled && !newValue && resourcePackManager.disablePackProfile(highContrastPackName))
                     {
                         this.client.options.updateResourcePacks(resourcePackManager);
                     }
