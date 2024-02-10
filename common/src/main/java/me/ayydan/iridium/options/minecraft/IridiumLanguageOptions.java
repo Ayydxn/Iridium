@@ -55,6 +55,8 @@ public class IridiumLanguageOptions extends IridiumMinecraftOptions
                     {
                         this.client.getLanguageManager().setLanguage(languageCode);
                         this.client.reloadResources();
+
+                        this.refreshOptionsScreen();
                     })
                     .build();
 

@@ -49,18 +49,15 @@ public class IridiumGameOptions
     @GameOption
     private boolean showCoordinates = false;
 
+    @GameOption
+    private boolean enableShaderCaching = true;
+
+    @GameOption
+    private int framesInFlight = 3;
+
     public static IridiumGameOptions defaults()
     {
-        IridiumGameOptions iridiumGameOptions = new IridiumGameOptions();
-        iridiumGameOptions.leavesQuality = GraphicsQuality.High;
-        iridiumGameOptions.weatherQuality = GraphicsQuality.High;
-        iridiumGameOptions.enableVignette = true;
-        iridiumGameOptions.overlayPosition = OverlayPosition.TopLeft;
-        iridiumGameOptions.textContrast = TextContrast.Shadow;
-        iridiumGameOptions.showFPSOverlay = false;
-        iridiumGameOptions.showCoordinates = false;
-
-        return iridiumGameOptions;
+        return new IridiumGameOptions();
     }
 
     public static IridiumGameOptions load()
@@ -228,6 +225,30 @@ public class IridiumGameOptions
     public void setCoordinatesOverlayEnabled(boolean showCoordinatesOverlayEnabled)
     {
         this.showCoordinates = showCoordinatesOverlayEnabled;
+
+        this.write();
+    }
+
+    public boolean isShaderCachingEnabled()
+    {
+        return this.enableShaderCaching;
+    }
+
+    public void setShaderCachingEnabled(boolean enableShaderCaching)
+    {
+        this.enableShaderCaching = enableShaderCaching;
+
+        this.write();
+    }
+
+    public int getFramesInFlight()
+    {
+        return this.framesInFlight;
+    }
+
+    public void setFramesInFlight(int framesInFlight)
+    {
+        this.framesInFlight = framesInFlight;
 
         this.write();
     }

@@ -50,13 +50,16 @@ public class IridiumOptionsScreen
         IridiumOnlineOptions iridiumOnlineOptions = new IridiumOnlineOptions();
         iridiumOnlineOptions.create();
 
+        IridiumRendererOptions iridiumRendererOptions = new IridiumRendererOptions(this.iridiumGameOptions);
+        iridiumRendererOptions.create();
+
         IridiumExtraOptions iridiumExtraOptions = new IridiumExtraOptions();
         iridiumExtraOptions.create();
 
         Collections.addAll(this.optionCategories, iridiumVideoOptions.getYACLCategory(), iridiumAudioOptions.getYACLCategory(),
                 iridiumControlsOptions.getYACLCategory(), iridiumSkinOptions.getYACLCategory(), iridiumLanguageOptions.getYACLCategory(),
                 iridiumChatSettings.getYACLCategory(), iridiumAccessibilitySettings.getYACLCategory(), iridiumOnlineOptions.getYACLCategory(),
-                iridiumExtraOptions.getYACLCategory());
+                iridiumRendererOptions.getYACLCategory(), iridiumExtraOptions.getYACLCategory());
     }
 
     public Screen getHandle()

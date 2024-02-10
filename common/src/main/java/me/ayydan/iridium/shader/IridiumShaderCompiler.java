@@ -1,29 +1,26 @@
 package me.ayydan.iridium.shader;
 
 import com.google.common.collect.Lists;
-import com.google.common.io.Files;
 import com.google.common.io.Resources;
-import com.sun.jna.platform.unix.Resource;
 import dev.architectury.platform.Platform;
+import me.ayydan.iridium.IridiumClientMod;
+import me.ayydan.iridium.options.IridiumGameOptions;
 import me.ayydan.iridium.render.IridiumRenderer;
 import me.ayydan.iridium.render.exceptions.IridiumRendererException;
 import me.ayydan.iridium.shader.utils.ShaderIncludeResolver;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.WinNativeModuleLister;
-import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportSection;
-import org.apache.commons.io.FileUtils;
+import me.ayydan.iridium.utils.ByteBufferUtils;
+import me.ayydan.iridium.utils.IridiumConstants;
+import me.ayydan.iridium.utils.PathUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.system.MemoryUtil;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.lwjgl.util.shaderc.Shaderc.*;
 import static org.lwjgl.vulkan.VK12.VK_API_VERSION_1_2;
@@ -73,8 +70,7 @@ public class IridiumShaderCompiler
 
     public ShaderSPIRV compileShader(String shaderName, String shaderSource, ShaderStage shaderStage)
     {
-        if (Platform.isDevelopmentEnvironment())
-            IridiumRenderer.getLogger().info("Compiling shader '{}'", shaderName);
+        IridiumRenderer.getLogger().info("Compiling shader '{}'...", shaderName);
 
         long shaderCompilationResult = shaderc_compile_into_spv(this.shadercCompiler, shaderSource, shaderStage.getID(), shaderName, "main",
                 this.shadercCompilerOptions);
@@ -90,31 +86,53 @@ public class IridiumShaderCompiler
 
     public ShaderSPIRV compileShaderFromFile(String shaderFilepath, ShaderStage shaderStage)
     {
-        if (Platform.isDevelopmentEnvironment())
-            IridiumRenderer.getLogger().info("Compiling shader '{}'", shaderFilepath);
+        Path shaderCacheDirectory = PathUtils.getShaderCacheDirectory();
+        String shaderFilename = StringUtils.substringBefore(FilenameUtils.getName(shaderFilepath), ".");
 
-        try
+        IridiumGameOptions iridiumGameOptions = IridiumClientMod.getGameOptions();
+        if (iridiumGameOptions.isShaderCachingEnabled())
         {
-            URL shaderFileURL = Resources.getResource("assets/iridium/shaders/" + shaderFilepath);
-            String shaderSource = Resources.toString(shaderFileURL, StandardCharsets.UTF_8);
+            Path shaderCacheFilepath = Path.of(shaderCacheDirectory + "/" + shaderFilename + "_" + shaderStage.getCacheID() +
+                    IridiumConstants.SHADER_CACHE_FILE_EXTENSION);
 
-            long shaderCompilationResult = shaderc_compile_into_spv(this.shadercCompiler, shaderSource, shaderStage.getID(), shaderFilepath, "main",
-                    this.shadercCompilerOptions);
-
-            if (shaderCompilationResult == MemoryUtil.NULL)
-                throw new NullPointerException(String.format("Failed to compile shader '%s'!", shaderFilepath));
-
-            if (shaderc_result_get_compilation_status(shaderCompilationResult) != shaderc_compilation_status_success)
+            if (Files.exists(shaderCacheFilepath))
             {
-                IridiumRenderer.getLogger().error("Failed to compile shader '{}':\n\n{}", shaderFilepath,
-                        shaderc_result_get_error_message(shaderCompilationResult));
-            }
+                IridiumRenderer.getLogger().info("Loading shader '{}' from cache...", shaderFilepath);
 
-            return new ShaderSPIRV(shaderCompilationResult, shaderc_result_get_bytes(shaderCompilationResult));
+                ByteBuffer cachedShaderBytecode = ByteBufferUtils.readFromFile(shaderCacheFilepath.toString());
+                return new ShaderSPIRV(MemoryUtil.NULL, cachedShaderBytecode);
+            }
+            else
+            {
+                try
+                {
+                    URL shaderFileURL = Resources.getResource("assets/iridium/shaders/" + shaderFilepath);
+                    String shaderSource = Resources.toString(shaderFileURL, StandardCharsets.UTF_8);
+
+                    ShaderSPIRV shaderSPIRV = this.compileShader(shaderFilename, shaderSource, shaderStage);
+                    ByteBufferUtils.writeToFile(shaderSPIRV.getShaderBytecode(), shaderCacheFilepath.toString());
+
+                    return shaderSPIRV;
+                }
+                catch (IOException exception)
+                {
+                    exception.printStackTrace();
+                }
+            }
         }
-        catch (IOException exception)
+        else
         {
-            exception.printStackTrace();
+            try
+            {
+                URL shaderFileURL = Resources.getResource("assets/iridium/shaders/" + shaderFilepath);
+                String shaderSource = Resources.toString(shaderFileURL, StandardCharsets.UTF_8);
+
+                return this.compileShader(shaderFilename, shaderSource, shaderStage);
+            }
+            catch (IOException exception)
+            {
+                exception.printStackTrace();
+            }
         }
 
         return null;

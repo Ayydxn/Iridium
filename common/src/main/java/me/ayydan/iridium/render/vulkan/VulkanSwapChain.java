@@ -1,6 +1,7 @@
 package me.ayydan.iridium.render.vulkan;
 
 import com.google.common.collect.Lists;
+import me.ayydan.iridium.IridiumClientMod;
 import me.ayydan.iridium.event.WindowEventHandler;
 import me.ayydan.iridium.render.IridiumRenderer;
 import me.ayydan.iridium.render.exceptions.IridiumRendererException;
@@ -372,7 +373,7 @@ public class VulkanSwapChain implements WindowEventHandler
             }
         }
 
-        IridiumRenderer.setCurrentFrameIndex((IridiumRenderer.getCurrentFrameIndex() + 1) % this.swapChainImages.size());
+        IridiumRenderer.setCurrentFrameIndex((IridiumRenderer.getCurrentFrameIndex() + 1) % IridiumClientMod.getGameOptions().getFramesInFlight());
 
         // Wait and make sure that the frame that we're going to present has finished rendering.
         vkCheckResult(vkWaitForFences(logicalDevice, waitFence, true, IridiumConstants.UINT64_MAX));

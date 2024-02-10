@@ -164,5 +164,11 @@
   "iridium.options.group.credits": "Credits and Attribution",
   "iridium.options.credits.credits.description": "View all of those who have contributed to Minecraft's creation.",
   "iridium.options.credits.attribution.description": "View the game's attributions.",
-  "iridium.options.credits.licenses.description": "View the game's licensing."
+  "iridium.options.credits.licenses.description": "View the game's licensing.",
+
+  "iridium.options.category.renderer": "Renderer",
+  "iridium.options.renderer.enableShaderCaching": "Enable Shader Caching",
+  "iridium.options.renderer.enableShaderCaching.description": "Shader compilation is a relatively expensive operation, especially on lower-end hardware. By caching shaders, the need to compile shaders every time you launch the game is eliminated, therefore potentially improving load times.\n\nHowever, caching shaders can potentially consume a lot of storage space and/or cause issues if used on a graphics driver that is different from the one that they were compiled on.",
+  "iridium.options.renderer.framesInFlight": "Frames In Flight",
+  "iridium.options.renderer.framesInFlight.description": "Determines the maximum number of frames that the CPU can be waiting on the GPU to finish rendering.\n\nSetting this value too low or too high can create instabilities in your framerate.\n\nUpon changing this setting, a game restart is required in order for it to take effect."
 }
