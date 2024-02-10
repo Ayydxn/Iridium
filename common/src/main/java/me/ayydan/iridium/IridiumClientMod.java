@@ -3,7 +3,7 @@ package me.ayydan.iridium;
 import dev.architectury.platform.Platform;
 import me.ayydan.iridium.options.IridiumGameOptions;
 import me.ayydan.iridium.subsystems.IridiumSubsystemManager;
-import me.ayydan.iridium.utils.ClientFramerateTracker;
+import me.ayydan.iridium.client.ClientFramerateTracker;
 import me.ayydan.iridium.utils.logging.IridiumLogger;
 
 public class IridiumClientMod

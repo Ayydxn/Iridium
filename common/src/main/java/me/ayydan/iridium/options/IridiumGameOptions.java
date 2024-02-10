@@ -29,31 +29,31 @@ public class IridiumGameOptions
     private static boolean isConfigCorrupted = false;
 
     @GameOption
-    private GraphicsQuality leavesQuality = GraphicsQuality.High;
+    public GraphicsQuality leavesQuality = GraphicsQuality.High;
 
     @GameOption
-    private GraphicsQuality weatherQuality = GraphicsQuality.High;
+    public GraphicsQuality weatherQuality = GraphicsQuality.High;
 
     @GameOption
-    private boolean enableVignette = true;
+    public boolean enableVignette = true;
 
     @GameOption
-    private OverlayPosition overlayPosition = OverlayPosition.TopLeft;
+    public OverlayPosition overlayPosition = OverlayPosition.TopLeft;
 
     @GameOption
-    private TextContrast textContrast = TextContrast.Shadow;
+    public TextContrast textContrast = TextContrast.Shadow;
 
     @GameOption
-    private boolean showFPSOverlay = false;
+    public boolean showFPSOverlay = false;
 
     @GameOption
-    private boolean showCoordinates = false;
+    public boolean showCoordinates = false;
 
     @GameOption
-    private boolean enableShaderCaching = true;
+    public boolean enableShaderCaching = true;
 
     @GameOption
-    private int framesInFlight = 3;
+    public int framesInFlight = 3;
 
     public static IridiumGameOptions defaults()
     {
@@ -143,114 +143,6 @@ public class IridiumGameOptions
     public static boolean isConfigCorrupted()
     {
         return isConfigCorrupted;
-    }
-
-    public GraphicsQuality getLeavesQuality()
-    {
-        return leavesQuality;
-    }
-
-    public void setLeavesQuality(GraphicsQuality leavesQuality)
-    {
-        this.leavesQuality = leavesQuality;
-
-        this.write();
-    }
-
-    public GraphicsQuality getWeatherQuality()
-    {
-        return weatherQuality;
-    }
-
-    public void setWeatherQuality(GraphicsQuality weatherQuality)
-    {
-        this.weatherQuality = weatherQuality;
-
-        this.write();
-    }
-
-    public boolean isVignetteEnabled()
-    {
-        return enableVignette;
-    }
-
-    public void setVignetteEnabled(boolean isVignetteEnabled)
-    {
-        this.enableVignette = isVignetteEnabled;
-
-        this.write();
-    }
-
-    public OverlayPosition getOverlayPosition()
-    {
-        return overlayPosition;
-    }
-
-    public void setOverlayPosition(OverlayPosition overlayPosition)
-    {
-        this.overlayPosition = overlayPosition;
-
-        this.write();
-    }
-
-    public TextContrast getTextContrast()
-    {
-        return textContrast;
-    }
-
-    public void setTextContrast(TextContrast textContrast)
-    {
-        this.textContrast = textContrast;
-
-        this.write();
-    }
-
-    public boolean isFPSOverlayEnabled()
-    {
-        return this.showFPSOverlay;
-    }
-
-    public void setFPSOverlayEnabled(boolean showFPSOverlay)
-    {
-        this.showFPSOverlay = showFPSOverlay;
-
-        this.write();
-    }
-
-    public boolean isCoordinatesOverlayEnabled()
-    {
-        return this.showCoordinates;
-    }
-
-    public void setCoordinatesOverlayEnabled(boolean showCoordinatesOverlayEnabled)
-    {
-        this.showCoordinates = showCoordinatesOverlayEnabled;
-
-        this.write();
-    }
-
-    public boolean isShaderCachingEnabled()
-    {
-        return this.enableShaderCaching;
-    }
-
-    public void setShaderCachingEnabled(boolean enableShaderCaching)
-    {
-        this.enableShaderCaching = enableShaderCaching;
-
-        this.write();
-    }
-
-    public int getFramesInFlight()
-    {
-        return this.framesInFlight;
-    }
-
-    public void setFramesInFlight(int framesInFlight)
-    {
-        this.framesInFlight = framesInFlight;
-
-        this.write();
     }
 
     public enum GraphicsQuality

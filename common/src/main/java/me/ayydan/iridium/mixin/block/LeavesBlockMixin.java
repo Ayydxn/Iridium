@@ -20,7 +20,7 @@ public class LeavesBlockMixin extends Block
     @Override
     public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction)
     {
-        if (IridiumClientMod.getGameOptions().getLeavesQuality().isMediumOrBetter())
+        if (IridiumClientMod.getGameOptions().leavesQuality.isMediumOrBetter())
         {
             return super.isSideInvisible(state, stateFrom, direction);
         }

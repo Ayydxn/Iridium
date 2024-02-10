@@ -1,4 +1,4 @@
-package me.ayydan.iridium.utils;
+package me.ayydan.iridium.client;
 
 import net.minecraft.client.MinecraftClient;
 

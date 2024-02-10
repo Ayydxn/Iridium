@@ -373,7 +373,7 @@ public class VulkanSwapChain implements WindowEventHandler
             }
         }
 
-        IridiumRenderer.setCurrentFrameIndex((IridiumRenderer.getCurrentFrameIndex() + 1) % IridiumClientMod.getGameOptions().getFramesInFlight());
+        IridiumRenderer.setCurrentFrameIndex((IridiumRenderer.getCurrentFrameIndex() + 1) % IridiumClientMod.getGameOptions().framesInFlight);
 
         // Wait and make sure that the frame that we're going to present has finished rendering.
         vkCheckResult(vkWaitForFences(logicalDevice, waitFence, true, IridiumConstants.UINT64_MAX));

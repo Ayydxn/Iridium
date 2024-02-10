@@ -6,7 +6,7 @@ import me.ayydan.iridium.gui.hud.IridiumHudOverlay;
 import me.ayydan.iridium.options.IridiumGameOptions;
 import me.ayydan.iridium.platform.IridiumPlatformUtils;
 import me.ayydan.iridium.subsystems.IridiumSubsystem;
-import me.ayydan.iridium.utils.ClientFramerateTracker;
+import me.ayydan.iridium.client.ClientFramerateTracker;
 import me.ayydan.iridium.utils.logging.IridiumLogger;
 
 public class IridiumCoreSubsystem extends IridiumSubsystem

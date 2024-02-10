@@ -233,14 +233,11 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append(OptionPerformanceImpact.Varies.getText()))
                         .build())
                 .binding(Binding.minecraft(this.client.options.getFov()))
-                .customController(option -> new IntegerSliderController(option, 30, 110, 1, value ->
+                .customController(option -> new IntegerSliderController(option, 30, 110, 1, value -> switch (value)
                 {
-                    return switch (value)
-                    {
-                        case 70 -> Text.translatable("iridium.options.graphics.fov.normal", value);
-                        case 110 -> Text.translatable("iridium.options.graphics.fov.quakePro", value);
-                        default -> Text.literal(String.valueOf(value));
-                    };
+                    case 70 -> Text.translatable("iridium.options.graphics.fov.normal", value);
+                    case 110 -> Text.translatable("iridium.options.graphics.fov.quakePro", value);
+                    default -> Text.literal(String.valueOf(value));
                 }))
                 .flag(OptionFlag.WORLD_RENDER_UPDATE)
                 .build();
@@ -297,6 +294,7 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
         Collections.addAll(this.graphicsOptions, brightnessOption, fovOption, guiScaleOption, viewBobbingOption, attackIndicatorOption, resourcePacksOption);
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void createGraphicsQualityOptions()
     {
         Option<Integer> renderDistanceOption = Option.<Integer>createBuilder()
@@ -362,7 +360,7 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Medium.getText()))
                         .build())
-                .binding(IridiumGameOptions.defaults().getWeatherQuality(), this.iridiumGameOptions::getWeatherQuality, this.iridiumGameOptions::setWeatherQuality)
+                .binding(IridiumGameOptions.defaults().weatherQuality, () -> this.iridiumGameOptions.weatherQuality, newValue -> this.iridiumGameOptions.weatherQuality = newValue)
                 .customController(option -> new EnumController<>(option, IridiumGameOptions.GraphicsQuality.class))
                 .flag(OptionFlag.RELOAD_CHUNKS)
                 .build();
@@ -374,7 +372,7 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Low.getText()))
                         .build())
-                .binding(IridiumGameOptions.defaults().getLeavesQuality(), this.iridiumGameOptions::getLeavesQuality, this.iridiumGameOptions::setLeavesQuality)
+                .binding(IridiumGameOptions.defaults().leavesQuality, () -> this.iridiumGameOptions.leavesQuality, newValue -> this.iridiumGameOptions.leavesQuality = newValue)
                 .customController(option -> new EnumController<>(option, IridiumGameOptions.GraphicsQuality.class))
                 .flag(OptionFlag.RELOAD_CHUNKS)
                 .build();
@@ -430,7 +428,7 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Low.getText()))
                         .build())
-                .binding(IridiumGameOptions.defaults().isVignetteEnabled(), this.iridiumGameOptions::isVignetteEnabled, this.iridiumGameOptions::setVignetteEnabled)
+                .binding(IridiumGameOptions.defaults().enableVignette, () -> this.iridiumGameOptions.enableVignette, newValue -> this.iridiumGameOptions.enableVignette = newValue)
                 .customController(BooleanController::new)
                 .build();
 
@@ -473,42 +471,40 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                 fovEffectsOption, distortionEffectsOption, mipmapLevelsOption);
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void createAdvancedGraphicsOptions()
     {
         Option<Boolean> showFPSOverlayOption = Option.<Boolean>createBuilder()
                 .name(Text.translatable("iridium.options.advancedGraphics.showFPSOverlay"))
                 .description(OptionDescription.of(Text.translatable("iridium.options.advancedGraphics.showFPSOverlay.description")))
-                .binding(IridiumGameOptions.defaults().isFPSOverlayEnabled(), this.iridiumGameOptions::isFPSOverlayEnabled, this.iridiumGameOptions::setFPSOverlayEnabled)
+                .binding(IridiumGameOptions.defaults().showFPSOverlay, () -> this.iridiumGameOptions.showFPSOverlay, newValue -> this.iridiumGameOptions.showFPSOverlay = newValue)
                 .customController(BooleanController::new)
                 .build();
 
         Option<Boolean> showCoordinatesOption = Option.<Boolean>createBuilder()
                 .name(Text.translatable("iridium.options.advancedGraphics.showCoordinates"))
                 .description(OptionDescription.of(Text.translatable("iridium.options.advancedGraphics.showCoordinates.description")))
-                .binding(IridiumGameOptions.defaults().isCoordinatesOverlayEnabled(), this.iridiumGameOptions::isCoordinatesOverlayEnabled, this.iridiumGameOptions::setCoordinatesOverlayEnabled)
+                .binding(IridiumGameOptions.defaults().showCoordinates, () -> this.iridiumGameOptions.showCoordinates, newValue -> this.iridiumGameOptions.showCoordinates = newValue)
                 .customController(BooleanController::new)
                 .build();
 
         Option<IridiumGameOptions.TextContrast> overlayContrastOption = Option.<IridiumGameOptions.TextContrast>createBuilder()
                 .name(Text.translatable("iridium.options.advancedGraphics.overlayContrast"))
                 .description(OptionDescription.of(Text.translatable("iridium.options.advancedGraphics.textContrast.description")))
-                .binding(IridiumGameOptions.defaults().getTextContrast(), this.iridiumGameOptions::getTextContrast, this.iridiumGameOptions::setTextContrast)
+                .binding(IridiumGameOptions.defaults().textContrast, () -> this.iridiumGameOptions.textContrast, newValue -> this.iridiumGameOptions.textContrast = newValue)
                 .customController(option -> new EnumController<>(option, IridiumGameOptions.TextContrast.class))
                 .build();
 
         Option<IridiumGameOptions.OverlayPosition> overlayPositionOption = Option.<IridiumGameOptions.OverlayPosition>createBuilder()
                 .name(Text.translatable("iridium.options.advancedGraphics.overlayPosition"))
                 .description(OptionDescription.of(Text.translatable("iridium.options.advancedGraphics.overlayPosition.description")))
-                .binding(IridiumGameOptions.defaults().getOverlayPosition(), this.iridiumGameOptions::getOverlayPosition, this.iridiumGameOptions::setOverlayPosition)
-                .customController(option -> new EnumController<>(option, overlayPosition ->
+                .binding(IridiumGameOptions.defaults().overlayPosition, () -> this.iridiumGameOptions.overlayPosition, newValue -> this.iridiumGameOptions.overlayPosition = newValue)
+                .customController(option -> new EnumController<>(option, overlayPosition -> switch (overlayPosition)
                 {
-                    return switch (overlayPosition)
-                    {
-                        case TopLeft -> Text.translatable("iridium.options.overlayPosition.topLeft");
-                        case TopRight -> Text.translatable("iridium.options.overlayPosition.topRight");
-                        case BottomLeft -> Text.translatable("iridium.options.overlayPosition.bottomLeft");
-                        case BottomRight -> Text.translatable("iridium.options.overlayPosition.bottomRight");
-                    };
+                    case TopLeft -> Text.translatable("iridium.options.overlayPosition.topLeft");
+                    case TopRight -> Text.translatable("iridium.options.overlayPosition.topRight");
+                    case BottomLeft -> Text.translatable("iridium.options.overlayPosition.bottomLeft");
+                    case BottomRight -> Text.translatable("iridium.options.overlayPosition.bottomRight");
                 }, IridiumGameOptions.OverlayPosition.toArray()))
                 .build();
 

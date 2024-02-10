@@ -2,7 +2,7 @@ package me.ayydan.iridium.gui.hud;
 
 import me.ayydan.iridium.IridiumClientMod;
 import me.ayydan.iridium.options.IridiumGameOptions;
-import me.ayydan.iridium.utils.ClientFramerateTracker;
+import me.ayydan.iridium.client.ClientFramerateTracker;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.text.Text;
@@ -19,10 +19,10 @@ public class IridiumHudOverlay
     {
         if (!this.minecraftClient.method_53526().chartsVisible())
         {
-            if (this.iridiumGameOptions.isFPSOverlayEnabled())
+            if (this.iridiumGameOptions.showFPSOverlay)
                 this.renderFramerateOverlay(guiGraphics);
 
-            if (this.iridiumGameOptions.isCoordinatesOverlayEnabled())
+            if (this.iridiumGameOptions.showCoordinates)
                 this.renderCoordinatesOverlay(guiGraphics);
         }
     }
@@ -37,7 +37,7 @@ public class IridiumHudOverlay
 
         int xPosition = 0;
         int yPosition = 0;
-        switch (this.iridiumGameOptions.getOverlayPosition())
+        switch (this.iridiumGameOptions.overlayPosition)
         {
             case TopLeft ->
             {
@@ -82,7 +82,7 @@ public class IridiumHudOverlay
 
         int xPosition = 0;
         int yPosition = 0;
-        switch (this.iridiumGameOptions.getOverlayPosition())
+        switch (this.iridiumGameOptions.overlayPosition)
         {
             case TopLeft ->
             {
@@ -114,7 +114,7 @@ public class IridiumHudOverlay
 
     private void drawString(GuiGraphics guiGraphics, Text text, int xPosition, int yPosition)
     {
-        switch (this.iridiumGameOptions.getTextContrast())
+        switch (this.iridiumGameOptions.textContrast)
         {
             case None -> guiGraphics.drawText(this.minecraftClient.textRenderer, text, xPosition, yPosition, Color.WHITE.getRGB(), false);
 

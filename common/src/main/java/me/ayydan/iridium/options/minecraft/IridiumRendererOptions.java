@@ -42,6 +42,7 @@ public class IridiumRendererOptions extends IridiumMinecraftOptions
         return this.rendererOptionsCategory;
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void createRendererOptions()
     {
         Option<Boolean> shaderCachingOption = Option.<Boolean>createBuilder()
@@ -51,7 +52,7 @@ public class IridiumRendererOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.None.getText()))
                         .build())
-                .binding(IridiumGameOptions.defaults().isShaderCachingEnabled(), this.iridiumGameOptions::isShaderCachingEnabled, this.iridiumGameOptions::setShaderCachingEnabled)
+                .binding(IridiumGameOptions.defaults().enableShaderCaching, () -> this.iridiumGameOptions.enableShaderCaching, newValue -> this.iridiumGameOptions.enableShaderCaching = newValue)
                 .customController(BooleanController::new)
                 .build();
 
@@ -62,7 +63,7 @@ public class IridiumRendererOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.High.getText()))
                         .build())
-                .binding(IridiumGameOptions.defaults().getFramesInFlight(), this.iridiumGameOptions::getFramesInFlight, this.iridiumGameOptions::setFramesInFlight)
+                .binding(IridiumGameOptions.defaults().framesInFlight, () -> this.iridiumGameOptions.framesInFlight, newValue -> this.iridiumGameOptions.framesInFlight = newValue)
                 .customController(option -> new IntegerSliderController(option, 0, 9, 1))
                 .flag(OptionFlag.GAME_RESTART)
                 .build();

@@ -69,7 +69,7 @@ public class IridiumOptionsScreen
                 .categories(this.optionCategories)
                 .save(() ->
                 {
-                   MinecraftClient.getInstance().options.write();
+                    MinecraftClient.getInstance().options.write();
                     this.iridiumGameOptions.write();
                 })
                 .build()

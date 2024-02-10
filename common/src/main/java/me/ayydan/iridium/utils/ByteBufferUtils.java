@@ -1,12 +1,14 @@
 package me.ayydan.iridium.utils;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.Validate;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.file.Files;
-import java.nio.file.attribute.FileAttribute;
 
 public class ByteBufferUtils
 {
@@ -17,7 +19,7 @@ public class ByteBufferUtils
         try
         {
             if (!byteBufferFile.exists())
-                byteBufferFile.createNewFile();
+                Validate.isTrue(byteBufferFile.createNewFile());
         }
         catch (IOException exception)
         {
@@ -27,7 +29,7 @@ public class ByteBufferUtils
         try (FileOutputStream fileOutputStream = new FileOutputStream(byteBufferFile))
         {
             FileChannel fileChannel = fileOutputStream.getChannel();
-            fileChannel.write(byteBuffer);
+            Validate.isTrue(fileChannel.write(byteBuffer) != 0);
         }
         catch (IOException exception)
         {
