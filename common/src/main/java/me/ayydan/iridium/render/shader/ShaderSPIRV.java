@@ -1,4 +1,4 @@
-package me.ayydan.iridium.shader;
+package me.ayydan.iridium.render.shader;
 
 import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.system.NativeResource;

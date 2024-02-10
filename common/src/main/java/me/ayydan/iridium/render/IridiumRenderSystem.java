@@ -17,4 +17,9 @@ public class IridiumRenderSystem
             IridiumSubsystemManager.getInstance().addSubsystem(new IridiumRendererSubsystem());
         }
     }
+
+    public static int getMaxSupportedTextureSize()
+    {
+        return IridiumRenderer.getVulkanContext().getPhysicalDevice().getProperties().limits().maxImageDimension2D();
+    }
 }

@@ -1,4 +1,4 @@
-package me.ayydan.iridium.shader.utils;
+package me.ayydan.iridium.render.shader.utils;
 
 import me.ayydan.iridium.render.IridiumRenderer;
 import org.lwjgl.system.MemoryStack;

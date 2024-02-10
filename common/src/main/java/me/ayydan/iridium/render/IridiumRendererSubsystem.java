@@ -1,7 +1,7 @@
 package me.ayydan.iridium.render;
 
 import me.ayydan.iridium.render.vulkan.VulkanContext;
-import me.ayydan.iridium.shader.IridiumShaderCompiler;
+import me.ayydan.iridium.render.shader.IridiumShaderCompiler;
 import me.ayydan.iridium.subsystems.IridiumSubsystem;
 import me.ayydan.iridium.utils.logging.IridiumLogger;
 import net.minecraft.client.MinecraftClient;

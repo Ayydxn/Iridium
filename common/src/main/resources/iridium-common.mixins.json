@@ -6,7 +6,12 @@
   "client": [
     "blaze3d.glfw.WindowMixin",
     "blaze3d.platform.GLDebugInfoMixin",
+    "blaze3d.platform.GLStateManagerMixin",
+    "blaze3d.shader.GLProgramManagerMixin",
+    "blaze3d.shader.GLUniformMixin",
+    "blaze3d.shader.ShaderStageMixin",
     "blaze3d.systems.RenderSystemMixin",
+    "blaze3d.vertex.VertexBufferMixin",
 
     "block.LeavesBlockMixin",
 
@@ -15,6 +20,7 @@
     "client.gui.screens.OptionsScreenMixin",
     "client.gui.screens.TitleScreenMixin",
     "client.render.RenderLayersMixin",
+    "client.render.ShaderProgramMixin",
     "client.render.WorldRendererMixin",
     "client.MinecraftClientMixin"
   ],

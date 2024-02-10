@@ -1,4 +1,4 @@
-package me.ayydan.iridium.shader;
+package me.ayydan.iridium.render.shader;
 
 import static org.lwjgl.util.shaderc.Shaderc.shaderc_glsl_fragment_shader;
 import static org.lwjgl.util.shaderc.Shaderc.shaderc_glsl_vertex_shader;

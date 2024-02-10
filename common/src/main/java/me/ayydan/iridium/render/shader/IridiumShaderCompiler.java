@@ -1,13 +1,12 @@
-package me.ayydan.iridium.shader;
+package me.ayydan.iridium.render.shader;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
-import dev.architectury.platform.Platform;
 import me.ayydan.iridium.IridiumClientMod;
 import me.ayydan.iridium.options.IridiumGameOptions;
 import me.ayydan.iridium.render.IridiumRenderer;
 import me.ayydan.iridium.render.exceptions.IridiumRendererException;
-import me.ayydan.iridium.shader.utils.ShaderIncludeResolver;
+import me.ayydan.iridium.render.shader.utils.ShaderIncludeResolver;
 import me.ayydan.iridium.utils.ByteBufferUtils;
 import me.ayydan.iridium.utils.IridiumConstants;
 import me.ayydan.iridium.utils.PathUtils;
