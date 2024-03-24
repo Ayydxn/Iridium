@@ -5,8 +5,8 @@ import net.fabricmc.loom.api.LoomGradleExtensionAPI
 plugins {
     java
     id("architectury-plugin") version "3.4-SNAPSHOT"
-    id("dev.architectury.loom") version "1.4-SNAPSHOT" apply false
-    id("org.ajoberstar.grgit") version "5.2.1"
+    id("dev.architectury.loom") version "1.5-SNAPSHOT" apply false
+    id("org.ajoberstar.grgit") version "5.2.2"
     id("io.github.pacifistmc.forgix") version "1.2.6"
 }
 
