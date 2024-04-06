@@ -1,34 +1,68 @@
 package me.ayydan.iridium;
 
-import dev.architectury.platform.Platform;
-import me.ayydan.iridium.options.IridiumGameOptions;
-import me.ayydan.iridium.subsystems.IridiumSubsystemManager;
+import dev.architectury.event.events.client.ClientGuiEvent;
+import dev.architectury.event.events.client.ClientTickEvent;
 import me.ayydan.iridium.client.ClientFramerateTracker;
+import me.ayydan.iridium.gui.hud.IridiumHudOverlay;
+import me.ayydan.iridium.options.IridiumGameOptions;
+import me.ayydan.iridium.platform.IridiumPlatformUtils;
 import me.ayydan.iridium.utils.logging.IridiumLogger;
 
 public class IridiumClientMod
 {
+    private static IridiumClientMod INSTANCE;
+    private static IridiumLogger LOGGER;
+
+    private final IridiumGameOptions iridiumGameOptions;
+    private final ClientFramerateTracker clientFramerateTracker;
+
+    private IridiumClientMod()
+    {
+        LOGGER = new IridiumLogger("Iridium Core");
+        LOGGER.info("Initializing Iridium... (Version: {})", IridiumPlatformUtils.getCurrentVersion());
+
+        this.iridiumGameOptions = IridiumGameOptions.load();
+        this.clientFramerateTracker = new ClientFramerateTracker();
+
+        ClientTickEvent.CLIENT_PRE.register(this.clientFramerateTracker::tick);
+        ClientGuiEvent.RENDER_HUD.register((graphics, tickDelta) -> new IridiumHudOverlay().render(graphics));
+
+    }
+
     public static void initialize()
     {
-        // (Ayydan) By the time this function is called in the NeoForge, the subsystem manager would've already been initialized.
-        if (!Platform.isNeoForge())
-            IridiumSubsystemManager.initialize();
+        if (INSTANCE != null)
+        {
+            LOGGER.warn("Iridium's core has already been initialized! You cannot initialize Iridium's core more than once!");
+            return;
+        }
 
-        IridiumSubsystemManager.getInstance().addSubsystem(new IridiumCoreSubsystem());
+        LOGGER = new IridiumLogger("Iridium Core");
+        LOGGER.info("Initializing Iridium... (Version: {})", IridiumPlatformUtils.getCurrentVersion());
+
+        INSTANCE = new IridiumClientMod();
+    }
+
+    public static IridiumClientMod getInstance()
+    {
+        if (INSTANCE == null)
+            throw new IllegalStateException("Tried to access an instance of Iridium's core when one isn't available!");
+
+        return INSTANCE;
     }
 
     public static IridiumLogger getLogger()
     {
-        return ((IridiumCoreSubsystem) IridiumSubsystemManager.getInstance().getSubsystemInstance(IridiumCoreSubsystem.class)).getLogger();
+        return LOGGER;
     }
 
-    public static IridiumGameOptions getGameOptions()
+    public IridiumGameOptions getGameOptions()
     {
-        return ((IridiumCoreSubsystem) IridiumSubsystemManager.getInstance().getSubsystemInstance(IridiumCoreSubsystem.class)).getGameOptions();
+        return this.iridiumGameOptions;
     }
 
-    public static ClientFramerateTracker getClientFramerateTracker()
+    public ClientFramerateTracker getClientFramerateTracker()
     {
-        return ((IridiumCoreSubsystem) IridiumSubsystemManager.getInstance().getSubsystemInstance(IridiumCoreSubsystem.class)).getClientFramerateTracker();
+        return this.clientFramerateTracker;
     }
 }

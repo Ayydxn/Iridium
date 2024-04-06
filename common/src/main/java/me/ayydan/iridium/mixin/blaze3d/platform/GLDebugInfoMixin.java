@@ -14,18 +14,18 @@ public class GLDebugInfoMixin
     @Redirect(method = "getVendor", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;_getString(I)Ljava/lang/String;"))
     private static String getVulkanPhysicalDeviceVendor(int name)
     {
-        return IridiumRenderer.getVulkanContext().getPhysicalDevice().getVendorName();
+        return IridiumRenderer.getInstance().getVulkanContext().getPhysicalDevice().getVendorName();
     }
 
     @Redirect(method = "getRenderer", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;_getString(I)Ljava/lang/String;"))
     private static String getVulkanPhysicalDeviceName(int name)
     {
-        return IridiumRenderer.getVulkanContext().getPhysicalDevice().getProperties().deviceNameString();
+        return IridiumRenderer.getInstance().getVulkanContext().getPhysicalDevice().getProperties().deviceNameString();
     }
 
     @Redirect(method = "getVersion", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;_getString(I)Ljava/lang/String;"))
     private static String getVulkanPhysicalDeviceDriverVersion(int name)
     {
-        return IridiumRenderer.getVulkanContext().getPhysicalDevice().getDriverVersion();
+        return IridiumRenderer.getInstance().getVulkanContext().getPhysicalDevice().getDriverVersion();
     }
 }

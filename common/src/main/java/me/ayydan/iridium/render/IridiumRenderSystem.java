@@ -1,25 +1,14 @@
 package me.ayydan.iridium.render;
 
-import dev.architectury.platform.Platform;
-import me.ayydan.iridium.subsystems.IridiumSubsystemManager;
-
 public class IridiumRenderSystem
 {
     public static void initRenderer()
     {
-        if (Platform.isNeoForge())
-        {
-            IridiumSubsystemManager.initialize();
-            IridiumSubsystemManager.getInstance().addSubsystem(new IridiumRendererSubsystem());
-        }
-        else
-        {
-            IridiumSubsystemManager.getInstance().addSubsystem(new IridiumRendererSubsystem());
-        }
+        IridiumRenderer.initialize();
     }
 
     public static int getMaxSupportedTextureSize()
     {
-        return IridiumRenderer.getVulkanContext().getPhysicalDevice().getProperties().limits().maxImageDimension2D();
+        return IridiumRenderer.getInstance().getVulkanContext().getPhysicalDevice().getProperties().limits().maxImageDimension2D();
     }
 }

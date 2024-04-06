@@ -1,45 +1,88 @@
 package me.ayydan.iridium.render;
 
 import me.ayydan.iridium.render.vulkan.VulkanContext;
-import me.ayydan.iridium.subsystems.IridiumSubsystemManager;
 import me.ayydan.iridium.utils.logging.IridiumLogger;
+import net.minecraft.client.MinecraftClient;
 
 public class IridiumRenderer
 {
-    private static final IridiumRendererSubsystem RENDERER_SUBSYSTEM = (IridiumRendererSubsystem) IridiumSubsystemManager.getInstance().getSubsystemInstance(IridiumRendererSubsystem.class);
+    private static IridiumRenderer INSTANCE;
+    private static IridiumLogger LOGGER;
 
-    public static void beginFrame()
+    public int currentFrameIndex;
+
+    private final VulkanContext vulkanContext;
+
+    private boolean shouldSkipFrame;
+
+    private IridiumRenderer()
     {
-        RENDERER_SUBSYSTEM.beginFrame();
+        this.vulkanContext = new VulkanContext();
+        this.vulkanContext.create();
     }
 
-    public static void endFrame()
+    public static void initialize()
     {
-        RENDERER_SUBSYSTEM.endFrame();
+        if (INSTANCE != null)
+        {
+            LOGGER.warn("Iridium's renderer has already been initialized! You cannot initialize Iridium's renderer more than once!");
+            return;
+        }
+
+        LOGGER = new IridiumLogger("Iridium Renderer");
+        LOGGER.info("Initializing Iridium Renderer..");
+
+        INSTANCE = new IridiumRenderer();
+    }
+
+    public void shutdown()
+    {
+        this.vulkanContext.destroy();
+
+        LOGGER = null;
+        INSTANCE = null;
+    }
+
+    public void beginFrame()
+    {
+        int swapChainWidth = this.vulkanContext.getSwapChain().getWidth();
+        int swapChainHeight = this.vulkanContext.getSwapChain().getHeight();
+
+        this.shouldSkipFrame = swapChainWidth == 0 || swapChainHeight == 0;
+
+        MinecraftClient.getInstance().skipGameRender = this.shouldSkipFrame;
+
+        if (this.shouldSkipFrame)
+            return;
+
+        // TODO: (Ayydan) Do Vulkan related setup so that we can start rendering a frame.
+    }
+
+    public void endFrame()
+    {
+        // TODO: (Ayydan) Work that needs to be done when we end a frame goes here.
+    }
+
+    public static IridiumRenderer getInstance()
+    {
+        if (INSTANCE == null)
+            throw new IllegalStateException("Tried to access an instance of Iridium's renderer when one isn't available!");
+
+        return INSTANCE;
     }
 
     public static IridiumLogger getLogger()
     {
-        return RENDERER_SUBSYSTEM.getLogger();
+        return LOGGER;
     }
 
-    public static VulkanContext getVulkanContext()
+    public VulkanContext getVulkanContext()
     {
-        return RENDERER_SUBSYSTEM.getVulkanContext();
+        return this.vulkanContext;
     }
 
-    public static boolean isCurrentFrameBeingSkipped()
+    public boolean isCurrentFrameBeingSkipped()
     {
-        return RENDERER_SUBSYSTEM.isCurrentFrameBeingSkipped();
-    }
-
-    public static int getCurrentFrameIndex()
-    {
-        return RENDERER_SUBSYSTEM.currentFrameIndex;
-    }
-
-    public static void setCurrentFrameIndex(int currentFrameIndex)
-    {
-        RENDERER_SUBSYSTEM.currentFrameIndex = currentFrameIndex;
+        return this.shouldSkipFrame;
     }
 }

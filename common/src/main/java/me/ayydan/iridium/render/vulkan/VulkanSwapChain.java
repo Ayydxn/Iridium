@@ -331,12 +331,12 @@ public class VulkanSwapChain implements WindowEventHandler
 
     public void present()
     {
-        if (IridiumRenderer.isCurrentFrameBeingSkipped())
+        if (IridiumRenderer.getInstance().isCurrentFrameBeingSkipped())
             return;
 
         VkDevice logicalDevice = this.vulkanLogicalDevice.getHandle();
         int currentSwapChainImageIndex = this.acquireNextImage();
-        int currentFrameIndex = IridiumRenderer.getCurrentFrameIndex();
+        int currentFrameIndex = IridiumRenderer.getInstance().currentFrameIndex;
         long waitFence = this.waitFences.get(currentFrameIndex);
 
         try (MemoryStack memoryStack = MemoryStack.stackPush())
@@ -373,7 +373,7 @@ public class VulkanSwapChain implements WindowEventHandler
             }
         }
 
-        IridiumRenderer.setCurrentFrameIndex((IridiumRenderer.getCurrentFrameIndex() + 1) % IridiumClientMod.getGameOptions().framesInFlight);
+        IridiumRenderer.getInstance().currentFrameIndex = (IridiumRenderer.getInstance().currentFrameIndex + 1) % IridiumClientMod.getInstance().getGameOptions().framesInFlight;
 
         // Wait and make sure that the frame that we're going to present has finished rendering.
         vkCheckResult(vkWaitForFences(logicalDevice, waitFence, true, IridiumConstants.UINT64_MAX));

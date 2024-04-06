@@ -22,7 +22,7 @@ public class RenderSystemMixin
     @Redirect(method = "flipFrame", at = @At(value = "INVOKE", target = "Lorg/lwjgl/glfw/GLFW;glfwSwapBuffers(J)V"), remap = false)
     private static void presentCurrentSwapChainImage(long window)
     {
-        IridiumRenderer.getVulkanContext().getSwapChain().present();
+        IridiumRenderer.getInstance().getVulkanContext().getSwapChain().present();
     }
 
     @Redirect(method = "enableCull", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;_enableCull()V"), remap = false)

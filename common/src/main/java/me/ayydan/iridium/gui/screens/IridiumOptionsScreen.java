@@ -23,7 +23,7 @@ public class IridiumOptionsScreen
 
     public IridiumOptionsScreen(@Nullable Screen previousScreen)
     {
-        this.iridiumGameOptions = IridiumClientMod.getGameOptions();
+        this.iridiumGameOptions = IridiumClientMod.getInstance().getGameOptions();
         this.previousScreen = previousScreen;
 
         IridiumVideoOptions iridiumVideoOptions = new IridiumVideoOptions(this.iridiumGameOptions);

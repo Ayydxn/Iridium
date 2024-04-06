@@ -181,7 +181,7 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                 .binding(true, () -> this.client.options.getEnableVsync().get(), newValue ->
                 {
                     this.client.options.getEnableVsync().set(newValue);
-                    IridiumRenderer.getVulkanContext().getSwapChain().enableVSync(newValue);
+                    IridiumRenderer.getInstance().getVulkanContext().getSwapChain().enableVSync(newValue);
                 })
                 .customController(BooleanController::new)
                 .build();

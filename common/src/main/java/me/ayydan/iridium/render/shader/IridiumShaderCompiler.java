@@ -88,7 +88,7 @@ public class IridiumShaderCompiler
         Path shaderCacheDirectory = PathUtils.getShaderCacheDirectory();
         String shaderFilename = StringUtils.substringBefore(FilenameUtils.getName(shaderFilepath), ".");
 
-        IridiumGameOptions iridiumGameOptions = IridiumClientMod.getGameOptions();
+        IridiumGameOptions iridiumGameOptions = IridiumClientMod.getInstance().getGameOptions();
         if (iridiumGameOptions.enableShaderCaching)
         {
             Path shaderCacheFilepath = Path.of(shaderCacheDirectory + "/" + shaderFilename + "_" + shaderStage.getCacheID() +

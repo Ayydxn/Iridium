@@ -12,7 +12,7 @@ import static org.lwjgl.vulkan.VK10.*;
 
 public class IridiumShader
 {
-    private final VkDevice logicalDevice = IridiumRenderer.getVulkanContext().getLogicalDevice().getHandle();
+    private final VkDevice logicalDevice = IridiumRenderer.getInstance().getVulkanContext().getLogicalDevice().getHandle();
 
     private final ShaderSPIRV vertexShaderSPIRV;
     private final ShaderSPIRV fragmentShaderSPIRV;

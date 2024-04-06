@@ -17,7 +17,7 @@ public class RenderLayersMixin
     @Inject(method = "getBlockLayer", at = @At("RETURN"), cancellable = true)
     private static void getLeavesRenderBasedOnIridiumOption(BlockState state, CallbackInfoReturnable<RenderLayer> cir)
     {
-        IridiumGameOptions.GraphicsQuality leavesGraphicsQuality = IridiumClientMod.getGameOptions().leavesQuality;
+        IridiumGameOptions.GraphicsQuality leavesGraphicsQuality = IridiumClientMod.getInstance().getGameOptions().leavesQuality;
 
         if (state.getBlock() instanceof LeavesBlock)
         {
