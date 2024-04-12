@@ -1,6 +1,5 @@
 package me.ayydan.iridium.render.shader;
 
-import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.system.NativeResource;
 
 import java.nio.ByteBuffer;
@@ -22,8 +21,7 @@ public class ShaderSPIRV implements NativeResource
     @Override
     public void free()
     {
-        if (this.handle != MemoryUtil.NULL)
-            shaderc_result_release(handle);
+        shaderc_result_release(handle);
 
         this.shaderBytecode = null;
     }

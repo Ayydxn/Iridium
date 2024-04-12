@@ -18,15 +18,11 @@ public class IridiumClientMod
 
     private IridiumClientMod()
     {
-        LOGGER = new IridiumLogger("Iridium Core");
-        LOGGER.info("Initializing Iridium... (Version: {})", IridiumPlatformUtils.getCurrentVersion());
-
         this.iridiumGameOptions = IridiumGameOptions.load();
         this.clientFramerateTracker = new ClientFramerateTracker();
 
         ClientTickEvent.CLIENT_PRE.register(this.clientFramerateTracker::tick);
         ClientGuiEvent.RENDER_HUD.register((graphics, tickDelta) -> new IridiumHudOverlay().render(graphics));
-
     }
 
     public static void initialize()

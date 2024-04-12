@@ -4,6 +4,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import dev.architectury.platform.Platform;
 import me.ayydan.iridium.IridiumClientMod;
 import me.ayydan.iridium.platform.IridiumPlatformUtils;
 import org.apache.commons.io.FileUtils;
@@ -50,7 +51,7 @@ public class IridiumGameOptions
     public boolean showCoordinates = false;
 
     @GameOption
-    public boolean enableShaderCaching = true;
+    public boolean enableShaderCaching = !Platform.isDevelopmentEnvironment();
 
     @GameOption
     public int framesInFlight = 3;

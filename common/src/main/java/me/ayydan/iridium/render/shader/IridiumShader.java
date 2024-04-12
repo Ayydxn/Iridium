@@ -1,11 +1,20 @@
 package me.ayydan.iridium.render.shader;
 
+import com.google.gson.JsonObject;
 import me.ayydan.iridium.render.IridiumRenderer;
+import me.ayydan.iridium.render.exceptions.IridiumRendererException;
+import net.minecraft.util.JsonHelper;
+import org.apache.commons.io.FilenameUtils;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.VkDevice;
 import org.lwjgl.vulkan.VkShaderModuleCreateInfo;
 
+import java.net.URL;
 import java.nio.LongBuffer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static me.ayydan.iridium.render.vulkan.VulkanValidation.vkCheckResult;
 import static org.lwjgl.vulkan.VK10.*;
@@ -14,24 +23,41 @@ public class IridiumShader
 {
     private final VkDevice logicalDevice = IridiumRenderer.getInstance().getVulkanContext().getLogicalDevice().getHandle();
 
-    private final ShaderSPIRV vertexShaderSPIRV;
-    private final ShaderSPIRV fragmentShaderSPIRV;
-
+    private ShaderSPIRV vertexShaderSPIRV;
+    private ShaderSPIRV fragmentShaderSPIRV;
     private long vertexShaderModule;
     private long fragmentShaderModule;
 
     public IridiumShader(String filepath)
     {
-        this.vertexShaderSPIRV = IridiumShaderCompiler.getInstance().compileShaderFromFile(filepath + ".vsh", ShaderStage.VertexShader);
-        this.fragmentShaderSPIRV = IridiumShaderCompiler.getInstance().compileShaderFromFile(filepath + ".fsh", ShaderStage.FragmentShader);
+        URL shaderJSONFileURL = IridiumShader.class.getResource("/assets/iridium/shaders/" + filepath + ".json");
+        if (shaderJSONFileURL == null)
+            throw new IridiumRendererException(String.format("The JSON descriptor file for the shader '%s' wasn't found!", filepath));
+        try
+        {
+            Path shaderJSONFilePath = Paths.get(shaderJSONFileURL.toURI());
+            String shaderJSONFileContent = Files.readString(shaderJSONFilePath, StandardCharsets.UTF_8);
+
+            JsonObject shaderJSONObject = JsonHelper.deserialize(shaderJSONFileContent);
+            String vertexShaderName = JsonHelper.getString(shaderJSONObject, "vertex", null);
+            String fragmentShaderName = JsonHelper.getString(shaderJSONObject, "fragment", null);
+            String baseShaderFilepath = FilenameUtils.getPath(filepath);
+
+            this.vertexShaderSPIRV = IridiumShaderCompiler.getInstance().compileShaderFromFile(baseShaderFilepath + vertexShaderName + ".vsh", ShaderStage.VertexShader);
+            this.fragmentShaderSPIRV = IridiumShaderCompiler.getInstance().compileShaderFromFile(baseShaderFilepath + fragmentShaderName + ".fsh", ShaderStage.FragmentShader);
+        }
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
 
         this.vertexShaderModule = VK_NULL_HANDLE;
         this.fragmentShaderModule = VK_NULL_HANDLE;
 
-        this.createShaderModule();
+        this.createShaderModules();
     }
 
-    private void createShaderModule()
+    private void createShaderModules()
     {
         try (MemoryStack memoryStack = MemoryStack.stackPush())
         {

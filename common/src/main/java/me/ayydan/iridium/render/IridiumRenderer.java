@@ -1,5 +1,6 @@
 package me.ayydan.iridium.render;
 
+import me.ayydan.iridium.render.shader.IridiumShaderCompiler;
 import me.ayydan.iridium.render.vulkan.VulkanContext;
 import me.ayydan.iridium.utils.logging.IridiumLogger;
 import net.minecraft.client.MinecraftClient;
@@ -19,6 +20,8 @@ public class IridiumRenderer
     {
         this.vulkanContext = new VulkanContext();
         this.vulkanContext.create();
+
+        IridiumShaderCompiler.initialize();
     }
 
     public static void initialize()
@@ -37,6 +40,8 @@ public class IridiumRenderer
 
     public void shutdown()
     {
+        IridiumShaderCompiler.getInstance().shutdown();
+
         this.vulkanContext.destroy();
 
         LOGGER = null;
