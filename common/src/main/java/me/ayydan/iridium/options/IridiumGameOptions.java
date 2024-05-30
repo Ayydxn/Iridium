@@ -6,7 +6,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import dev.architectury.platform.Platform;
 import me.ayydan.iridium.IridiumClientMod;
-import me.ayydan.iridium.platform.IridiumPlatformUtils;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
@@ -19,7 +18,7 @@ import java.util.Objects;
 
 public class IridiumGameOptions
 {
-    private static final Path CONFIG_FILE = IridiumPlatformUtils.getConfigurationDir().resolve("iridium-settings.json");
+    private static final Path CONFIG_FILE = Platform.getConfigFolder().resolve("iridium-settings.json");
 
     private static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()

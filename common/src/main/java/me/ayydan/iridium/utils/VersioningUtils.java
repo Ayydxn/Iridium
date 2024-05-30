@@ -1,6 +1,6 @@
 package me.ayydan.iridium.utils;
 
-import me.ayydan.iridium.platform.IridiumPlatformUtils;
+import dev.architectury.platform.Platform;
 import net.minecraft.MinecraftVersion;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
@@ -8,7 +8,12 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 public class VersioningUtils
 {
     private static final ArtifactVersion MINECRAFT_ARTIFACT_VERSION = new DefaultArtifactVersion(MinecraftVersion.GAME_VERSION.getName());
-    private static final ArtifactVersion IRIDIUM_ARTIFACT_VERSION = new DefaultArtifactVersion(IridiumPlatformUtils.getCurrentVersion());
+    private static final ArtifactVersion IRIDIUM_ARTIFACT_VERSION = new DefaultArtifactVersion(VersioningUtils.getIridiumVersion());
+
+    public static String getIridiumVersion()
+    {
+        return Platform.getMod(IridiumConstants.MOD_ID).getVersion();
+    }
 
     public static int getMinecraftMajorVersion()
     {

@@ -2,10 +2,11 @@ package me.ayydan.iridium;
 
 import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
+import dev.architectury.platform.Platform;
 import me.ayydan.iridium.client.ClientFramerateTracker;
 import me.ayydan.iridium.gui.hud.IridiumHudOverlay;
 import me.ayydan.iridium.options.IridiumGameOptions;
-import me.ayydan.iridium.platform.IridiumPlatformUtils;
+import me.ayydan.iridium.utils.VersioningUtils;
 import me.ayydan.iridium.utils.logging.IridiumLogger;
 
 public class IridiumClientMod
@@ -34,7 +35,7 @@ public class IridiumClientMod
         }
 
         LOGGER = new IridiumLogger("Iridium Core");
-        LOGGER.info("Initializing Iridium... (Version: {})", IridiumPlatformUtils.getCurrentVersion());
+        LOGGER.info("Initializing Iridium... (Version: {})", VersioningUtils.getIridiumVersion());
 
         INSTANCE = new IridiumClientMod();
     }

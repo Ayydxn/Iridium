@@ -21,7 +21,7 @@
   "iridium.options.display.framerateLimit.description": "Sets of the maximum number of frames that the game can render per second. This is can help save processing power and reduce battery usage.\n\nIf VSync is enabled, this setting will be ignored unless it is set to a value lower than your monitor's refresh rate.",
   "iridium.options.group.graphics": "Graphics",
   "iridium.options.graphics.brightness.description": "Dims down or lights up the game's surfaces, even if it is fully dark. It has no effect on gameplay and is purely a visual effect.",
-  "iridium.options.graphics.fov.description": "FOV (Field of View) controls how much of the world is visible on the screen.\n\nIn Minecraft, the FOV value represents how many degrees of vertical vision the player gets without things such as sprinting, flying or status effects modifying it. Note that the FOV setting present in other games might represent different angles, meaning that using the same FOV value across different games or from a different game in Minecraft can give different results.\n\nFor more information refer to the description of the setting on the",
+  "iridium.options.graphics.fov.description": "FOV (Field of View) controls how much of the world is visible on the screen.\n\nIn Minecraft, the FOV value represents how many degrees of vertical vision the player gets without things such as sprinting, flying or status effects modifying it. Note that the FOV setting present in other games might represent different angles, meaning that using the same FOV value across different games or from a different game in Minecraft can give different results.\n\nFor more information, refer to the description of the setting on the",
   "iridium.options.graphics.fov.descriptionLink": "Minecraft wiki. (Click this to visit the page)",
   "iridium.options.graphics.fov.normal": "%d (Normal)",
   "iridium.options.graphics.fov.quakePro": "%d (Quake Pro)",
@@ -168,7 +168,7 @@
 
   "iridium.options.category.renderer": "Renderer",
   "iridium.options.renderer.enableShaderCaching": "Enable Shader Caching",
-  "iridium.options.renderer.enableShaderCaching.description": "Shader compilation is a relatively expensive operation, especially on lower-end hardware. By caching shaders, the need to compile shaders every time you launch the game is eliminated, therefore potentially improving load times.\n\nHowever, caching shaders can potentially consume a lot of storage space and/or cause issues if used on a graphics driver that is different from the one that they were compiled on.",
+  "iridium.options.renderer.enableShaderCaching.description": "Shader compilation is a relatively expensive operation, especially on lower-end hardware. By caching shaders, the need to compile shaders every time you launch the game is eliminated, therefore potentially improving load times.\n\nHowever, caching shaders can potentially consume a lot of storage space and/or cause issues if used on a graphics driver that is different from the one that they were originally compiled on.",
   "iridium.options.renderer.framesInFlight": "Frames In Flight",
   "iridium.options.renderer.framesInFlight.description": "Determines the maximum number of frames that the CPU can be waiting on the GPU to finish rendering.\n\nSetting this value too low or too high can create instabilities in your framerate.\n\nUpon changing this setting, a game restart is required in order for it to take effect."
 }

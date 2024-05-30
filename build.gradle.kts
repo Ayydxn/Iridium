@@ -5,7 +5,7 @@ import net.fabricmc.loom.api.LoomGradleExtensionAPI
 plugins {
     java
     id("architectury-plugin") version "3.4-SNAPSHOT"
-    id("dev.architectury.loom") version "1.5-SNAPSHOT" apply false
+    id("dev.architectury.loom") version "1.6-SNAPSHOT" apply false
     id("org.ajoberstar.grgit") version "5.2.2"
     id("io.github.pacifistmc.forgix") version "1.2.6"
 }
@@ -123,6 +123,10 @@ allprojects {
 
         maven("https://maven.isxander.dev/releases") {
             name = "Xander's Maven"
+        }
+
+        maven("https://maven.flashyreese.me/releases") {
+            name = "FlashyReese's Maven"
         }
     }
 
