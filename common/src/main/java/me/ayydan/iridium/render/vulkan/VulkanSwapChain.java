@@ -2,11 +2,11 @@ package me.ayydan.iridium.render.vulkan;
 
 import com.google.common.collect.Lists;
 import me.ayydan.iridium.IridiumClientMod;
-import me.ayydan.iridium.event.WindowEventHandler;
+import me.ayydan.iridium.event.WindowResizeEvent;
 import me.ayydan.iridium.render.IridiumRenderer;
 import me.ayydan.iridium.render.exceptions.IridiumRendererException;
 import me.ayydan.iridium.utils.IridiumConstants;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
 
@@ -20,7 +20,7 @@ import static org.lwjgl.vulkan.KHRSurface.*;
 import static org.lwjgl.vulkan.KHRSwapchain.*;
 import static org.lwjgl.vulkan.VK10.*;
 
-public class VulkanSwapChain implements WindowEventHandler
+public class VulkanSwapChain implements WindowResizeEvent
 {
     private final VkInstance vulkanInstance;
     private final VulkanPhysicalDevice vulkanPhysicalDevice;
@@ -68,7 +68,7 @@ public class VulkanSwapChain implements WindowEventHandler
             /*-------------------------------*/
 
             LongBuffer pWindowSurface = memoryStack.longs(VK_NULL_HANDLE);
-            vkCheckResult(glfwCreateWindowSurface(this.vulkanInstance, MinecraftClient.getInstance().getWindow().getHandle(), null, pWindowSurface));
+            vkCheckResult(glfwCreateWindowSurface(this.vulkanInstance, Minecraft.getInstance().getWindow().getWindow(), null, pWindowSurface));
 
             this.windowSurface = pWindowSurface.get(0);
 
@@ -101,7 +101,7 @@ public class VulkanSwapChain implements WindowEventHandler
 
         this.selectImageFormatAndColorSpace();
 
-        WindowEventHandler.EVENT.register(this);
+        WindowResizeEvent.EVENT.register(this);
 
         this.isInitialized = true;
     }

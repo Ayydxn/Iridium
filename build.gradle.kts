@@ -65,7 +65,12 @@ subprojects {
 
     dependencies {
         "minecraft"("com.mojang:minecraft:${rootProject.property("minecraft_version")}")
-        "mappings"("org.quiltmc:quilt-mappings:${rootProject.property("minecraft_version")}+build.${rootProject.property("quilt_mappings_version")}:intermediary-v2")
+
+        @Suppress("UnstableApiUsage")
+        "mappings"(loom.layered {
+            officialMojangMappings()
+            parchment("org.parchmentmc.data:parchment-${rootProject.property("minecraft_version")}:${rootProject.property("parchment_version")}@zip")
+        })
     }
 
     tasks.processResources {
@@ -127,6 +132,10 @@ allprojects {
 
         maven("https://maven.flashyreese.me/releases") {
             name = "FlashyReese's Maven"
+        }
+
+        maven("https://maven.parchmentmc.org") {
+            name = "ParchmentMC"
         }
     }
 

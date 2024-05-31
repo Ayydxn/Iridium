@@ -3,9 +3,9 @@ package me.ayydan.iridium.event;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 
-public interface WindowEventHandler
+public interface WindowResizeEvent
 {
-    Event<WindowEventHandler> EVENT = EventFactory.createLoop();
+    Event<WindowResizeEvent> EVENT = EventFactory.createLoop();
 
     void onWindowResize(int newWindowWidth, int newWindowHeight);
 }

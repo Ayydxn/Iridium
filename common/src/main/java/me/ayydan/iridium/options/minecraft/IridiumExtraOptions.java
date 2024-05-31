@@ -3,8 +3,11 @@ package me.ayydan.iridium.options.minecraft;
 import com.google.common.collect.Lists;
 import dev.isxander.yacl3.api.*;
 import me.ayydan.iridium.gui.screens.IridiumOptionsScreen;
-import net.minecraft.client.gui.screen.*;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.screens.ConfirmLinkScreen;
+import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.gui.screens.WinScreen;
+import net.minecraft.client.gui.screens.telemetry.TelemetryInfoScreen;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,17 +32,17 @@ public class IridiumExtraOptions extends IridiumMinecraftOptions
         this.createCreditsOptions();
 
         OptionGroup extraOptionsGroup = OptionGroup.createBuilder()
-                .name(Text.literal("Extras"))
+                .name(Component.literal("Extras"))
                 .options(this.extrasOptionsOptions)
                 .build();
 
         OptionGroup creditsOptionsGroup = OptionGroup.createBuilder()
-                .name(Text.literal("Credits"))
+                .name(Component.literal("Credits"))
                 .options(this.creditsOptionsOptions)
                 .build();
 
         this.extraOptionsCategory = ConfigCategory.createBuilder()
-                .name(Text.translatable("iridium.options.category.extras"))
+                .name(Component.translatable("iridium.options.category.extras"))
                 .groups(Lists.newArrayList(extraOptionsGroup, creditsOptionsGroup))
                 .build();
     }
@@ -53,10 +56,10 @@ public class IridiumExtraOptions extends IridiumMinecraftOptions
     private void createExtraOptions()
     {
         ButtonOption telemetryDataOption = ButtonOption.createBuilder()
-                .name(Text.translatable("iridium.options.extras.telemetryData"))
-                .description(OptionDescription.of(Text.translatable("iridium.options.extras.telemetryData.description")))
-                .text(Text.literal(""))
-                .action((screen, button) -> this.client.setScreen(new TelemetryDataScreen(new IridiumOptionsScreen(null).getHandle(), this.client.options)))
+                .name(Component.translatable("iridium.options.extras.telemetryData"))
+                .description(OptionDescription.of(Component.translatable("iridium.options.extras.telemetryData.description")))
+                .text(Component.literal(""))
+                .action((screen, button) -> this.client.setScreen(new TelemetryInfoScreen(new IridiumOptionsScreen(null).getHandle(), this.client.options)))
                 .build();
 
         Collections.addAll(this.extrasOptionsOptions, telemetryDataOption);
@@ -65,24 +68,24 @@ public class IridiumExtraOptions extends IridiumMinecraftOptions
     private void createCreditsOptions()
     {
         ButtonOption creditsOption = ButtonOption.createBuilder()
-                .name(Text.translatable("credits_and_attribution.button.credits"))
-                .description(OptionDescription.of(Text.translatable("iridium.options.credits.credits.description")))
-                .text(Text.literal(""))
-                .action((screen, button) -> this.client.setScreen(new CreditsScreen(false, () -> this.client.setScreen(new TitleScreen()))))
+                .name(Component.translatable("credits_and_attribution.button.credits"))
+                .description(OptionDescription.of(Component.translatable("iridium.options.credits.credits.description")))
+                .text(Component.literal(""))
+                .action((screen, button) -> this.client.setScreen(new WinScreen(false, () -> this.client.setScreen(new TitleScreen()))))
                 .build();
 
         ButtonOption attributionOption = ButtonOption.createBuilder()
-                .name(Text.translatable("credits_and_attribution.button.attribution"))
-                .description(OptionDescription.of(Text.translatable("iridium.options.credits.attribution.description")))
-                .text(Text.literal(""))
-                .action(((yaclScreen, buttonOption) -> ConfirmLinkScreen.create(new TitleScreen(), "https://aka.ms/MinecraftJavaAttribution")))
+                .name(Component.translatable("credits_and_attribution.button.attribution"))
+                .description(OptionDescription.of(Component.translatable("iridium.options.credits.attribution.description")))
+                .text(Component.literal(""))
+                .action(((yaclScreen, buttonOption) -> ConfirmLinkScreen.confirmLinkNow(new TitleScreen(), "https://aka.ms/MinecraftJavaAttribution")))
                 .build();
 
         ButtonOption licensesOption = ButtonOption.createBuilder()
-                .name(Text.translatable("credits_and_attribution.button.licenses"))
-                .description(OptionDescription.of(Text.translatable("iridium.options.credits.licenses.description")))
-                .text(Text.literal(""))
-                .action(((yaclScreen, buttonOption) -> ConfirmLinkScreen.create(new TitleScreen(), "https://aka.ms/MinecraftJavaLicenses")))
+                .name(Component.translatable("credits_and_attribution.button.licenses"))
+                .description(OptionDescription.of(Component.translatable("iridium.options.credits.licenses.description")))
+                .text(Component.literal(""))
+                .action(((yaclScreen, buttonOption) -> ConfirmLinkScreen.confirmLinkNow(new TitleScreen(), "https://aka.ms/MinecraftJavaLicenses")))
                 .build();
 
         Collections.addAll(this.creditsOptionsOptions, creditsOption, attributionOption, licensesOption);

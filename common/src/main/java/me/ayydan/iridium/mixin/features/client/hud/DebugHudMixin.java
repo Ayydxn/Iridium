@@ -1,10 +1,9 @@
 package me.ayydan.iridium.mixin.features.client.hud;
 
 import com.google.common.collect.Lists;
-import dev.architectury.platform.Platform;
 import me.ayydan.iridium.utils.VersioningUtils;
-import net.minecraft.client.gui.hud.debug.DebugHud;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.components.DebugScreenOverlay;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,10 +11,10 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.ArrayList;
 
-@Mixin(DebugHud.class)
+@Mixin(DebugScreenOverlay.class)
 public class DebugHudMixin
 {
-    @Redirect(method = "getRightText", at = @At(value = "INVOKE", target = "Lcom/google/common/collect/Lists;newArrayList([Ljava/lang/Object;)Ljava/util/ArrayList;", remap = false))
+    @Redirect(method = "getSystemInformation", at = @At(value = "INVOKE", target = "Lcom/google/common/collect/Lists;newArrayList([Ljava/lang/Object;)Ljava/util/ArrayList;", remap = false))
     private ArrayList<String> addIridiumDebugInfo(Object[] elements)
     {
         ArrayList<String> iridiumDebugStrings = Lists.newArrayList((String[]) elements);
@@ -26,19 +25,19 @@ public class DebugHudMixin
     }
 
     @Unique
-    private Formatting getVersionStringColor()
+    private ChatFormatting getVersionStringColor()
     {
         String iridiumVersion = VersioningUtils.getIridiumVersion();
 
         if (iridiumVersion.contains("-local"))
         {
-            return Formatting.RED;
+            return ChatFormatting.RED;
         }
         else if (iridiumVersion.contains("+snapshot"))
         {
-            return Formatting.GOLD;
+            return ChatFormatting.GOLD;
         }
 
-        return Formatting.GREEN;
+        return ChatFormatting.GREEN;
     }
 }

@@ -1,10 +1,11 @@
 package me.ayydan.iridium.render.shader.utils;
 
+import com.mojang.blaze3d.shaders.Program;
 import me.ayydan.iridium.render.shader.ShaderStage;
 
 public class IridiumShaderUtils
 {
-    public static ShaderStage getIridiumStageFromMinecraft(com.mojang.blaze3d.shader.ShaderStage.Type minecraftShaderStage)
+    public static ShaderStage getIridiumStageFromMinecraft(Program.Type minecraftShaderStage)
     {
         return switch (minecraftShaderStage)
         {

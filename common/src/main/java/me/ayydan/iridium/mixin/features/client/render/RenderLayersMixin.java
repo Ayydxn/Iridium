@@ -2,20 +2,20 @@ package me.ayydan.iridium.mixin.features.client.render;
 
 import me.ayydan.iridium.IridiumClientMod;
 import me.ayydan.iridium.options.IridiumGameOptions;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.LeavesBlock;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.RenderLayers;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(RenderLayers.class)
+@Mixin(ItemBlockRenderTypes.class)
 public class RenderLayersMixin
 {
-    @Inject(method = "getBlockLayer", at = @At("RETURN"), cancellable = true)
-    private static void getLeavesRenderBasedOnIridiumOption(BlockState state, CallbackInfoReturnable<RenderLayer> cir)
+    @Inject(method = "getChunkRenderType", at = @At("RETURN"), cancellable = true)
+    private static void getLeavesRenderBasedOnIridiumOption(BlockState state, CallbackInfoReturnable<RenderType> cir)
     {
         IridiumGameOptions.GraphicsQuality leavesGraphicsQuality = IridiumClientMod.getInstance().getGameOptions().leavesQuality;
 
@@ -23,9 +23,9 @@ public class RenderLayersMixin
         {
             switch (leavesGraphicsQuality)
             {
-                case Low -> cir.setReturnValue(RenderLayer.getSolid());
-                case Medium -> cir.setReturnValue(RenderLayer.getCutoutMipped());
-                case High -> cir.setReturnValue(RenderLayer.getCutout());
+                case Low -> cir.setReturnValue(RenderType.solid());
+                case Medium -> cir.setReturnValue(RenderType.cutoutMipped());
+                case High -> cir.setReturnValue(RenderType.cutout());
             }
         }
     }

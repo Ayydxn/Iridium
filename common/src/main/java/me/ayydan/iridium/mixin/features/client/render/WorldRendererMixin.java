@@ -1,15 +1,15 @@
 package me.ayydan.iridium.mixin.features.client.render;
 
 import me.ayydan.iridium.IridiumClientMod;
-import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.renderer.LevelRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-@Mixin(WorldRenderer.class)
+@Mixin(LevelRenderer.class)
 public class WorldRendererMixin
 {
-    @ModifyVariable(method = "renderWeather", at = @At("STORE"), ordinal = 3)
+    @ModifyVariable(method = "renderSnowAndRain", at = @At("STORE"), ordinal = 3)
     public int getAmountOfRainDroplets(int original)
     {
         return switch (IridiumClientMod.getInstance().getGameOptions().weatherQuality)

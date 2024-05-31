@@ -1,6 +1,6 @@
 package me.ayydan.iridium.client;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -12,9 +12,9 @@ public class ClientFramerateTracker
 
     private int averageFPS, lowestFPS, highestFPS;
 
-    public void tick(MinecraftClient client)
+    public void tick(Minecraft client)
     {
-        int currentClientFPS = client.getCurrentFps();
+        int currentClientFPS = client.getFps();
 
         this.framerateQueue.add(currentClientFPS);
 

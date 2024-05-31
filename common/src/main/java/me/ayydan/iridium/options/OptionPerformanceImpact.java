@@ -1,6 +1,6 @@
 package me.ayydan.iridium.options;
 
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 public enum OptionPerformanceImpact
 {
@@ -10,14 +10,14 @@ public enum OptionPerformanceImpact
     High("iridium.option.performanceImpact.high"),
     Varies("iridium.option.performanceImpact.varies");
 
-    private final Text text;
+    private final Component text;
 
     OptionPerformanceImpact(String translationKey)
     {
-        this.text = Text.translatable(translationKey);
+        this.text = Component.translatable(translationKey);
     }
 
-    public Text getText()
+    public Component getText()
     {
         return this.text;
     }

@@ -2,8 +2,8 @@ package me.ayydan.iridium.mixin.features.client.gui.screens;
 
 import me.ayydan.iridium.gui.screens.CorruptedIridiumConfigScreen;
 import me.ayydan.iridium.options.IridiumGameOptions;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.TitleScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -16,6 +16,6 @@ public class TitleScreenMixin
     public void displayCorruptedIridiumConfigScreen(CallbackInfo ci)
     {
         if (IridiumGameOptions.isConfigCorrupted())
-            MinecraftClient.getInstance().setScreen(new CorruptedIridiumConfigScreen());
+            Minecraft.getInstance().setScreen(new CorruptedIridiumConfigScreen());
     }
 }

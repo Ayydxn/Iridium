@@ -1,16 +1,16 @@
 package me.ayydan.iridium.options.util;
 
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 public class OptionsUtil
 {
-    public static Text getPercentValueText(double value)
+    public static Component getPercentValueText(double value)
     {
-        return Text.literal((int) (value * 100.0d) + "%");
+        return Component.literal((int) (value * 100.0d) + "%");
     }
 
-    public static Text getPixelValueText(int value)
+    public static Component getPixelValueText(int value)
     {
-        return Text.literal(value + "px");
+        return Component.literal(value + "px");
     }
 }

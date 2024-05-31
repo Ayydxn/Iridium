@@ -1,34 +1,34 @@
 package me.ayydan.iridium.gui.screens;
 
 import me.ayydan.iridium.options.IridiumGameOptions;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.MultilineText;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.ButtonWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.MultiLineLabel;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 
 import java.awt.*;
 
 public class CorruptedIridiumConfigScreen extends Screen
 {
-    private final MinecraftClient client;
+    private final Minecraft client;
 
     public CorruptedIridiumConfigScreen()
     {
-        super(Text.literal("Corrupted Iridium Config"));
+        super(Component.literal("Corrupted Iridium Config"));
 
-        this.client = MinecraftClient.getInstance();
+        this.client = Minecraft.getInstance();
     }
 
     @Override
     protected void init()
     {
-        this.addDrawableSelectableElement(ButtonWidget.builder(Text.translatable("iridium.options.button.close_game_and_reset_corrupt_config"), button ->
+        this.addRenderableWidget(Button.builder(Component.translatable("iridium.options.button.close_game_and_reset_corrupt_config"), button ->
         {
             IridiumGameOptions.defaults().write();
-            this.client.scheduleStop();
-        }).positionAndSize(this.width / 2 - 200 / 2, this.height - 40, 205, 20).build());
+            this.client.stop();
+        }).bounds(this.width / 2 - 200 / 2, this.height - 40, 205, 20).build());
     }
 
     @Override
@@ -36,18 +36,18 @@ public class CorruptedIridiumConfigScreen extends Screen
     {
         this.renderBackground(graphics, mouseX, mouseY, delta);
 
-        MultilineText errorMessage = MultilineText.create(this.client.textRenderer, Text.translatable("iridium.options.texts.corrupt_config", "\n\n"),
+        MultiLineLabel errorMessage = MultiLineLabel.create(this.client.font, Component.translatable("iridium.options.texts.corrupt_config", "\n\n"),
                 this.width - 50);
 
-        graphics.getMatrices().push();
-        graphics.getMatrices().scale(1.5f, 1.5f, 1.5f);
+        graphics.pose().pushPose();
+        graphics.pose().scale(1.5f, 1.5f, 1.5f);
 
-        graphics.drawShadowedText(this.client.textRenderer, Text.translatable("iridium.texts.fatal_error"),
+        graphics.drawString(this.client.font, Component.translatable("iridium.texts.fatal_error"),
                 17, 15, Color.RED.getRGB());
 
-        graphics.getMatrices().pop();
+        graphics.pose().popPose();
 
-        errorMessage.drawWithShadow(graphics, 25, 50, this.client.textRenderer.fontHeight * 2, Color.WHITE.getRGB());
+        errorMessage.renderLeftAligned(graphics, 25, 50, this.client.font.lineHeight * 2, Color.WHITE.getRGB());
 
         super.render(graphics, mouseX, mouseY, delta);
     }

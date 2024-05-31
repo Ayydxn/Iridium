@@ -5,7 +5,7 @@ import dev.isxander.yacl3.api.ConfigCategory;
 import dev.isxander.yacl3.api.Option;
 import dev.isxander.yacl3.api.OptionDescription;
 import dev.isxander.yacl3.gui.controllers.BooleanController;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +28,7 @@ public class IridiumOnlineOptions extends IridiumMinecraftOptions
         this.createOnlineOptions();
 
         this.onlineOptionsCategory = ConfigCategory.createBuilder()
-                .name(Text.translatable("iridium.options.category.online"))
+                .name(Component.translatable("iridium.options.category.online"))
                 .options(this.onlineOptions)
                 .build();
     }
@@ -42,16 +42,16 @@ public class IridiumOnlineOptions extends IridiumMinecraftOptions
     private void createOnlineOptions()
     {
         Option<Boolean> realmsNotificationsOption = Option.<Boolean>createBuilder()
-                .name(Text.translatable("options.realmsNotifications"))
-                .description(OptionDescription.of(Text.translatable("iridium.options.online.realmsNotifications.description")))
-                .binding(Binding.minecraft(this.client.options.getRealmsNotifications()))
+                .name(Component.translatable("options.realmsNotifications"))
+                .description(OptionDescription.of(Component.translatable("iridium.options.online.realmsNotifications.description")))
+                .binding(Binding.minecraft(this.client.options.realmsNotifications()))
                 .customController(BooleanController::new)
                 .build();
 
         Option<Boolean> allowServerListingsOption = Option.<Boolean>createBuilder()
-                .name(Text.translatable("options.allowServerListing"))
-                .description(OptionDescription.of(Text.translatable("iridium.options.online.allowServerListing.description")))
-                .binding(Binding.minecraft(this.client.options.getAllowServerListings()))
+                .name(Component.translatable("options.allowServerListing"))
+                .description(OptionDescription.of(Component.translatable("iridium.options.online.allowServerListing.description")))
+                .binding(Binding.minecraft(this.client.options.allowServerListing()))
                 .customController(BooleanController::new)
                 .build();
 

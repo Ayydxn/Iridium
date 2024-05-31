@@ -12,13 +12,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(VertexBuffer.class)
 public class VertexBufferMixin
 {
-    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;_glGenBuffers()I"))
+    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;_glGenBuffers()I"), remap = false)
     public int cancelGLGenBuffers()
     {
         return 0;
     }
 
-    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;_glGenVertexArrays()I"))
+    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;_glGenVertexArrays()I"), remap = false)
     public int cancelGLGenVertexArrays()
     {
         return 0;
@@ -30,7 +30,7 @@ public class VertexBufferMixin
         throw new NotImplementedException("VertexBuffer::upload has not been implemented by Iridium!");
     }
 
-    @Redirect(method = "bind", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;_glBindVertexArray(I)V"))
+    @Redirect(method = "bind", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;_glBindVertexArray(I)V"), remap = false)
     public void cancelBindVertexArray(int vertexArray)
     {
     }

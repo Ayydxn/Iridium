@@ -53,6 +53,7 @@ dependencies {
     // CaffeineConfig
     implementation("net.caffeinemc:CaffeineConfig:${rootProject.property("caffeine_config_version")}")
     include("net.caffeinemc:CaffeineConfig:${rootProject.property("caffeine_config_version")}")
+    forgeRuntimeLibrary("net.caffeinemc:CaffeineConfig:${rootProject.property("caffeine_config_version")}")
 
     common(project(":common", configuration = "namedElements")) { isTransitive = false }
     shadowCommon(project(":common", configuration = "transformProductionNeoForge")) { isTransitive = false }

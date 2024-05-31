@@ -4,7 +4,7 @@ import dev.isxander.yacl3.api.ButtonOption;
 import dev.isxander.yacl3.api.ConfigCategory;
 import dev.isxander.yacl3.api.Option;
 import dev.isxander.yacl3.api.OptionDescription;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +28,7 @@ public class IridiumLanguageOptions extends IridiumMinecraftOptions
         this.createLanguageOptions();
 
         this.languageOptionsCategory = ConfigCategory.createBuilder()
-                .name(Text.literal("Language"))
+                .name(Component.literal("Language"))
                 .options(this.languageOptions)
                 .build();
     }
@@ -41,20 +41,20 @@ public class IridiumLanguageOptions extends IridiumMinecraftOptions
 
     private void createLanguageOptions()
     {
-        this.client.getLanguageManager().getAllLanguages().forEach((languageCode, languageDefinition) ->
+        this.client.getLanguageManager().getLanguages().forEach((languageCode, languageDefinition) ->
         {
-            Text currentSelectedLanguage = Objects.equals(languageCode, this.client.getLanguageManager().getLanguage()) ?
-                    Text.translatable("iridium.options.language.language.selected", languageCode, languageDefinition.getDisplayText().getString()) :
-                    Text.translatable("iridium.options.language.language", languageCode, languageDefinition.getDisplayText().getString());
+            Component currentSelectedLanguage = Objects.equals(languageCode, this.client.getLanguageManager().getLanguage(languageCode).name()) ?
+                    Component.translatable("iridium.options.language.language.selected", languageCode, languageDefinition.toComponent().getString()) :
+                    Component.translatable("iridium.options.language.language", languageCode, languageDefinition.toComponent().getString());
 
             ButtonOption languageButtonOption = ButtonOption.createBuilder()
                     .name(currentSelectedLanguage)
                     .description(OptionDescription.EMPTY)
-                    .text(Text.literal(""))
+                    .text(Component.literal(""))
                     .action((screen, button) ->
                     {
-                        this.client.getLanguageManager().setLanguage(languageCode);
-                        this.client.reloadResources();
+                        this.client.getLanguageManager().setSelected(languageCode);
+                        this.client.reloadResourcePacks();
 
                         this.refreshOptionsScreen();
                     })

@@ -1,9 +1,9 @@
 package me.ayydan.iridium.options.minecraft;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.glfw.VideoMode;
-import com.mojang.blaze3d.glfw.Window;
-import com.mojang.blaze3d.glfw.monitor.Monitor;
+import com.mojang.blaze3d.platform.Monitor;
+import com.mojang.blaze3d.platform.VideoMode;
+import com.mojang.blaze3d.platform.Window;
 import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.gui.controllers.BooleanController;
 import dev.isxander.yacl3.gui.controllers.cycling.EnumController;
@@ -13,15 +13,11 @@ import me.ayydan.iridium.gui.screens.IridiumOptionsScreen;
 import me.ayydan.iridium.options.IridiumGameOptions;
 import me.ayydan.iridium.options.OptionPerformanceImpact;
 import me.ayydan.iridium.render.IridiumRenderer;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.pack.PackScreen;
-import net.minecraft.client.option.AttackIndicator;
-import net.minecraft.client.option.CloudRenderMode;
-import net.minecraft.client.option.GraphicsMode;
-import net.minecraft.client.option.ParticlesMode;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
+import net.minecraft.client.*;
+import net.minecraft.client.gui.screens.packs.PackSelectionScreen;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,27 +47,27 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
         this.createAdvancedGraphicsOptions();
 
         OptionGroup displayOptionsGroup = OptionGroup.createBuilder()
-                .name(Text.translatable("iridium.options.group.display"))
+                .name(Component.translatable("iridium.options.group.display"))
                 .options(this.displayOptions)
                 .build();
 
         OptionGroup graphicsOptionsGroup = OptionGroup.createBuilder()
-                .name(Text.translatable("iridium.options.group.graphics"))
+                .name(Component.translatable("iridium.options.group.graphics"))
                 .options(this.graphicsOptions)
                 .build();
 
         OptionGroup graphicsQualityOptionsGroup = OptionGroup.createBuilder()
-                .name(Text.translatable("iridium.options.group.graphicsQuality"))
+                .name(Component.translatable("iridium.options.group.graphicsQuality"))
                 .options(this.graphicsQualityOptions)
                 .build();
 
         OptionGroup advancedGraphicsOptionsGroup = OptionGroup.createBuilder()
-                .name(Text.translatable("iridium.options.group.advancedGraphics"))
+                .name(Component.translatable("iridium.options.group.advancedGraphics"))
                 .options(this.advancedGraphicsOptions)
                 .build();
 
         this.videoOptionsCategory = ConfigCategory.createBuilder()
-                .name(Text.translatable("iridium.options.category.video"))
+                .name(Component.translatable("iridium.options.category.video"))
                 .groups(Lists.newArrayList(displayOptionsGroup, graphicsOptionsGroup, graphicsQualityOptionsGroup, advancedGraphicsOptionsGroup))
                 .build();
     }
@@ -85,121 +81,121 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
     private void createDisplayOptions()
     {
         Window window = this.client.getWindow();
-        int videoModeCount = window.getMonitor() != null ? window.getMonitor().getVideoModeCount() : 0;
+        int videoModeCount = window.findBestMonitor() != null ? window.findBestMonitor().getModeCount() : 0;
 
         Option<Boolean> fullscreenOption = Option.<Boolean>createBuilder()
-                .name(Text.translatable("options.fullscreen"))
+                .name(Component.translatable("options.fullscreen"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.display.fullscreen.description")
+                        .text(Component.translatable("iridium.options.display.fullscreen.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.None.getText()))
                         .build())
-                .binding(false, () -> this.client.options.getFullscreen().get(), (newValue) ->
+                .binding(false, () -> this.client.options.fullscreen().get(), (newValue) ->
                 {
-                    this.client.options.getFullscreen().set(newValue);
+                    this.client.options.fullscreen().set(newValue);
 
-                    if (window.isFullscreen() != this.client.options.getFullscreen().get())
+                    if (window.isFullscreen() != this.client.options.fullscreen().get())
                     {
-                        window.toggleFullscreen();
+                        window.toggleFullScreen();
 
                         // The client might not be able to enter fullscreen, so we do this just in-case that happens.
-                        this.client.options.getFullscreen().set(window.isFullscreen());
+                        this.client.options.fullscreen().set(window.isFullscreen());
                     }
                 })
                 .customController(BooleanController::new)
                 .build();
 
         Option<Integer> fullscreenResolutionOption = Option.<Integer>createBuilder()
-                .name(Text.translatable("options.fullscreen.resolution"))
+                .name(Component.translatable("options.fullscreen.resolution"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.display.fullscreenResolution.description")
+                        .text(Component.translatable("iridium.options.display.fullscreenResolution.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.High.getText()))
                         .build())
                 .binding(0, () ->
                 {
-                    if (window.getMonitor() == null)
+                    if (window.findBestMonitor() == null)
                     {
                         return 0;
                     }
                     else
                     {
-                        Optional<VideoMode> videoMode = window.getVideoMode();
-                        return videoMode.map((vidMode) -> window.getMonitor().findClosestVideoModeIndex(vidMode) + 1).orElse(0);
+                        Optional<VideoMode> videoMode = window.getPreferredFullscreenVideoMode();
+                        return videoMode.map((vidMode) -> window.findBestMonitor().getVideoModeIndex(vidMode) + 1).orElse(0);
                     }
                 }, (newValue) ->
                 {
-                    if (window.getMonitor() != null)
+                    if (window.findBestMonitor() != null)
                     {
                         if (newValue == 0)
                         {
-                            window.setVideoMode(Optional.empty());
+                            window.setPreferredFullscreenVideoMode(Optional.empty());
                         }
                         else
                         {
-                            window.setVideoMode(Optional.of(window.getMonitor().getVideoMode(newValue - 1)));
+                            window.setPreferredFullscreenVideoMode(Optional.of(window.findBestMonitor().getMode(newValue - 1)));
                         }
                     }
 
-                    window.applyVideoMode();
+                    window.changeFullscreenVideoMode();
                 })
                 .customController(option -> new IntegerSliderController(option, 0, videoModeCount, 1, value ->
                 {
-                    Monitor monitor = window.getMonitor();
+                    Monitor monitor = window.findBestMonitor();
 
                     if (monitor == null)
                     {
-                        return Text.translatable("options.fullscreen.unavailable");
+                        return Component.translatable("options.fullscreen.unavailable");
                     }
                     else
                     {
                         if (value == 0)
                         {
-                            return Text.translatable("options.fullscreen.current");
+                            return Component.translatable("options.fullscreen.current");
                         }
                         else
                         {
-                            VideoMode videoMode = monitor.getVideoMode(value - 1);
+                            VideoMode videoMode = monitor.getMode(value - 1);
                             int width = videoMode.getWidth();
                             int height = videoMode.getHeight();
                             int refreshRate = videoMode.getRefreshRate();
                             int colorDepth = videoMode.getRedBits() + videoMode.getGreenBits() + videoMode.getBlueBits();
 
-                            return Text.literal(String.format("%d x %d (%dhz, %d bits)", width, height, refreshRate, colorDepth));
+                            return Component.literal(String.format("%d x %d (%dhz, %d bits)", width, height, refreshRate, colorDepth));
                         }
                     }
                 }))
                 .build();
 
         Option<Boolean> vSyncOption = Option.<Boolean>createBuilder()
-                .name(Text.translatable("iridium.options.display.vSync"))
+                .name(Component.translatable("iridium.options.display.vSync"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.display.vSync.description")
+                        .text(Component.translatable("iridium.options.display.vSync.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Varies.getText()))
                         .build())
-                .binding(true, () -> this.client.options.getEnableVsync().get(), newValue ->
+                .binding(true, () -> this.client.options.enableVsync().get(), newValue ->
                 {
-                    this.client.options.getEnableVsync().set(newValue);
+                    this.client.options.enableVsync().set(newValue);
                     IridiumRenderer.getInstance().getVulkanContext().getSwapChain().enableVSync(newValue);
                 })
                 .customController(BooleanController::new)
                 .build();
 
         Option<Integer> framerateLimitOption = Option.<Integer>createBuilder()
-                .name(Text.translatable("iridium.options.display.framerateLimit"))
+                .name(Component.translatable("iridium.options.display.framerateLimit"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.display.framerateLimit.description")
+                        .text(Component.translatable("iridium.options.display.framerateLimit.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.None.getText()))
                         .build())
-                .binding(120, () -> this.client.options.getMaxFps().get(), newValue ->
+                .binding(120, () -> this.client.options.framerateLimit().get(), newValue ->
                 {
-                    this.client.options.getMaxFps().set(newValue);
+                    this.client.options.framerateLimit().set(newValue);
                     this.client.getWindow().setFramerateLimit(newValue);
                 })
                 .customController(option -> new IntegerSliderController(option, 10, 260, 10, value ->
-                        value == 260 ? Text.translatable("options.framerateLimit.max") : Text.of(Integer.toString(value))))
+                        value == 260 ? Component.translatable("options.framerateLimit.max") : Component.literal(Integer.toString(value))))
                 .build();
 
         Collections.addAll(this.displayOptions, fullscreenOption, fullscreenResolutionOption, vSyncOption, framerateLimitOption);
@@ -208,94 +204,94 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
     private void createGraphicsOptions()
     {
         Option<Double> brightnessOption = Option.<Double>createBuilder()
-                .name(Text.translatable("options.gamma"))
+                .name(Component.translatable("options.gamma"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.graphics.brightness.description")
+                        .text(Component.translatable("iridium.options.graphics.brightness.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.None.getText()))
                         .build())
-                .binding(50.0d, () -> this.client.options.getGamma().get() / 0.01d, newValue -> this.client.options.getGamma().set(newValue * 0.01d))
+                .binding(50.0d, () -> this.client.options.gamma().get() / 0.01d, newValue -> this.client.options.gamma().set(newValue * 0.01d))
                 .customController(option -> new DoubleSliderController(option, 0, 100, 1, value ->
-                        value == 100.0d ? Text.translatable("options.gamma.max") : Text.of(Double.toString(value))))
+                        value == 100.0d ? Component.translatable("options.gamma.max") : Component.literal(Double.toString(value))))
                 .build();
 
         Option<Integer> fovOption = Option.<Integer>createBuilder()
-                .name(Text.translatable("options.fov"))
+                .name(Component.translatable("options.fov"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.graphics.fov.description")
+                        .text(Component.translatable("iridium.options.graphics.fov.description")
                                 .append(" ")
-                                .append(Text.translatable("iridium.options.graphics.fov.descriptionLink")
+                                .append(Component.translatable("iridium.options.graphics.fov.descriptionLink")
                                         .setStyle(Style.EMPTY
                                                 .withBold(true)
-                                                .withUnderline(true)
+                                                .withUnderlined(true)
                                                 .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://minecraft.fandom.com/wiki/Options#Options"))))
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Varies.getText()))
                         .build())
-                .binding(Binding.minecraft(this.client.options.getFov()))
+                .binding(Binding.minecraft(this.client.options.fov()))
                 .customController(option -> new IntegerSliderController(option, 30, 110, 1, value ->
                 {
                     if (value == 70)
                     {
-                        return Text.translatable("iridium.options.graphics.fov.normal", value);
+                        return Component.translatable("iridium.options.graphics.fov.normal", value);
                     }
                     else if (value == 110)
                     {
-                        return Text.translatable("iridium.options.graphics.fov.quakePro", value);
+                        return Component.translatable("iridium.options.graphics.fov.quakePro", value);
                     }
 
-                    return Text.literal(String.valueOf(value));
+                    return Component.literal(String.valueOf(value));
                 }))
                 .flag(OptionFlag.WORLD_RENDER_UPDATE)
                 .build();
 
         Option<Integer> guiScaleOption = Option.<Integer>createBuilder()
-                .name(Text.translatable("options.guiScale"))
+                .name(Component.translatable("options.guiScale"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.graphics.guiScale.description")
+                        .text(Component.translatable("iridium.options.graphics.guiScale.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.None.getText()))
                         .build())
-                .binding(0, () -> this.client.options.getGuiScale().get(), (newValue) ->
+                .binding(0, () -> this.client.options.guiScale().get(), (newValue) ->
                 {
-                    this.client.options.getGuiScale().set(newValue);
-                    this.client.onResolutionChanged();
+                    this.client.options.guiScale().set(newValue);
+                    this.client.resizeDisplay();
                 })
-                .customController(option -> new IntegerSliderController(option, 0, MinecraftClient.getInstance().getWindow().calculateScaleFactor(0, MinecraftClient.getInstance().forcesUnicodeFont()), 1, value ->
-                        value == 0 ? Text.translatable("options.guiScale.auto") : Text.of(value + "x")))
+                .customController(option -> new IntegerSliderController(option, 0, Minecraft.getInstance().getWindow().calculateScale(0, Minecraft.getInstance().isEnforceUnicode()), 1, value ->
+                        value == 0 ? Component.translatable("options.guiScale.auto") : Component.literal(value + "x")))
                 .build();
 
         Option<Boolean> viewBobbingOption = Option.<Boolean>createBuilder()
-                .name(Text.translatable("options.viewBobbing"))
+                .name(Component.translatable("options.viewBobbing"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.graphics.viewBobbing.description")
+                        .text(Component.translatable("iridium.options.graphics.viewBobbing.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Varies.getText()))
                         .build())
-                .binding(Binding.minecraft(this.client.options.getBobView()))
+                .binding(Binding.minecraft(this.client.options.bobView()))
                 .customController(BooleanController::new)
                 .build();
 
-        Option<AttackIndicator> attackIndicatorOption = Option.<AttackIndicator>createBuilder()
-                .name(Text.translatable("options.attackIndicator"))
+        Option<AttackIndicatorStatus> attackIndicatorOption = Option.<AttackIndicatorStatus>createBuilder()
+                .name(Component.translatable("options.attackIndicator"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.graphics.attackIndicator.description")
+                        .text(Component.translatable("iridium.options.graphics.attackIndicator.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.None.getText()))
                         .build())
-                .binding(Binding.minecraft(this.client.options.getAttackIndicator()))
-                .customController(option -> new EnumController<>(option, AttackIndicator.class))
+                .binding(Binding.minecraft(this.client.options.attackIndicator()))
+                .customController(option -> new EnumController<>(option, AttackIndicatorStatus.class))
                 .build();
 
         ButtonOption resourcePacksOption = ButtonOption.createBuilder()
-                .name(Text.translatable("iridium.options.graphics.resourcePacks"))
-                .description(OptionDescription.of(Text.translatable("iridium.options.graphics.resourcePacks.description")))
-                .text(Text.literal(""))
-                .action((screen, button) -> this.client.setScreen(new PackScreen(this.client.getResourcePackManager(), (packManager) ->
+                .name(Component.translatable("iridium.options.graphics.resourcePacks"))
+                .description(OptionDescription.of(Component.translatable("iridium.options.graphics.resourcePacks.description")))
+                .text(Component.literal(""))
+                .action((screen, button) -> this.client.setScreen(new PackSelectionScreen(this.client.getResourcePackRepository(), (packManager) ->
                 {
                     this.client.options.updateResourcePacks(packManager);
                     this.client.setScreen(new IridiumOptionsScreen(null).getHandle());
-                }, this.client.getResourcePackDir(), Text.translatable("resourcePack.title"))))
+                }, this.client.getResourcePackDirectory(), Component.translatable("resourcePack.title"))))
                 .build();
 
         Collections.addAll(this.graphicsOptions, brightnessOption, fovOption, guiScaleOption, viewBobbingOption, attackIndicatorOption, resourcePacksOption);
@@ -305,65 +301,65 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
     private void createGraphicsQualityOptions()
     {
         Option<Integer> renderDistanceOption = Option.<Integer>createBuilder()
-                .name(Text.translatable("options.renderDistance"))
+                .name(Component.translatable("options.renderDistance"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.graphicsQuality.renderDistance.description")
+                        .text(Component.translatable("iridium.options.graphicsQuality.renderDistance.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.High.getText()))
                         .build())
-                .binding(Binding.minecraft(this.client.options.getViewDistance()))
+                .binding(Binding.minecraft(this.client.options.renderDistance()))
                 .customController(option -> new IntegerSliderController(option, 2, 32, 1))
                 .build();
 
         Option<Integer> simulationDistanceOption = Option.<Integer>createBuilder()
-                .name(Text.translatable("options.simulationDistance"))
+                .name(Component.translatable("options.simulationDistance"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.graphicsQuality.simulationDistance.description")
+                        .text(Component.translatable("iridium.options.graphicsQuality.simulationDistance.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.High.getText()))
                         .build())
-                .binding(Binding.minecraft(this.client.options.getSimulationDistance()))
+                .binding(Binding.minecraft(this.client.options.simulationDistance()))
                 .customController(option -> new IntegerSliderController(option, 5, 32, 1))
                 .build();
 
         Option<Double> entityDistanceOption = Option.<Double>createBuilder()
-                .name(Text.translatable("options.entityDistanceScaling"))
+                .name(Component.translatable("options.entityDistanceScaling"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.graphicsQuality.entityDistance.description")
+                        .text(Component.translatable("iridium.options.graphicsQuality.entityDistance.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Medium.getText()))
                         .build())
-                .binding(100.0d, () -> (double) Math.round(this.client.options.getEntityDistanceScaling().get() * 100.0d), newValue -> this.client.options.getEntityDistanceScaling().set(newValue / 100.0d))
-                .customController(option -> new DoubleSliderController(option, 50, 500, 25, value -> Text.of(String.format("%d%c", value.intValue(), '%'))))
+                .binding(100.0d, () -> (double) Math.round(this.client.options.entityDistanceScaling().get() * 100.0d), newValue -> this.client.options.entityDistanceScaling().set(newValue / 100.0d))
+                .customController(option -> new DoubleSliderController(option, 50, 500, 25, value -> Component.literal(String.format("%d%c", value.intValue(), '%'))))
                 .build();
 
-        Option<GraphicsMode> graphicsModeOption = Option.<GraphicsMode>createBuilder()
-                .name(Text.translatable("iridium.options.graphicsQuality.graphicsMode"))
+        Option<GraphicsStatus> graphicsModeOption = Option.<GraphicsStatus>createBuilder()
+                .name(Component.translatable("iridium.options.graphicsQuality.graphicsMode"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.graphicsQuality.graphicsMode.description")
+                        .text(Component.translatable("iridium.options.graphicsQuality.graphicsMode.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.High.getText()))
                         .build())
-                .binding(Binding.minecraft(this.client.options.getGraphicsMode()))
-                .customController(option -> new EnumController<>(option, GraphicsMode.class))
+                .binding(Binding.minecraft(this.client.options.graphicsMode()))
+                .customController(option -> new EnumController<>(option, GraphicsStatus.class))
                 .flag(OptionFlag.RELOAD_CHUNKS)
                 .build();
 
-        Option<CloudRenderMode> cloudsOption = Option.<CloudRenderMode>createBuilder()
-                .name(Text.translatable("iridium.options.graphicsQuality.clouds"))
+        Option<CloudStatus> cloudsOption = Option.<CloudStatus>createBuilder()
+                .name(Component.translatable("iridium.options.graphicsQuality.clouds"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.graphicsQuality.clouds.description")
+                        .text(Component.translatable("iridium.options.graphicsQuality.clouds.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Low.getText()))
                         .build())
-                .binding(Binding.minecraft(this.client.options.getRenderClouds()))
-                .customController(option -> new EnumController<>(option, CloudRenderMode.class))
+                .binding(Binding.minecraft(this.client.options.cloudStatus()))
+                .customController(option -> new EnumController<>(option, CloudStatus.class))
                 .build();
 
         Option<IridiumGameOptions.GraphicsQuality> weatherQualityOption = Option.<IridiumGameOptions.GraphicsQuality>createBuilder()
-                .name(Text.translatable("iridium.options.graphicsQuality.weather"))
+                .name(Component.translatable("iridium.options.graphicsQuality.weather"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.graphicsQuality.weather.description")
+                        .text(Component.translatable("iridium.options.graphicsQuality.weather.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Medium.getText()))
                         .build())
@@ -373,9 +369,9 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                 .build();
 
         Option<IridiumGameOptions.GraphicsQuality> leavesQualityOption = Option.<IridiumGameOptions.GraphicsQuality>createBuilder()
-                .name(Text.translatable("iridium.options.graphicsQuality.leaves"))
+                .name(Component.translatable("iridium.options.graphicsQuality.leaves"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.graphicsQuality.leaves.description")
+                        .text(Component.translatable("iridium.options.graphicsQuality.leaves.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Low.getText()))
                         .build())
@@ -384,54 +380,54 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                 .flag(OptionFlag.RELOAD_CHUNKS)
                 .build();
 
-        Option<ParticlesMode> particlesOption = Option.<ParticlesMode>createBuilder()
-                .name(Text.translatable("options.particles"))
+        Option<ParticleStatus> particlesOption = Option.<ParticleStatus>createBuilder()
+                .name(Component.translatable("options.particles"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.graphicsQuality.particles.description")
+                        .text(Component.translatable("iridium.options.graphicsQuality.particles.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Low.getText()))
                         .build())
-                .binding(Binding.minecraft(this.client.options.getParticles()))
-                .customController(option -> new EnumController<>(option, ParticlesMode.class))
+                .binding(Binding.minecraft(this.client.options.particles()))
+                .customController(option -> new EnumController<>(option, ParticleStatus.class))
                 .build();
 
         Option<Boolean> smoothLightingOption = Option.<Boolean>createBuilder()
-                .name(Text.translatable("options.ao"))
+                .name(Component.translatable("options.ao"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.graphicsQuality.smoothLighting.description")
+                        .text(Component.translatable("iridium.options.graphicsQuality.smoothLighting.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Low.getText()))
                         .build())
-                .binding(Binding.minecraft(this.client.options.getSmoothLighting()))
+                .binding(Binding.minecraft(this.client.options.ambientOcclusion()))
                 .customController(BooleanController::new)
                 .build();
 
         Option<Integer> biomeBlendOption = Option.<Integer>createBuilder()
-                .name(Text.translatable("iridium.options.graphicsQuality.biomeBlend"))
+                .name(Component.translatable("iridium.options.graphicsQuality.biomeBlend"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.graphicsQuality.biomeBlend.description")
+                        .text(Component.translatable("iridium.options.graphicsQuality.biomeBlend.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Low.getText()))
                         .build())
-                .binding(Binding.minecraft(this.client.options.getBiomeBlendRadius()))
-                .customController(option -> new IntegerSliderController(option, 0, 7, 1, value -> Text.of(String.format("%d block(s)", value))))
+                .binding(Binding.minecraft(this.client.options.biomeBlendRadius()))
+                .customController(option -> new IntegerSliderController(option, 0, 7, 1, value -> Component.literal(String.format("%d block(s)", value))))
                 .build();
 
         Option<Boolean> entityShadowsOption = Option.<Boolean>createBuilder()
-                .name(Text.translatable("iridium.options.graphicsQuality.entityShadows"))
+                .name(Component.translatable("iridium.options.graphicsQuality.entityShadows"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.graphicsQuality.entityShadows.description")
+                        .text(Component.translatable("iridium.options.graphicsQuality.entityShadows.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Low.getText()))
                         .build())
-                .binding(Binding.minecraft(this.client.options.getEntityShadows()))
+                .binding(Binding.minecraft(this.client.options.entityShadows()))
                 .customController(BooleanController::new)
                 .build();
 
         Option<Boolean> enableVignetteOption = Option.<Boolean>createBuilder()
-                .name(Text.translatable("iridium.options.graphicsQuality.enableVignette"))
+                .name(Component.translatable("iridium.options.graphicsQuality.enableVignette"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.graphicsQuality.enableVignette.description")
+                        .text(Component.translatable("iridium.options.graphicsQuality.enableVignette.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Low.getText()))
                         .build())
@@ -440,36 +436,36 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                 .build();
 
         Option<Double> distortionEffectsOption = Option.<Double>createBuilder()
-                .name(Text.translatable("options.screenEffectScale"))
+                .name(Component.translatable("options.screenEffectScale"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.graphicsQuality.distortionEffects.description")
+                        .text(Component.translatable("iridium.options.graphicsQuality.distortionEffects.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Low.getText()))
                         .build())
-                .binding(100.0d, () -> (double) Math.round(this.client.options.getDistortionEffectScale().get() * 100.0d), newValue -> this.client.options.getDistortionEffectScale().set(newValue / 100.0d))
-                .customController(option -> new DoubleSliderController(option, 0, 100, 1, value -> Text.of(String.format("%d%c", value.intValue(), '%'))))
+                .binding(100.0d, () -> (double) Math.round(this.client.options.screenEffectScale().get() * 100.0d), newValue -> this.client.options.screenEffectScale().set(newValue / 100.0d))
+                .customController(option -> new DoubleSliderController(option, 0, 100, 1, value -> Component.literal(String.format("%d%c", value.intValue(), '%'))))
                 .build();
 
         Option<Double> fovEffectsOption = Option.<Double>createBuilder()
-                .name(Text.translatable("options.fovEffectScale"))
+                .name(Component.translatable("options.fovEffectScale"))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.graphicsQuality.fovEffects.description")
+                        .text(Component.translatable("iridium.options.graphicsQuality.fovEffects.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Low.getText()))
                         .build())
-                .binding(100.0d, () -> (double) Math.round(Math.pow(this.client.options.getFovEffectScale().get(), 2.0d) * 100.0d), newValue -> this.client.options.getFovEffectScale().set(Math.sqrt(newValue / 100.0d)))
-                .customController(option -> new DoubleSliderController(option, 0, 100, 1, value -> Text.of(String.format("%d%c", value.intValue(), '%'))))
+                .binding(100.0d, () -> (double) Math.round(Math.pow(this.client.options.fovEffectScale().get(), 2.0d) * 100.0d), newValue -> this.client.options.fovEffectScale().set(Math.sqrt(newValue / 100.0d)))
+                .customController(option -> new DoubleSliderController(option, 0, 100, 1, value -> Component.literal(String.format("%d%c", value.intValue(), '%'))))
                 .build();
 
         Option<Integer> mipmapLevelsOption = Option.<Integer>createBuilder()
-                .name(Text.translatable("options.mipmapLevels"))
-                .binding(Binding.minecraft(this.client.options.getMipmapLevels()))
+                .name(Component.translatable("options.mipmapLevels"))
+                .binding(Binding.minecraft(this.client.options.mipmapLevels()))
                 .description(OptionDescription.createBuilder()
-                        .text(Text.translatable("iridium.options.graphicsQuality.mipmapLevels.description")
+                        .text(Component.translatable("iridium.options.graphicsQuality.mipmapLevels.description")
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Medium.getText()))
                         .build())
-                .customController(option -> new IntegerSliderController(option, 0, 4, 1, value -> Text.of(value + "x")))
+                .customController(option -> new IntegerSliderController(option, 0, 4, 1, value -> Component.literal(value + "x")))
                 .flag(OptionFlag.ASSET_RELOAD)
                 .build();
 
@@ -482,36 +478,36 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
     private void createAdvancedGraphicsOptions()
     {
         Option<Boolean> showFPSOverlayOption = Option.<Boolean>createBuilder()
-                .name(Text.translatable("iridium.options.advancedGraphics.showFPSOverlay"))
-                .description(OptionDescription.of(Text.translatable("iridium.options.advancedGraphics.showFPSOverlay.description")))
+                .name(Component.translatable("iridium.options.advancedGraphics.showFPSOverlay"))
+                .description(OptionDescription.of(Component.translatable("iridium.options.advancedGraphics.showFPSOverlay.description")))
                 .binding(IridiumGameOptions.defaults().showFPSOverlay, () -> this.iridiumGameOptions.showFPSOverlay, newValue -> this.iridiumGameOptions.showFPSOverlay = newValue)
                 .customController(BooleanController::new)
                 .build();
 
         Option<Boolean> showCoordinatesOption = Option.<Boolean>createBuilder()
-                .name(Text.translatable("iridium.options.advancedGraphics.showCoordinates"))
-                .description(OptionDescription.of(Text.translatable("iridium.options.advancedGraphics.showCoordinates.description")))
+                .name(Component.translatable("iridium.options.advancedGraphics.showCoordinates"))
+                .description(OptionDescription.of(Component.translatable("iridium.options.advancedGraphics.showCoordinates.description")))
                 .binding(IridiumGameOptions.defaults().showCoordinates, () -> this.iridiumGameOptions.showCoordinates, newValue -> this.iridiumGameOptions.showCoordinates = newValue)
                 .customController(BooleanController::new)
                 .build();
 
         Option<IridiumGameOptions.TextContrast> overlayContrastOption = Option.<IridiumGameOptions.TextContrast>createBuilder()
-                .name(Text.translatable("iridium.options.advancedGraphics.overlayContrast"))
-                .description(OptionDescription.of(Text.translatable("iridium.options.advancedGraphics.textContrast.description")))
+                .name(Component.translatable("iridium.options.advancedGraphics.overlayContrast"))
+                .description(OptionDescription.of(Component.translatable("iridium.options.advancedGraphics.textContrast.description")))
                 .binding(IridiumGameOptions.defaults().textContrast, () -> this.iridiumGameOptions.textContrast, newValue -> this.iridiumGameOptions.textContrast = newValue)
                 .customController(option -> new EnumController<>(option, IridiumGameOptions.TextContrast.class))
                 .build();
 
         Option<IridiumGameOptions.OverlayPosition> overlayPositionOption = Option.<IridiumGameOptions.OverlayPosition>createBuilder()
-                .name(Text.translatable("iridium.options.advancedGraphics.overlayPosition"))
-                .description(OptionDescription.of(Text.translatable("iridium.options.advancedGraphics.overlayPosition.description")))
+                .name(Component.translatable("iridium.options.advancedGraphics.overlayPosition"))
+                .description(OptionDescription.of(Component.translatable("iridium.options.advancedGraphics.overlayPosition.description")))
                 .binding(IridiumGameOptions.defaults().overlayPosition, () -> this.iridiumGameOptions.overlayPosition, newValue -> this.iridiumGameOptions.overlayPosition = newValue)
                 .customController(option -> new EnumController<>(option, overlayPosition -> switch (overlayPosition)
                 {
-                    case TopLeft -> Text.translatable("iridium.options.overlayPosition.topLeft");
-                    case TopRight -> Text.translatable("iridium.options.overlayPosition.topRight");
-                    case BottomLeft -> Text.translatable("iridium.options.overlayPosition.bottomLeft");
-                    case BottomRight -> Text.translatable("iridium.options.overlayPosition.bottomRight");
+                    case TopLeft -> Component.translatable("iridium.options.overlayPosition.topLeft");
+                    case TopRight -> Component.translatable("iridium.options.overlayPosition.topRight");
+                    case BottomLeft -> Component.translatable("iridium.options.overlayPosition.bottomLeft");
+                    case BottomRight -> Component.translatable("iridium.options.overlayPosition.bottomRight");
                 }, IridiumGameOptions.OverlayPosition.toArray()))
                 .build();
 

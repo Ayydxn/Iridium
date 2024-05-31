@@ -5,9 +5,9 @@ import dev.isxander.yacl3.api.YetAnotherConfigLib;
 import me.ayydan.iridium.IridiumClientMod;
 import me.ayydan.iridium.options.minecraft.*;
 import me.ayydan.iridium.options.IridiumGameOptions;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -65,11 +65,11 @@ public class IridiumOptionsScreen
     public Screen getHandle()
     {
         return YetAnotherConfigLib.createBuilder()
-                .title(Text.translatable("iridium.options.gui_title"))
+                .title(Component.translatable("iridium.options.gui_title"))
                 .categories(this.optionCategories)
                 .save(() ->
                 {
-                    MinecraftClient.getInstance().options.write();
+                    Minecraft.getInstance().options.save();
                     this.iridiumGameOptions.write();
                 })
                 .build()

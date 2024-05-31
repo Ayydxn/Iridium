@@ -3,7 +3,7 @@ package me.ayydan.iridium.render;
 import me.ayydan.iridium.render.shader.IridiumShaderCompiler;
 import me.ayydan.iridium.render.vulkan.VulkanContext;
 import me.ayydan.iridium.utils.logging.IridiumLogger;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 public class IridiumRenderer
 {
@@ -55,7 +55,7 @@ public class IridiumRenderer
 
         this.shouldSkipFrame = swapChainWidth == 0 || swapChainHeight == 0;
 
-        MinecraftClient.getInstance().skipGameRender = this.shouldSkipFrame;
+        Minecraft.getInstance().noRender = this.shouldSkipFrame;
 
         if (this.shouldSkipFrame)
             return;

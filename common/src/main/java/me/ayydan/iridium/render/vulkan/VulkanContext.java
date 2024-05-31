@@ -5,7 +5,7 @@ import me.ayydan.iridium.render.IridiumRenderer;
 import me.ayydan.iridium.render.exceptions.IridiumRendererException;
 import me.ayydan.iridium.utils.PointerUtils;
 import me.ayydan.iridium.utils.VersioningUtils;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
@@ -107,8 +107,8 @@ public class VulkanContext
 
         this.vulkanSwapChain = new VulkanSwapChain(this);
         this.vulkanSwapChain.initialize();
-        this.vulkanSwapChain.create(MinecraftClient.getInstance().getWindow().getWidth(), MinecraftClient.getInstance().getWindow().getHeight(),
-                MinecraftClient.getInstance().options.getEnableVsync().get());
+        this.vulkanSwapChain.create(Minecraft.getInstance().getWindow().getWidth(), Minecraft.getInstance().getWindow().getHeight(),
+                Minecraft.getInstance().options.enableVsync().get());
     }
 
     public void destroy()

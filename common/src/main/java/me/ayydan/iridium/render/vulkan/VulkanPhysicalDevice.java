@@ -1,11 +1,11 @@
 package me.ayydan.iridium.render.vulkan;
 
 import me.ayydan.iridium.render.exceptions.IridiumRendererException;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.Util;
-import net.minecraft.util.WinNativeModuleLister;
-import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.CrashReport;
+import net.minecraft.CrashReportCategory;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.NativeModuleLister;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
@@ -44,10 +44,10 @@ public class VulkanPhysicalDevice
             String crashMessage = String.format("Vulkan 1.2 isn't supported! Make your GPU drivers are up-to-date! (%s)", physicalDeviceName);
 
             CrashReport crashReport = new CrashReport(crashMessage, new IridiumRendererException(crashMessage));
-            CrashReportSection crashReportSection = crashReport.addElement("Vulkan 1.2 isn't supported!");
+            CrashReportCategory crashReportSection = crashReport.addCategory("Vulkan 1.2 isn't supported!");
 
-            WinNativeModuleLister.addReportSection(crashReportSection);
-            MinecraftClient.printCrashReport(MinecraftClient.getInstance(), MinecraftClient.getInstance().runDirectory, crashReport);
+            NativeModuleLister.addCrashSection(crashReportSection);
+            Minecraft.crash(Minecraft.getInstance(), Minecraft.getInstance().gameDirectory, crashReport);
         }
     }
 
@@ -185,7 +185,7 @@ public class VulkanPhysicalDevice
             }
 
             // Intel
-            if (physicalDeviceVendorID == 0x8086 && Util.getOperatingSystem() == Util.OperatingSystem.WINDOWS)
+            if (physicalDeviceVendorID == 0x8086 && Util.getPlatform() == Util.OS.WINDOWS)
             {
                 int driverMajorVersion = physicalDeviceDriverVersion >> 14;
                 int driverMinorVersion = physicalDeviceDriverVersion & 0x3fff;

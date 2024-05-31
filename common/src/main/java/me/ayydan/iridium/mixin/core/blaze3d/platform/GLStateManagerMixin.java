@@ -14,16 +14,16 @@ import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER_COMPLETE;
 @Mixin(GlStateManager.class)
 public class GLStateManagerMixin
 {
-    @Redirect(method = "_enableDepthTest", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager$CapabilityTracker;enable()V"), remap = false)
-    private static void enableDepthTest(GlStateManager.CapabilityTracker instance)
+    @Redirect(method = "_enableDepthTest", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager$BooleanState;enable()V"), remap = false)
+    private static void enableDepthTest(GlStateManager.BooleanState instance)
     {
         RenderSystem.assertOnRenderThreadOrInit();
 
         throw new NotImplementedException("GlStateManager::_enableDepthTest has not been implemented by Iridium!");
     }
 
-    @Redirect(method = "_enableBlend", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager$CapabilityTracker;enable()V"), remap = false)
-    private static void enableBlend(GlStateManager.CapabilityTracker capabilityTracker)
+    @Redirect(method = "_enableBlend", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager$BooleanState;enable()V"), remap = false)
+    private static void enableBlend(GlStateManager.BooleanState capabilityTracker)
     {
         RenderSystem.assertOnRenderThread();
 

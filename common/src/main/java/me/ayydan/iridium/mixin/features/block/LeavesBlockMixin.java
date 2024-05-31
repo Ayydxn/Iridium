@@ -1,11 +1,11 @@
 package me.ayydan.iridium.mixin.features.block;
 
 import me.ayydan.iridium.IridiumClientMod;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.LeavesBlock;
-import net.minecraft.util.math.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(LeavesBlock.class)
@@ -13,20 +13,20 @@ public class LeavesBlockMixin extends Block
 {
     public LeavesBlockMixin()
     {
-        super(Settings.method_9630(Blocks.AIR));
+        super(Properties.ofFullCopy(Blocks.AIR));
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction)
+    public boolean skipRendering(BlockState state, BlockState adjacentState, Direction direction)
     {
         if (IridiumClientMod.getInstance().getGameOptions().leavesQuality.isMediumOrBetter())
         {
-            return super.isSideInvisible(state, stateFrom, direction);
+            return super.skipRendering(state, adjacentState, direction);
         }
         else
         {
-            return stateFrom.getBlock() instanceof LeavesBlock || super.isSideInvisible(state, stateFrom, direction);
+            return adjacentState.getBlock() instanceof LeavesBlock || super.skipRendering(state, adjacentState, direction);
         }
     }
 }

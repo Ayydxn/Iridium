@@ -3,21 +3,21 @@ package me.ayydan.iridium.gui.hud;
 import me.ayydan.iridium.IridiumClientMod;
 import me.ayydan.iridium.options.IridiumGameOptions;
 import me.ayydan.iridium.client.ClientFramerateTracker;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.phys.Vec3;
 
 import java.awt.*;
 
 public class IridiumHudOverlay
 {
-    private final MinecraftClient minecraftClient = MinecraftClient.getInstance();
+    private final Minecraft minecraftClient = Minecraft.getInstance();
     private final IridiumGameOptions iridiumGameOptions = IridiumClientMod.getInstance().getGameOptions();
 
     public void render(GuiGraphics guiGraphics)
     {
-        if (!this.minecraftClient.method_53526().chartsVisible())
+        if (!this.minecraftClient.getDebugOverlay().showDebugScreen())
         {
             if (this.iridiumGameOptions.showFPSOverlay)
                 this.renderFramerateOverlay(guiGraphics);
@@ -29,10 +29,10 @@ public class IridiumHudOverlay
 
     private void renderFramerateOverlay(GuiGraphics guiGraphics)
     {
-        int currentClientFPS = this.minecraftClient.getCurrentFps();
+        int currentClientFPS = this.minecraftClient.getFps();
         ClientFramerateTracker clientFramerateTracker = IridiumClientMod.getInstance().getClientFramerateTracker();
 
-        Text fpsOverlayText = Text.translatable("iridium.advancedGraphics.fpsOverlay", currentClientFPS, clientFramerateTracker.getAverageFPS(),
+        Component fpsOverlayText = Component.translatable("iridium.advancedGraphics.fpsOverlay", currentClientFPS, clientFramerateTracker.getAverageFPS(),
                 clientFramerateTracker.getHighestFPS(), clientFramerateTracker.getLowestFPS());
 
         int xPosition = 0;
@@ -47,20 +47,20 @@ public class IridiumHudOverlay
 
             case TopRight ->
             {
-                xPosition = this.minecraftClient.getWindow().getScaledWidth() - this.minecraftClient.textRenderer.getWidth(fpsOverlayText) - 2;
+                xPosition = this.minecraftClient.getWindow().getGuiScaledWidth() - this.minecraftClient.font.width(fpsOverlayText) - 2;
                 yPosition = 2;
             }
 
             case BottomLeft ->
             {
                 xPosition = 2;
-                yPosition = this.minecraftClient.getWindow().getScaledWidth() - this.minecraftClient.textRenderer.fontHeight - 2;
+                yPosition = this.minecraftClient.getWindow().getGuiScaledWidth() - this.minecraftClient.font.lineHeight - 2;
             }
 
             case BottomRight ->
             {
-                xPosition = this.minecraftClient.getWindow().getScaledWidth() - this.minecraftClient.textRenderer.getWidth(fpsOverlayText) - 2;
-                yPosition = this.minecraftClient.getWindow().getScaledWidth() - this.minecraftClient.textRenderer.fontHeight - 2;
+                xPosition = this.minecraftClient.getWindow().getGuiScaledWidth() - this.minecraftClient.font.width(fpsOverlayText) - 2;
+                yPosition = this.minecraftClient.getWindow().getGuiScaledWidth() - this.minecraftClient.font.lineHeight - 2;
             }
         }
 
@@ -72,13 +72,13 @@ public class IridiumHudOverlay
         if (this.minecraftClient.player == null)
             return;
 
-        if (this.minecraftClient.hasReducedDebugInfo())
+        if (this.minecraftClient.showOnlyReducedInfo())
             return;
 
-        Vec3d playerPosition = this.minecraftClient.player.getPos();
+        Vec3 playerPosition = this.minecraftClient.player.position();
 
-        Text coordinatesOverlay = Text.translatable("iridium.advancedGraphics.coordinatesOverlay", String.format("%.2f", playerPosition.getX()),
-                String.format("%.2f", playerPosition.getY()), String.format("%.2f", playerPosition.getZ()));
+        Component coordinatesOverlay = Component.translatable("iridium.advancedGraphics.coordinatesOverlay", String.format("%.2f", playerPosition.x()),
+                String.format("%.2f", playerPosition.y()), String.format("%.2f", playerPosition.z()));
 
         int xPosition = 0;
         int yPosition = 0;
@@ -92,39 +92,39 @@ public class IridiumHudOverlay
 
             case TopRight ->
             {
-                xPosition = this.minecraftClient.getWindow().getScaledWidth() - this.minecraftClient.textRenderer.getWidth(coordinatesOverlay) - 2;
+                xPosition = this.minecraftClient.getWindow().getGuiScaledWidth() - this.minecraftClient.font.width(coordinatesOverlay) - 2;
                 yPosition = 12;
             }
 
             case BottomLeft ->
             {
                 xPosition = 2;
-                yPosition = this.minecraftClient.getWindow().getScaledWidth() - this.minecraftClient.textRenderer.fontHeight - 12;
+                yPosition = this.minecraftClient.getWindow().getGuiScaledWidth() - this.minecraftClient.font.lineHeight - 12;
             }
 
             case BottomRight ->
             {
-                xPosition = this.minecraftClient.getWindow().getScaledWidth() - this.minecraftClient.textRenderer.getWidth(coordinatesOverlay) - 2;
-                yPosition = this.minecraftClient.getWindow().getScaledWidth() - this.minecraftClient.textRenderer.fontHeight - 12;
+                xPosition = this.minecraftClient.getWindow().getGuiScaledWidth() - this.minecraftClient.font.width(coordinatesOverlay) - 2;
+                yPosition = this.minecraftClient.getWindow().getGuiScaledWidth() - this.minecraftClient.font.lineHeight - 12;
             }
         }
 
         this.drawString(guiGraphics, coordinatesOverlay, xPosition, yPosition);
     }
 
-    private void drawString(GuiGraphics guiGraphics, Text text, int xPosition, int yPosition)
+    private void drawString(GuiGraphics guiGraphics, Component text, int xPosition, int yPosition)
     {
         switch (this.iridiumGameOptions.textContrast)
         {
-            case None -> guiGraphics.drawText(this.minecraftClient.textRenderer, text, xPosition, yPosition, Color.WHITE.getRGB(), false);
+            case None -> guiGraphics.drawString(this.minecraftClient.font, text, xPosition, yPosition, Color.WHITE.getRGB(), false);
 
             case Background ->
             {
-                guiGraphics.fill(xPosition - 1, yPosition - 1, xPosition + this.minecraftClient.textRenderer.getWidth(text) + 1, yPosition + this.minecraftClient.textRenderer.fontHeight, -1873784752);
-                guiGraphics.drawText(this.minecraftClient.textRenderer, text, xPosition, yPosition, Color.WHITE.getRGB(), false);
+                guiGraphics.fill(xPosition - 1, yPosition - 1, xPosition + this.minecraftClient.font.width(text) + 1, yPosition + this.minecraftClient.font.lineHeight, -1873784752);
+                guiGraphics.drawString(this.minecraftClient.font, text, xPosition, yPosition, Color.WHITE.getRGB(), false);
             }
 
-            case Shadow -> guiGraphics.drawText(this.minecraftClient.textRenderer, text, xPosition, yPosition, Color.WHITE.getRGB(), true);
+            case Shadow -> guiGraphics.drawString(this.minecraftClient.font, text, xPosition, yPosition, Color.WHITE.getRGB(), true);
         }
     }
 }

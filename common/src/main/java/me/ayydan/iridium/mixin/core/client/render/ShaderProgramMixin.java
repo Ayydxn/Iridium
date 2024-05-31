@@ -1,13 +1,13 @@
 package me.ayydan.iridium.mixin.core.client.render;
 
-import com.mojang.blaze3d.glfw.Window;
-import com.mojang.blaze3d.shader.GlUniform;
-import com.mojang.blaze3d.shader.ShaderStage;
+import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.shaders.Program;
+import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.ShaderProgram;
-import net.minecraft.resource.ResourceFactory;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.server.packs.resources.ResourceProvider;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,91 +18,91 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(ShaderProgram.class)
+@Mixin(ShaderInstance.class)
 public class ShaderProgramMixin
 {
-    @Shadow @Final @Nullable public GlUniform modelViewMat;
-    @Shadow @Final @Nullable public GlUniform projectionMat;
-    @Shadow @Final @Nullable public GlUniform colorModulator;
-    @Shadow @Final @Nullable public GlUniform inverseViewRotationMat;
-    @Shadow @Final @Nullable public GlUniform glintAlpha;
-    @Shadow @Final @Nullable public GlUniform fogStart;
-    @Shadow @Final @Nullable public GlUniform fogEnd;
-    @Shadow @Final @Nullable public GlUniform fogColor;
-    @Shadow @Final @Nullable public GlUniform fogShape;
-    @Shadow @Final @Nullable public GlUniform textureMat;
-    @Shadow @Final @Nullable public GlUniform gameTime;
-    @Shadow @Final @Nullable public GlUniform screenSize;
-    @Shadow @Final @Nullable public GlUniform lineWidth;
+    @Shadow @Final @Nullable public Uniform MODEL_VIEW_MATRIX;
+    @Shadow @Final @Nullable public Uniform PROJECTION_MATRIX;
+    @Shadow @Final @Nullable public Uniform COLOR_MODULATOR;
+    @Shadow @Final @Nullable public Uniform INVERSE_VIEW_ROTATION_MATRIX;
+    @Shadow @Final @Nullable public Uniform GLINT_ALPHA;
+    @Shadow @Final @Nullable public Uniform FOG_START;
+    @Shadow @Final @Nullable public Uniform FOG_END;
+    @Shadow @Final @Nullable public Uniform FOG_COLOR;
+    @Shadow @Final @Nullable public Uniform FOG_SHAPE;
+    @Shadow @Final @Nullable public Uniform TEXTURE_MATRIX;
+    @Shadow @Final @Nullable public Uniform GAME_TIME;
+    @Shadow @Final @Nullable public Uniform SCREEN_SIZE;
+    @Shadow @Final @Nullable public Uniform LINE_WIDTH;
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    public void createShader(ResourceFactory factory, String name, VertexFormat format, CallbackInfo ci)
+    public void createShader(ResourceProvider resourceProvider, String name, VertexFormat vertexFormat, CallbackInfo ci)
     {
         // TODO: (Ayydan) Initialize and create the graphics pipeline here.
     }
 
-    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/shader/GlUniform;bindAttribLocation(IILjava/lang/CharSequence;)V"))
+    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/shaders/Uniform;glBindAttribLocation(IILjava/lang/CharSequence;)V"))
     public void cancelBindAttribLocation(int program, int index, CharSequence name)
     {
     }
 
-    @Inject(method = "loadProgram", at = @At("HEAD"), cancellable = true)
-    private static void loadShaderProgram(ResourceFactory factory, ShaderStage.Type type, String name, CallbackInfoReturnable<ShaderStage> cir)
+    @Inject(method = "getOrCreate", at = @At("HEAD"), cancellable = true)
+    private static void loadShaderProgram(ResourceProvider resourceProvider, Program.Type programType, String name, CallbackInfoReturnable<Program> cir)
     {
         cir.setReturnValue(null);
         cir.cancel();
     }
 
-    @Inject(method = "bind", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "apply", at = @At("HEAD"), cancellable = true)
     public void bind(CallbackInfo ci)
     {
-        if (this.modelViewMat != null)
-            this.modelViewMat.setMat4x4(RenderSystem.getModelViewMatrix());
+        if (this.MODEL_VIEW_MATRIX != null)
+            this.MODEL_VIEW_MATRIX.set(RenderSystem.getModelViewMatrix());
 
-        if (this.projectionMat != null)
-            this.projectionMat.setMat4x4(RenderSystem.getProjectionMatrix());
+        if (this.PROJECTION_MATRIX != null)
+            this.PROJECTION_MATRIX.set(RenderSystem.getProjectionMatrix());
 
-        if (this.colorModulator != null)
-            this.colorModulator.setFloats(RenderSystem.getShaderColor());
+        if (this.COLOR_MODULATOR != null)
+            this.COLOR_MODULATOR.set(RenderSystem.getShaderColor());
 
-        if (this.inverseViewRotationMat != null)
-            this.inverseViewRotationMat.setMat3x3(RenderSystem.getInverseViewRotationMatrix());
+        if (this.INVERSE_VIEW_ROTATION_MATRIX != null)
+            this.INVERSE_VIEW_ROTATION_MATRIX.set(RenderSystem.getInverseViewRotationMatrix());
 
-        if (this.glintAlpha != null)
-            this.glintAlpha.setFloat(RenderSystem.getShaderGlintAlpha());
+        if (this.GLINT_ALPHA != null)
+            this.GLINT_ALPHA.set(RenderSystem.getShaderGlintAlpha());
 
-        if (this.fogStart != null)
-            this.fogStart.setFloat(RenderSystem.getShaderFogStart());
+        if (this.FOG_START != null)
+            this.FOG_START.set(RenderSystem.getShaderFogStart());
 
-        if (this.fogEnd != null)
-            this.fogEnd.setFloat(RenderSystem.getShaderFogEnd());
+        if (this.FOG_END != null)
+            this.FOG_END.set(RenderSystem.getShaderFogEnd());
 
-        if (this.fogColor != null)
-            this.fogColor.setFloats(RenderSystem.getShaderFogColor());
+        if (this.FOG_COLOR != null)
+            this.FOG_COLOR.set(RenderSystem.getShaderFogColor());
 
-        if (this.fogShape != null)
-            this.fogShape.setInt(RenderSystem.getShaderFogShape().getShapeId());
+        if (this.FOG_SHAPE != null)
+            this.FOG_SHAPE.set(RenderSystem.getShaderFogShape().getIndex());
 
-        if (this.textureMat != null)
-            this.textureMat.setMat4x4(RenderSystem.getTextureMatrix());
+        if (this.TEXTURE_MATRIX != null)
+            this.TEXTURE_MATRIX.set(RenderSystem.getTextureMatrix());
 
-        if (this.gameTime != null)
-            this.gameTime.setFloat(RenderSystem.getShaderGameTime());
+        if (this.GAME_TIME != null)
+            this.GAME_TIME.set(RenderSystem.getShaderGameTime());
 
-        if (this.screenSize != null)
+        if (this.SCREEN_SIZE != null)
         {
-            Window window = MinecraftClient.getInstance().getWindow();
+            Window window = Minecraft.getInstance().getWindow();
 
-            this.screenSize.setVec2((float) window.getWidth(), (float) window.getHeight());
+            this.SCREEN_SIZE.set((float) window.getWidth(), (float) window.getHeight());
         }
 
-        if (this.lineWidth != null)
-            this.lineWidth.setFloat(RenderSystem.getShaderLineWidth());
+        if (this.LINE_WIDTH != null)
+            this.LINE_WIDTH.set(RenderSystem.getShaderLineWidth());
 
         ci.cancel();
     }
 
-    @Inject(method = "unbind", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "clear", at = @At("HEAD"), cancellable = true)
     public void unbind(CallbackInfo ci)
     {
         ci.cancel();

@@ -1,7 +1,7 @@
 package me.ayydan.iridium.mixin.core.blaze3d.shader;
 
-import com.mojang.blaze3d.shader.GlslImportProcessor;
-import com.mojang.blaze3d.shader.ShaderStage;
+import com.mojang.blaze3d.preprocessor.GlslPreprocessor;
+import com.mojang.blaze3d.shaders.Program;
 import me.ayydan.iridium.render.shader.IridiumShaderCompiler;
 import me.ayydan.iridium.render.shader.utils.IridiumShaderUtils;
 import org.apache.commons.io.IOUtils;
@@ -14,21 +14,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-@Mixin(ShaderStage.class)
+@Mixin(Program.class)
 public class ShaderStageMixin
 {
     @Inject(method = "compileShaderInternal", at = @At("HEAD"), cancellable = true)
-    private static void compileShaderInternal(ShaderStage.Type type, String name, InputStream inputStream, String domain, GlslImportProcessor importProcessor,
+    private static void compileShaderInternal(Program.Type type, String name, InputStream shaderData, String sourceName, GlslPreprocessor preprocessor,
                                               CallbackInfoReturnable<Integer> cir) throws IOException
     {
-        String shaderSource = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+        String shaderSource = IOUtils.toString(shaderData, StandardCharsets.UTF_8);
         if (shaderSource == null)
         {
             throw new IOException(String.format("Failed to load shader program '%s'! (Type: %s)", name, type.getName()));
         }
         else
         {
-            importProcessor.process(shaderSource);
+            preprocessor.process(shaderSource);
             IridiumShaderCompiler.getInstance().compileShader(name, shaderSource, IridiumShaderUtils.getIridiumStageFromMinecraft(type));
         }
 

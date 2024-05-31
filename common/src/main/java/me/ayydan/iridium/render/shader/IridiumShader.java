@@ -3,7 +3,7 @@ package me.ayydan.iridium.render.shader;
 import com.google.gson.JsonObject;
 import me.ayydan.iridium.render.IridiumRenderer;
 import me.ayydan.iridium.render.exceptions.IridiumRendererException;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.GsonHelper;
 import org.apache.commons.io.FilenameUtils;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.VkDevice;
@@ -38,9 +38,9 @@ public class IridiumShader
             Path shaderJSONFilePath = Paths.get(shaderJSONFileURL.toURI());
             String shaderJSONFileContent = Files.readString(shaderJSONFilePath, StandardCharsets.UTF_8);
 
-            JsonObject shaderJSONObject = JsonHelper.deserialize(shaderJSONFileContent);
-            String vertexShaderName = JsonHelper.getString(shaderJSONObject, "vertex", null);
-            String fragmentShaderName = JsonHelper.getString(shaderJSONObject, "fragment", null);
+            JsonObject shaderJSONObject = GsonHelper.parse(shaderJSONFileContent);
+            String vertexShaderName = GsonHelper.getAsString(shaderJSONObject, "vertex", null);
+            String fragmentShaderName = GsonHelper.getAsString(shaderJSONObject, "fragment", null);
             String baseShaderFilepath = FilenameUtils.getPath(filepath);
 
             this.vertexShaderSPIRV = IridiumShaderCompiler.getInstance().compileShaderFromFile(baseShaderFilepath + vertexShaderName + ".vsh", ShaderStage.VertexShader);
