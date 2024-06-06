@@ -50,10 +50,6 @@ dependencies {
     runtimeOnly("org.apache.maven:maven-artifact:${rootProject.property("maven_artifact_version")}")
     include("org.apache.maven:maven-artifact:${rootProject.property("maven_artifact_version")}")
 
-    // CaffeineConfig
-    implementation("net.caffeinemc:CaffeineConfig:${rootProject.property("caffeine_config_version")}")
-    include("net.caffeinemc:CaffeineConfig:${rootProject.property("caffeine_config_version")}")
-
     common(project(":common", configuration = "namedElements")) { isTransitive = false }
     shadowCommon(project(":common", configuration = "transformProductionFabric")) { isTransitive = false }
 }

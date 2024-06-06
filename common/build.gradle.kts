@@ -31,9 +31,6 @@ dependencies {
 
     // Maven Artifact
     implementation("org.apache.maven:maven-artifact:${rootProject.property("maven_artifact_version")}")
-
-    // CaffeineConfig
-    implementation("net.caffeinemc:CaffeineConfig:${rootProject.property("caffeine_config_version")}")
 }
 
 publishing {

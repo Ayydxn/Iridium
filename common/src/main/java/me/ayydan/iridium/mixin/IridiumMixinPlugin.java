@@ -1,25 +1,49 @@
 package me.ayydan.iridium.mixin;
 
-import net.caffeinemc.caffeineconfig.AbstractCaffeineConfigMixinPlugin;
-import net.caffeinemc.caffeineconfig.CaffeineConfig;
-import net.fabricmc.loader.api.FabricLoader;
-import org.slf4j.LoggerFactory;
+import org.objectweb.asm.tree.ClassNode;
+import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
+import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
-public class IridiumMixinPlugin extends AbstractCaffeineConfigMixinPlugin
+import java.util.List;
+import java.util.Set;
+
+public class IridiumMixinPlugin implements IMixinConfigPlugin
 {
     @Override
-    public CaffeineConfig createConfig()
+    public void onLoad(String mixinPackage)
     {
-        return CaffeineConfig.builder("Iridium")
-                .addMixinOption("core", true)
-                .addMixinOption("features", true)
-                .withLogger(LoggerFactory.getLogger("Iridium Mixin Plugin"))
-                .build(FabricLoader.getInstance().getConfigDir().resolve("iridium-mixin-settings.properties"));
     }
 
     @Override
-    public String mixinPackageRoot()
+    public String getRefMapperConfig()
     {
-        return "me.ayydan.iridium.mixin.";
+        return null;
+    }
+
+    @Override
+    public boolean shouldApplyMixin(String targetClassName, String mixinClassName)
+    {
+        return true;
+    }
+
+    @Override
+    public void acceptTargets(Set<String> myTargets, Set<String> otherTargets)
+    {
+    }
+
+    @Override
+    public List<String> getMixins()
+    {
+        return null;
+    }
+
+    @Override
+    public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo)
+    {
+    }
+
+    @Override
+    public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo)
+    {
     }
 }
