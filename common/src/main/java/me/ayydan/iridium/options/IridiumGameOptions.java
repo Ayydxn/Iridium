@@ -23,36 +23,18 @@ public class IridiumGameOptions
     private static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
-            .setExclusionStrategies(new GameOptionExclusionStrategy())
             .create();
 
     private static boolean isConfigCorrupted = false;
 
-    @GameOption
     public GraphicsQuality leavesQuality = GraphicsQuality.High;
-
-    @GameOption
     public GraphicsQuality weatherQuality = GraphicsQuality.High;
-
-    @GameOption
     public boolean enableVignette = true;
-
-    @GameOption
     public OverlayPosition overlayPosition = OverlayPosition.TopLeft;
-
-    @GameOption
     public TextContrast textContrast = TextContrast.Shadow;
-
-    @GameOption
     public boolean showFPSOverlay = false;
-
-    @GameOption
     public boolean showCoordinates = false;
-
-    @GameOption
     public boolean enableShaderCaching = !Platform.isDevelopmentEnvironment();
-
-    @GameOption
     public int framesInFlight = 3;
 
     public static IridiumGameOptions defaults()
@@ -118,9 +100,6 @@ public class IridiumGameOptions
     {
         for (Field field : iridiumGameOptions.getClass().getDeclaredFields())
         {
-            if (!field.isAnnotationPresent(GameOption.class))
-                continue;
-
             if (Modifier.isPrivate(field.getModifiers()))
                 field.setAccessible(true);
 

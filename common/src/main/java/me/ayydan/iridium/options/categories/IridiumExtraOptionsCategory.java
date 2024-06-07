@@ -1,32 +1,39 @@
-package me.ayydan.iridium.options.minecraft;
+package me.ayydan.iridium.options.categories;
 
-import com.google.common.collect.Lists;
-import dev.isxander.yacl3.api.*;
+import dev.isxander.yacl3.api.ButtonOption;
+import dev.isxander.yacl3.api.Option;
+import dev.isxander.yacl3.api.OptionDescription;
+import dev.isxander.yacl3.api.OptionGroup;
 import me.ayydan.iridium.gui.screens.IridiumOptionsScreen;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.WinScreen;
 import net.minecraft.client.gui.screens.telemetry.TelemetryInfoScreen;
 import net.minecraft.network.chat.Component;
+import org.apache.commons.compress.utils.Lists;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class IridiumExtraOptions extends IridiumMinecraftOptions
+public class IridiumExtraOptionsCategory extends IridiumOptionCategory
 {
-    private final List<Option<?>> extrasOptionsOptions = new ArrayList<>();
-    private final List<Option<?>> creditsOptionsOptions = new ArrayList<>();
+    private List<Option<?>> extrasOptionsOptions;
+    private List<Option<?>> creditsOptionsOptions;
 
-    private ConfigCategory extraOptionsCategory;
-
-    public IridiumExtraOptions()
+    public IridiumExtraOptionsCategory()
     {
-        super(null);
+        super(Component.translatable("iridium.options.category.extras"));
     }
 
     @Override
-    public void create()
+    public List<Option<?>> getCategoryOptions()
+    {
+        return null;
+    }
+
+    @Override
+    public List<OptionGroup> getCategoryGroups()
     {
         this.createExtraOptions();
         this.createCreditsOptions();
@@ -41,25 +48,20 @@ public class IridiumExtraOptions extends IridiumMinecraftOptions
                 .options(this.creditsOptionsOptions)
                 .build();
 
-        this.extraOptionsCategory = ConfigCategory.createBuilder()
-                .name(Component.translatable("iridium.options.category.extras"))
-                .groups(Lists.newArrayList(extraOptionsGroup, creditsOptionsGroup))
-                .build();
-    }
-
-    @Override
-    public ConfigCategory getYACLCategory()
-    {
-        return this.extraOptionsCategory;
+        return List.of(extraOptionsGroup, creditsOptionsGroup);
     }
 
     private void createExtraOptions()
     {
+        this.extrasOptionsOptions = Lists.newArrayList();
+
+        Minecraft client = Minecraft.getInstance();
+
         ButtonOption telemetryDataOption = ButtonOption.createBuilder()
                 .name(Component.translatable("iridium.options.extras.telemetryData"))
                 .description(OptionDescription.of(Component.translatable("iridium.options.extras.telemetryData.description")))
                 .text(Component.literal(""))
-                .action((screen, button) -> this.client.setScreen(new TelemetryInfoScreen(new IridiumOptionsScreen(null).getHandle(), this.client.options)))
+                .action((screen, button) -> client.setScreen(new TelemetryInfoScreen(new IridiumOptionsScreen(null).getHandle(), client.options)))
                 .build();
 
         Collections.addAll(this.extrasOptionsOptions, telemetryDataOption);
@@ -67,11 +69,15 @@ public class IridiumExtraOptions extends IridiumMinecraftOptions
 
     private void createCreditsOptions()
     {
+        this.creditsOptionsOptions = Lists.newArrayList();
+
+        Minecraft client = Minecraft.getInstance();
+        
         ButtonOption creditsOption = ButtonOption.createBuilder()
                 .name(Component.translatable("credits_and_attribution.button.credits"))
                 .description(OptionDescription.of(Component.translatable("iridium.options.credits.credits.description")))
                 .text(Component.literal(""))
-                .action((screen, button) -> this.client.setScreen(new WinScreen(false, () -> this.client.setScreen(new TitleScreen()))))
+                .action((screen, button) -> client.setScreen(new WinScreen(false, () -> client.setScreen(new TitleScreen()))))
                 .build();
 
         ButtonOption attributionOption = ButtonOption.createBuilder()

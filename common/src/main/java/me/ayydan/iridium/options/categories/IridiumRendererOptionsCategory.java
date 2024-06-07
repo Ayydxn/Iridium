@@ -1,49 +1,26 @@
-package me.ayydan.iridium.options.minecraft;
+package me.ayydan.iridium.options.categories;
 
-import dev.isxander.yacl3.api.ConfigCategory;
 import dev.isxander.yacl3.api.Option;
 import dev.isxander.yacl3.api.OptionDescription;
 import dev.isxander.yacl3.api.OptionFlag;
+import dev.isxander.yacl3.api.OptionGroup;
 import dev.isxander.yacl3.gui.controllers.BooleanController;
 import dev.isxander.yacl3.gui.controllers.slider.IntegerSliderController;
 import me.ayydan.iridium.options.IridiumGameOptions;
-import me.ayydan.iridium.options.OptionPerformanceImpact;
+import me.ayydan.iridium.options.util.OptionPerformanceImpact;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.List;
 
-public class IridiumRendererOptions extends IridiumMinecraftOptions
+public class IridiumRendererOptionsCategory extends IridiumOptionCategory
 {
-    private final ArrayList<Option<?>> rendererOptions = new ArrayList<>();
-
-    private ConfigCategory rendererOptionsCategory;
-
-    public IridiumRendererOptions(@Nullable IridiumGameOptions iridiumGameOptions)
+    public IridiumRendererOptionsCategory()
     {
-        super(iridiumGameOptions);
+        super(Component.translatable("iridium.options.category.renderer"));
     }
 
     @Override
-    public void create()
-    {
-        this.createRendererOptions();
-
-        this.rendererOptionsCategory = ConfigCategory.createBuilder()
-                .name(Component.translatable("iridium.options.category.renderer"))
-                .options(this.rendererOptions)
-                .build();
-    }
-
-    @Override
-    public ConfigCategory getYACLCategory()
-    {
-        return this.rendererOptionsCategory;
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    private void createRendererOptions()
+    public List<Option<?>> getCategoryOptions()
     {
         Option<Boolean> shaderCachingOption = Option.<Boolean>createBuilder()
                 .name(Component.translatable("iridium.options.renderer.enableShaderCaching"))
@@ -68,6 +45,12 @@ public class IridiumRendererOptions extends IridiumMinecraftOptions
                 .flag(OptionFlag.GAME_RESTART)
                 .build();
 
-        Collections.addAll(this.rendererOptions, shaderCachingOption, framesInFlightOption);
+        return List.of(shaderCachingOption, framesInFlightOption);
+    }
+
+    @Override
+    public List<OptionGroup> getCategoryGroups()
+    {
+        return null;
     }
 }

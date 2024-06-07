@@ -3,8 +3,8 @@ package me.ayydan.iridium.gui.screens;
 import dev.isxander.yacl3.api.ConfigCategory;
 import dev.isxander.yacl3.api.YetAnotherConfigLib;
 import me.ayydan.iridium.IridiumClientMod;
-import me.ayydan.iridium.options.minecraft.*;
 import me.ayydan.iridium.options.IridiumGameOptions;
+import me.ayydan.iridium.options.categories.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -26,40 +26,21 @@ public class IridiumOptionsScreen
         this.iridiumGameOptions = IridiumClientMod.getInstance().getGameOptions();
         this.previousScreen = previousScreen;
 
-        IridiumVideoOptions iridiumVideoOptions = new IridiumVideoOptions(this.iridiumGameOptions);
-        iridiumVideoOptions.create();
+        IridiumVideoOptionsCategory videoOptionsCategory = new IridiumVideoOptionsCategory();
+        IridiumAudioOptionsCategory audioOptionsCategory = new IridiumAudioOptionsCategory();
+        IridiumControlsOptionsCategory controlsOptionsCategory = new IridiumControlsOptionsCategory();
+        IridiumSkinOptionsCategory skinOptionsCategory = new IridiumSkinOptionsCategory();
+        IridiumLanguageOptionsCategory languageOptionsCategory = new IridiumLanguageOptionsCategory();
+        IridiumChatOptionsCategory chatOptionsCategory = new IridiumChatOptionsCategory();
+        IridiumAccessibilityOptionsCategory accessibilityOptionsCategory = new IridiumAccessibilityOptionsCategory();
+        IridiumOnlineOptionsCategory onlineOptionsCategory = new IridiumOnlineOptionsCategory();
+        IridiumRendererOptionsCategory rendererOptionsCategory = new IridiumRendererOptionsCategory();
+        IridiumExtraOptionsCategory extraOptionsCategory = new IridiumExtraOptionsCategory();
 
-        IridiumAudioOptions iridiumAudioOptions = new IridiumAudioOptions();
-        iridiumAudioOptions.create();
-
-        IridiumControlsOptions iridiumControlsOptions = new IridiumControlsOptions();
-        iridiumControlsOptions.create();
-
-        IridiumSkinOptions iridiumSkinOptions = new IridiumSkinOptions();
-        iridiumSkinOptions.create();
-
-        IridiumLanguageOptions iridiumLanguageOptions = new IridiumLanguageOptions();
-        iridiumLanguageOptions.create();
-
-        IridiumChatSettings iridiumChatSettings = new IridiumChatSettings();
-        iridiumChatSettings.create();
-
-        IridiumAccessibilitySettings iridiumAccessibilitySettings = new IridiumAccessibilitySettings();
-        iridiumAccessibilitySettings.create();
-
-        IridiumOnlineOptions iridiumOnlineOptions = new IridiumOnlineOptions();
-        iridiumOnlineOptions.create();
-
-        IridiumRendererOptions iridiumRendererOptions = new IridiumRendererOptions(this.iridiumGameOptions);
-        iridiumRendererOptions.create();
-
-        IridiumExtraOptions iridiumExtraOptions = new IridiumExtraOptions();
-        iridiumExtraOptions.create();
-
-        Collections.addAll(this.optionCategories, iridiumVideoOptions.getYACLCategory(), iridiumAudioOptions.getYACLCategory(),
-                iridiumControlsOptions.getYACLCategory(), iridiumSkinOptions.getYACLCategory(), iridiumLanguageOptions.getYACLCategory(),
-                iridiumChatSettings.getYACLCategory(), iridiumAccessibilitySettings.getYACLCategory(), iridiumOnlineOptions.getYACLCategory(),
-                iridiumRendererOptions.getYACLCategory(), iridiumExtraOptions.getYACLCategory());
+        Collections.addAll(this.optionCategories, videoOptionsCategory.getYACLCategory(), audioOptionsCategory.getYACLCategory(),
+                controlsOptionsCategory.getYACLCategory(), skinOptionsCategory.getYACLCategory(), languageOptionsCategory.getYACLCategory(),
+                chatOptionsCategory.getYACLCategory(), accessibilityOptionsCategory.getYACLCategory(), onlineOptionsCategory.getYACLCategory(),
+                rendererOptionsCategory.getYACLCategory(), extraOptionsCategory.getYACLCategory());
     }
 
     public Screen getHandle()

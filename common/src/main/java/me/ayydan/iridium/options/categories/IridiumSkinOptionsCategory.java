@@ -1,11 +1,12 @@
-package me.ayydan.iridium.options.minecraft;
+package me.ayydan.iridium.options.categories;
 
 import dev.isxander.yacl3.api.Binding;
-import dev.isxander.yacl3.api.ConfigCategory;
 import dev.isxander.yacl3.api.Option;
 import dev.isxander.yacl3.api.OptionDescription;
+import dev.isxander.yacl3.api.OptionGroup;
 import dev.isxander.yacl3.gui.controllers.BooleanController;
 import dev.isxander.yacl3.gui.controllers.cycling.EnumController;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.PlayerModelPart;
@@ -13,52 +14,35 @@ import net.minecraft.world.entity.player.PlayerModelPart;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IridiumSkinOptions extends IridiumMinecraftOptions
+public class IridiumSkinOptionsCategory extends IridiumOptionCategory
 {
-    private final List<Option<?>> skinOptions = new ArrayList<>();
-
-    private ConfigCategory skinOptionsCategory;
-
-    public IridiumSkinOptions()
+    public IridiumSkinOptionsCategory()
     {
-        super(null);
+        super(Component.translatable("options.skinCustomisation.title"));
     }
 
     @Override
-    public void create()
+    public List<Option<?>> getCategoryOptions()
     {
-        this.createSkinOptions();
+        List<Option<?>> skinCategoryOptions = new ArrayList<>();
+        Minecraft client = Minecraft.getInstance();
 
-        this.skinOptionsCategory = ConfigCategory.createBuilder()
-                .name(Component.translatable("options.skinCustomisation.title"))
-                .options(this.skinOptions)
-                .build();
-    }
-
-    @Override
-    public ConfigCategory getYACLCategory()
-    {
-        return this.skinOptionsCategory;
-    }
-
-    private void createSkinOptions()
-    {
         for (PlayerModelPart playerModelPart : PlayerModelPart.values())
         {
             Option<Boolean> playerModelPartOption = Option.<Boolean>createBuilder()
                     .name(playerModelPart.getName())
                     .description(OptionDescription.of(this.getPlayerModelPartDescription(playerModelPart)))
-                    .binding(true, () -> this.client.options.isModelPartEnabled(playerModelPart), newValue -> this.client.options.toggleModelPart(playerModelPart, newValue))
+                    .binding(true, () -> client.options.isModelPartEnabled(playerModelPart), newValue -> client.options.toggleModelPart(playerModelPart, newValue))
                     .customController(BooleanController::new)
                     .build();
 
-            this.skinOptions.add(playerModelPartOption);
+            skinCategoryOptions.add(playerModelPartOption);
         }
 
         Option<HumanoidArm> mainHandOption = Option.<HumanoidArm>createBuilder()
                 .name(Component.translatable("options.mainHand"))
                 .description(OptionDescription.of(Component.translatable("iridium.options.skinCustomisation.mainHand.description")))
-                .binding(Binding.minecraft(this.client.options.mainHand()))
+                .binding(Binding.minecraft(client.options.mainHand()))
                 .customController(option -> new EnumController<>(option, arm ->
                 {
                     return switch (arm)
@@ -69,7 +53,15 @@ public class IridiumSkinOptions extends IridiumMinecraftOptions
                 }, HumanoidArm.values()))
                 .build();
 
-        this.skinOptions.add(mainHandOption);
+        skinCategoryOptions.add(mainHandOption);
+
+        return skinCategoryOptions;
+    }
+
+    @Override
+    public List<OptionGroup> getCategoryGroups()
+    {
+        return null;
     }
 
     private Component getPlayerModelPartDescription(PlayerModelPart playerModelPart)

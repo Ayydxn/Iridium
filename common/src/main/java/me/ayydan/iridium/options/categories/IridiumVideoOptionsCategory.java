@@ -1,6 +1,5 @@
-package me.ayydan.iridium.options.minecraft;
+package me.ayydan.iridium.options.categories;
 
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.Monitor;
 import com.mojang.blaze3d.platform.VideoMode;
 import com.mojang.blaze3d.platform.Window;
@@ -11,35 +10,37 @@ import dev.isxander.yacl3.gui.controllers.slider.DoubleSliderController;
 import dev.isxander.yacl3.gui.controllers.slider.IntegerSliderController;
 import me.ayydan.iridium.gui.screens.IridiumOptionsScreen;
 import me.ayydan.iridium.options.IridiumGameOptions;
-import me.ayydan.iridium.options.OptionPerformanceImpact;
+import me.ayydan.iridium.options.util.OptionPerformanceImpact;
 import me.ayydan.iridium.render.IridiumRenderer;
 import net.minecraft.client.*;
 import net.minecraft.client.gui.screens.packs.PackSelectionScreen;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import org.apache.commons.compress.utils.Lists;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-public class IridiumVideoOptions extends IridiumMinecraftOptions
+public class IridiumVideoOptionsCategory extends IridiumOptionCategory
 {
-    private final List<Option<?>> displayOptions = new ArrayList<>();
-    private final List<Option<?>> graphicsOptions = new ArrayList<>();
-    private final List<Option<?>> graphicsQualityOptions = new ArrayList<>();
-    private final List<Option<?>> advancedGraphicsOptions = new ArrayList<>();
+    private List<Option<?>> displayOptions;
+    private List<Option<?>> graphicsOptions;
+    private List<Option<?>> graphicsQualityOptions;
+    private List<Option<?>> advancedGraphicsOptions;
 
-    private ConfigCategory videoOptionsCategory;
-
-    public IridiumVideoOptions(IridiumGameOptions iridiumGameOptions)
+    public IridiumVideoOptionsCategory()
     {
-        super(iridiumGameOptions);
+        super(Component.translatable("iridium.options.category.video"));
     }
 
     @Override
-    public void create()
+    public List<Option<?>> getCategoryOptions()
+    {
+        return null;
+    }
+
+    @Override
+    public List<OptionGroup> getCategoryGroups()
     {
         this.createDisplayOptions();
         this.createGraphicsOptions();
@@ -66,21 +67,15 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                 .options(this.advancedGraphicsOptions)
                 .build();
 
-        this.videoOptionsCategory = ConfigCategory.createBuilder()
-                .name(Component.translatable("iridium.options.category.video"))
-                .groups(Lists.newArrayList(displayOptionsGroup, graphicsOptionsGroup, graphicsQualityOptionsGroup, advancedGraphicsOptionsGroup))
-                .build();
-    }
-
-    @Override
-    public ConfigCategory getYACLCategory()
-    {
-        return this.videoOptionsCategory;
+        return List.of(displayOptionsGroup, graphicsOptionsGroup, graphicsQualityOptionsGroup, advancedGraphicsOptionsGroup);
     }
 
     private void createDisplayOptions()
     {
-        Window window = this.client.getWindow();
+        this.displayOptions = Lists.newArrayList();
+
+        Minecraft client = Minecraft.getInstance();
+        Window window = client.getWindow();
         int videoModeCount = window.findBestMonitor() != null ? window.findBestMonitor().getModeCount() : 0;
 
         Option<Boolean> fullscreenOption = Option.<Boolean>createBuilder()
@@ -90,16 +85,16 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.None.getText()))
                         .build())
-                .binding(false, () -> this.client.options.fullscreen().get(), (newValue) ->
+                .binding(false, () -> client.options.fullscreen().get(), (newValue) ->
                 {
-                    this.client.options.fullscreen().set(newValue);
+                    client.options.fullscreen().set(newValue);
 
-                    if (window.isFullscreen() != this.client.options.fullscreen().get())
+                    if (window.isFullscreen() != client.options.fullscreen().get())
                     {
                         window.toggleFullScreen();
 
                         // The client might not be able to enter fullscreen, so we do this just in-case that happens.
-                        this.client.options.fullscreen().set(window.isFullscreen());
+                        client.options.fullscreen().set(window.isFullscreen());
                     }
                 })
                 .customController(BooleanController::new)
@@ -174,9 +169,9 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Varies.getText()))
                         .build())
-                .binding(true, () -> this.client.options.enableVsync().get(), newValue ->
+                .binding(true, () -> client.options.enableVsync().get(), newValue ->
                 {
-                    this.client.options.enableVsync().set(newValue);
+                    client.options.enableVsync().set(newValue);
                     IridiumRenderer.getInstance().getVulkanContext().getSwapChain().enableVSync(newValue);
                 })
                 .customController(BooleanController::new)
@@ -189,10 +184,10 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.None.getText()))
                         .build())
-                .binding(120, () -> this.client.options.framerateLimit().get(), newValue ->
+                .binding(120, () -> client.options.framerateLimit().get(), newValue ->
                 {
-                    this.client.options.framerateLimit().set(newValue);
-                    this.client.getWindow().setFramerateLimit(newValue);
+                    client.options.framerateLimit().set(newValue);
+                    client.getWindow().setFramerateLimit(newValue);
                 })
                 .customController(option -> new IntegerSliderController(option, 10, 260, 10, value ->
                         value == 260 ? Component.translatable("options.framerateLimit.max") : Component.literal(Integer.toString(value))))
@@ -203,6 +198,10 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
 
     private void createGraphicsOptions()
     {
+        this.graphicsOptions = Lists.newArrayList();
+
+        Minecraft client = Minecraft.getInstance();
+
         Option<Double> brightnessOption = Option.<Double>createBuilder()
                 .name(Component.translatable("options.gamma"))
                 .description(OptionDescription.createBuilder()
@@ -210,7 +209,7 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.None.getText()))
                         .build())
-                .binding(50.0d, () -> this.client.options.gamma().get() / 0.01d, newValue -> this.client.options.gamma().set(newValue * 0.01d))
+                .binding(50.0d, () -> client.options.gamma().get() / 0.01d, newValue -> client.options.gamma().set(newValue * 0.01d))
                 .customController(option -> new DoubleSliderController(option, 0, 100, 1, value ->
                         value == 100.0d ? Component.translatable("options.gamma.max") : Component.literal(Double.toString(value))))
                 .build();
@@ -228,7 +227,7 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Varies.getText()))
                         .build())
-                .binding(Binding.minecraft(this.client.options.fov()))
+                .binding(Binding.minecraft(client.options.fov()))
                 .customController(option -> new IntegerSliderController(option, 30, 110, 1, value ->
                 {
                     if (value == 70)
@@ -252,10 +251,10 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.None.getText()))
                         .build())
-                .binding(0, () -> this.client.options.guiScale().get(), (newValue) ->
+                .binding(0, () -> client.options.guiScale().get(), (newValue) ->
                 {
-                    this.client.options.guiScale().set(newValue);
-                    this.client.resizeDisplay();
+                    client.options.guiScale().set(newValue);
+                    client.resizeDisplay();
                 })
                 .customController(option -> new IntegerSliderController(option, 0, Minecraft.getInstance().getWindow().calculateScale(0, Minecraft.getInstance().isEnforceUnicode()), 1, value ->
                         value == 0 ? Component.translatable("options.guiScale.auto") : Component.literal(value + "x")))
@@ -268,7 +267,7 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Varies.getText()))
                         .build())
-                .binding(Binding.minecraft(this.client.options.bobView()))
+                .binding(Binding.minecraft(client.options.bobView()))
                 .customController(BooleanController::new)
                 .build();
 
@@ -279,7 +278,7 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.None.getText()))
                         .build())
-                .binding(Binding.minecraft(this.client.options.attackIndicator()))
+                .binding(Binding.minecraft(client.options.attackIndicator()))
                 .customController(option -> new EnumController<>(option, AttackIndicatorStatus.class))
                 .build();
 
@@ -287,11 +286,11 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                 .name(Component.translatable("iridium.options.graphics.resourcePacks"))
                 .description(OptionDescription.of(Component.translatable("iridium.options.graphics.resourcePacks.description")))
                 .text(Component.literal(""))
-                .action((screen, button) -> this.client.setScreen(new PackSelectionScreen(this.client.getResourcePackRepository(), (packManager) ->
+                .action((screen, button) -> client.setScreen(new PackSelectionScreen(client.getResourcePackRepository(), (packManager) ->
                 {
-                    this.client.options.updateResourcePacks(packManager);
-                    this.client.setScreen(new IridiumOptionsScreen(null).getHandle());
-                }, this.client.getResourcePackDirectory(), Component.translatable("resourcePack.title"))))
+                    client.options.updateResourcePacks(packManager);
+                    client.setScreen(new IridiumOptionsScreen(null).getHandle());
+                }, client.getResourcePackDirectory(), Component.translatable("resourcePack.title"))))
                 .build();
 
         Collections.addAll(this.graphicsOptions, brightnessOption, fovOption, guiScaleOption, viewBobbingOption, attackIndicatorOption, resourcePacksOption);
@@ -300,6 +299,10 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
     @SuppressWarnings("ConstantConditions")
     private void createGraphicsQualityOptions()
     {
+        this.graphicsQualityOptions = Lists.newArrayList();
+
+        Minecraft client = Minecraft.getInstance();
+
         Option<Integer> renderDistanceOption = Option.<Integer>createBuilder()
                 .name(Component.translatable("options.renderDistance"))
                 .description(OptionDescription.createBuilder()
@@ -307,7 +310,7 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.High.getText()))
                         .build())
-                .binding(Binding.minecraft(this.client.options.renderDistance()))
+                .binding(Binding.minecraft(client.options.renderDistance()))
                 .customController(option -> new IntegerSliderController(option, 2, 32, 1))
                 .build();
 
@@ -318,7 +321,7 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.High.getText()))
                         .build())
-                .binding(Binding.minecraft(this.client.options.simulationDistance()))
+                .binding(Binding.minecraft(client.options.simulationDistance()))
                 .customController(option -> new IntegerSliderController(option, 5, 32, 1))
                 .build();
 
@@ -329,7 +332,7 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Medium.getText()))
                         .build())
-                .binding(100.0d, () -> (double) Math.round(this.client.options.entityDistanceScaling().get() * 100.0d), newValue -> this.client.options.entityDistanceScaling().set(newValue / 100.0d))
+                .binding(100.0d, () -> (double) Math.round(client.options.entityDistanceScaling().get() * 100.0d), newValue -> client.options.entityDistanceScaling().set(newValue / 100.0d))
                 .customController(option -> new DoubleSliderController(option, 50, 500, 25, value -> Component.literal(String.format("%d%c", value.intValue(), '%'))))
                 .build();
 
@@ -340,7 +343,7 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.High.getText()))
                         .build())
-                .binding(Binding.minecraft(this.client.options.graphicsMode()))
+                .binding(Binding.minecraft(client.options.graphicsMode()))
                 .customController(option -> new EnumController<>(option, GraphicsStatus.class))
                 .flag(OptionFlag.RELOAD_CHUNKS)
                 .build();
@@ -352,7 +355,7 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Low.getText()))
                         .build())
-                .binding(Binding.minecraft(this.client.options.cloudStatus()))
+                .binding(Binding.minecraft(client.options.cloudStatus()))
                 .customController(option -> new EnumController<>(option, CloudStatus.class))
                 .build();
 
@@ -387,7 +390,7 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Low.getText()))
                         .build())
-                .binding(Binding.minecraft(this.client.options.particles()))
+                .binding(Binding.minecraft(client.options.particles()))
                 .customController(option -> new EnumController<>(option, ParticleStatus.class))
                 .build();
 
@@ -398,7 +401,7 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Low.getText()))
                         .build())
-                .binding(Binding.minecraft(this.client.options.ambientOcclusion()))
+                .binding(Binding.minecraft(client.options.ambientOcclusion()))
                 .customController(BooleanController::new)
                 .build();
 
@@ -409,7 +412,7 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Low.getText()))
                         .build())
-                .binding(Binding.minecraft(this.client.options.biomeBlendRadius()))
+                .binding(Binding.minecraft(client.options.biomeBlendRadius()))
                 .customController(option -> new IntegerSliderController(option, 0, 7, 1, value -> Component.literal(String.format("%d block(s)", value))))
                 .build();
 
@@ -420,7 +423,7 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Low.getText()))
                         .build())
-                .binding(Binding.minecraft(this.client.options.entityShadows()))
+                .binding(Binding.minecraft(client.options.entityShadows()))
                 .customController(BooleanController::new)
                 .build();
 
@@ -442,7 +445,7 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Low.getText()))
                         .build())
-                .binding(100.0d, () -> (double) Math.round(this.client.options.screenEffectScale().get() * 100.0d), newValue -> this.client.options.screenEffectScale().set(newValue / 100.0d))
+                .binding(100.0d, () -> (double) Math.round(client.options.screenEffectScale().get() * 100.0d), newValue -> client.options.screenEffectScale().set(newValue / 100.0d))
                 .customController(option -> new DoubleSliderController(option, 0, 100, 1, value -> Component.literal(String.format("%d%c", value.intValue(), '%'))))
                 .build();
 
@@ -453,13 +456,13 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Low.getText()))
                         .build())
-                .binding(100.0d, () -> (double) Math.round(Math.pow(this.client.options.fovEffectScale().get(), 2.0d) * 100.0d), newValue -> this.client.options.fovEffectScale().set(Math.sqrt(newValue / 100.0d)))
+                .binding(100.0d, () -> (double) Math.round(Math.pow(client.options.fovEffectScale().get(), 2.0d) * 100.0d), newValue -> client.options.fovEffectScale().set(Math.sqrt(newValue / 100.0d)))
                 .customController(option -> new DoubleSliderController(option, 0, 100, 1, value -> Component.literal(String.format("%d%c", value.intValue(), '%'))))
                 .build();
 
         Option<Integer> mipmapLevelsOption = Option.<Integer>createBuilder()
                 .name(Component.translatable("options.mipmapLevels"))
-                .binding(Binding.minecraft(this.client.options.mipmapLevels()))
+                .binding(Binding.minecraft(client.options.mipmapLevels()))
                 .description(OptionDescription.createBuilder()
                         .text(Component.translatable("iridium.options.graphicsQuality.mipmapLevels.description")
                                 .append("\n\n")
@@ -477,6 +480,8 @@ public class IridiumVideoOptions extends IridiumMinecraftOptions
     @SuppressWarnings("ConstantConditions")
     private void createAdvancedGraphicsOptions()
     {
+        this.advancedGraphicsOptions = Lists.newArrayList();
+
         Option<Boolean> showFPSOverlayOption = Option.<Boolean>createBuilder()
                 .name(Component.translatable("iridium.options.advancedGraphics.showFPSOverlay"))
                 .description(OptionDescription.of(Component.translatable("iridium.options.advancedGraphics.showFPSOverlay.description")))

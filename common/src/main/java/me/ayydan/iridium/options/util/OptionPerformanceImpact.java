@@ -1,4 +1,4 @@
-package me.ayydan.iridium.options;
+package me.ayydan.iridium.options.util;
 
 import net.minecraft.network.chat.Component;
 

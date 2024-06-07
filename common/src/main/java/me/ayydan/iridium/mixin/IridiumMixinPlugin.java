@@ -23,7 +23,7 @@ public class IridiumMixinPlugin implements IMixinConfigPlugin
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName)
     {
-        return true;
+        return !mixinClassName.startsWith("me.ayydan.iridium.mixin.core");
     }
 
     @Override
