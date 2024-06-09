@@ -15,7 +15,7 @@ public class TitleScreenMixin
     @Inject(method = "init", at = @At("TAIL"))
     public void displayCorruptedIridiumConfigScreen(CallbackInfo ci)
     {
-        if (IridiumGameOptions.isConfigCorrupted())
+        if (IridiumGameOptions.isGameOptionsConfigCorrupted())
             Minecraft.getInstance().setScreen(new CorruptedIridiumConfigScreen());
     }
 }

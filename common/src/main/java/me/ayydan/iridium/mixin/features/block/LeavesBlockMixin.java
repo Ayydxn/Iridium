@@ -20,7 +20,7 @@ public class LeavesBlockMixin extends Block
     @Override
     public boolean skipRendering(BlockState state, BlockState adjacentState, Direction direction)
     {
-        if (IridiumClientMod.getInstance().getGameOptions().leavesQuality.isMediumOrBetter())
+        if (IridiumClientMod.getInstance().getGameOptions().qualityOptions.leavesQuality.isMediumOrBetter())
         {
             return super.skipRendering(state, adjacentState, direction);
         }

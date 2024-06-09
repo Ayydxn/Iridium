@@ -17,7 +17,7 @@ public class RenderLayersMixin
     @Inject(method = "getChunkRenderType", at = @At("RETURN"), cancellable = true)
     private static void getLeavesRenderBasedOnIridiumOption(BlockState state, CallbackInfoReturnable<RenderType> cir)
     {
-        IridiumGameOptions.GraphicsQuality leavesGraphicsQuality = IridiumClientMod.getInstance().getGameOptions().leavesQuality;
+        IridiumGameOptions.GraphicsQuality leavesGraphicsQuality = IridiumClientMod.getInstance().getGameOptions().qualityOptions.leavesQuality;
 
         if (state.getBlock() instanceof LeavesBlock)
         {

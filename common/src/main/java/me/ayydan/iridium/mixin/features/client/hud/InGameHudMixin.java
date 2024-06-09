@@ -12,6 +12,6 @@ public class InGameHudMixin
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;useFancyGraphics()Z"))
     public boolean isIridiumVignetteEnabled()
     {
-        return IridiumClientMod.getInstance().getGameOptions().enableVignette;
+        return IridiumClientMod.getInstance().getGameOptions().qualityOptions.enableVignette;
     }
 }

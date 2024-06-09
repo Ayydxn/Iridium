@@ -29,7 +29,7 @@ public class IridiumRendererOptionsCategory extends IridiumOptionCategory
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.None.getText()))
                         .build())
-                .binding(IridiumGameOptions.defaults().enableShaderCaching, () -> this.iridiumGameOptions.enableShaderCaching, newValue -> this.iridiumGameOptions.enableShaderCaching = newValue)
+                .binding(IridiumGameOptions.defaults().rendererOptions.enableShaderCaching, () -> this.iridiumGameOptions.rendererOptions.enableShaderCaching, newValue -> this.iridiumGameOptions.rendererOptions.enableShaderCaching = newValue)
                 .customController(BooleanController::new)
                 .build();
 
@@ -40,7 +40,7 @@ public class IridiumRendererOptionsCategory extends IridiumOptionCategory
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.High.getText()))
                         .build())
-                .binding(IridiumGameOptions.defaults().framesInFlight, () -> this.iridiumGameOptions.framesInFlight, newValue -> this.iridiumGameOptions.framesInFlight = newValue)
+                .binding(IridiumGameOptions.defaults().rendererOptions.framesInFlight, () -> this.iridiumGameOptions.rendererOptions.framesInFlight, newValue -> this.iridiumGameOptions.rendererOptions.framesInFlight = newValue)
                 .customController(option -> new IntegerSliderController(option, 0, 9, 1))
                 .flag(OptionFlag.GAME_RESTART)
                 .build();

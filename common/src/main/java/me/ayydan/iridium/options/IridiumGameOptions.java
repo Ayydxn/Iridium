@@ -27,15 +27,9 @@ public class IridiumGameOptions
 
     private static boolean isConfigCorrupted = false;
 
-    public GraphicsQuality leavesQuality = GraphicsQuality.High;
-    public GraphicsQuality weatherQuality = GraphicsQuality.High;
-    public boolean enableVignette = true;
-    public OverlayPosition overlayPosition = OverlayPosition.TopLeft;
-    public TextContrast textContrast = TextContrast.Shadow;
-    public boolean showFPSOverlay = false;
-    public boolean showCoordinates = false;
-    public boolean enableShaderCaching = !Platform.isDevelopmentEnvironment();
-    public int framesInFlight = 3;
+    public QualityOptions qualityOptions = new QualityOptions();
+    public AdvancedGraphicsOptions advancedGraphicsOptions = new AdvancedGraphicsOptions();
+    public RendererOptions rendererOptions = new RendererOptions();
 
     public static IridiumGameOptions defaults()
     {
@@ -96,6 +90,11 @@ public class IridiumGameOptions
         }
     }
 
+    public static boolean isGameOptionsConfigCorrupted()
+    {
+        return isConfigCorrupted;
+    }
+
     private static boolean isConfigCorrupted(IridiumGameOptions iridiumGameOptions)
     {
         for (Field field : iridiumGameOptions.getClass().getDeclaredFields())
@@ -119,9 +118,27 @@ public class IridiumGameOptions
         return false;
     }
 
-    public static boolean isConfigCorrupted()
+    public static class QualityOptions
     {
-        return isConfigCorrupted;
+        public GraphicsQuality leavesQuality = GraphicsQuality.High;
+        public GraphicsQuality weatherQuality = GraphicsQuality.High;
+
+        public boolean enableVignette = true;
+    }
+
+    public static class AdvancedGraphicsOptions
+    {
+        public OverlayPosition overlayPosition = OverlayPosition.TopLeft;
+        public TextContrast textContrast = TextContrast.Shadow;
+
+        public boolean showFPSOverlay = false;
+        public boolean showCoordinates = false;
+    }
+
+    public static class RendererOptions
+    {
+        public boolean enableShaderCaching = !Platform.isDevelopmentEnvironment();
+        public int framesInFlight = 3;
     }
 
     public enum GraphicsQuality

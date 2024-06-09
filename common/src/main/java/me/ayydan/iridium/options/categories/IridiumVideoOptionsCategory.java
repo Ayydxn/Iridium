@@ -366,7 +366,7 @@ public class IridiumVideoOptionsCategory extends IridiumOptionCategory
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Medium.getText()))
                         .build())
-                .binding(IridiumGameOptions.defaults().weatherQuality, () -> this.iridiumGameOptions.weatherQuality, newValue -> this.iridiumGameOptions.weatherQuality = newValue)
+                .binding(IridiumGameOptions.defaults().qualityOptions.weatherQuality, () -> this.iridiumGameOptions.qualityOptions.weatherQuality, newValue -> this.iridiumGameOptions.qualityOptions.weatherQuality = newValue)
                 .customController(option -> new EnumController<>(option, IridiumGameOptions.GraphicsQuality.class))
                 .flag(OptionFlag.RELOAD_CHUNKS)
                 .build();
@@ -378,7 +378,7 @@ public class IridiumVideoOptionsCategory extends IridiumOptionCategory
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Low.getText()))
                         .build())
-                .binding(IridiumGameOptions.defaults().leavesQuality, () -> this.iridiumGameOptions.leavesQuality, newValue -> this.iridiumGameOptions.leavesQuality = newValue)
+                .binding(IridiumGameOptions.defaults().qualityOptions.leavesQuality, () -> this.iridiumGameOptions.qualityOptions.leavesQuality, newValue -> this.iridiumGameOptions.qualityOptions.leavesQuality = newValue)
                 .customController(option -> new EnumController<>(option, IridiumGameOptions.GraphicsQuality.class))
                 .flag(OptionFlag.RELOAD_CHUNKS)
                 .build();
@@ -434,7 +434,7 @@ public class IridiumVideoOptionsCategory extends IridiumOptionCategory
                                 .append("\n\n")
                                 .append(OptionPerformanceImpact.Low.getText()))
                         .build())
-                .binding(IridiumGameOptions.defaults().enableVignette, () -> this.iridiumGameOptions.enableVignette, newValue -> this.iridiumGameOptions.enableVignette = newValue)
+                .binding(IridiumGameOptions.defaults().qualityOptions.enableVignette, () -> this.iridiumGameOptions.qualityOptions.enableVignette, newValue -> this.iridiumGameOptions.qualityOptions.enableVignette = newValue)
                 .customController(BooleanController::new)
                 .build();
 
@@ -485,28 +485,28 @@ public class IridiumVideoOptionsCategory extends IridiumOptionCategory
         Option<Boolean> showFPSOverlayOption = Option.<Boolean>createBuilder()
                 .name(Component.translatable("iridium.options.advancedGraphics.showFPSOverlay"))
                 .description(OptionDescription.of(Component.translatable("iridium.options.advancedGraphics.showFPSOverlay.description")))
-                .binding(IridiumGameOptions.defaults().showFPSOverlay, () -> this.iridiumGameOptions.showFPSOverlay, newValue -> this.iridiumGameOptions.showFPSOverlay = newValue)
+                .binding(IridiumGameOptions.defaults().advancedGraphicsOptions.showFPSOverlay, () -> this.iridiumGameOptions.advancedGraphicsOptions.showFPSOverlay, newValue -> this.iridiumGameOptions.advancedGraphicsOptions.showFPSOverlay = newValue)
                 .customController(BooleanController::new)
                 .build();
 
         Option<Boolean> showCoordinatesOption = Option.<Boolean>createBuilder()
                 .name(Component.translatable("iridium.options.advancedGraphics.showCoordinates"))
                 .description(OptionDescription.of(Component.translatable("iridium.options.advancedGraphics.showCoordinates.description")))
-                .binding(IridiumGameOptions.defaults().showCoordinates, () -> this.iridiumGameOptions.showCoordinates, newValue -> this.iridiumGameOptions.showCoordinates = newValue)
+                .binding(IridiumGameOptions.defaults().advancedGraphicsOptions.showCoordinates, () -> this.iridiumGameOptions.advancedGraphicsOptions.showCoordinates, newValue -> this.iridiumGameOptions.advancedGraphicsOptions.showCoordinates = newValue)
                 .customController(BooleanController::new)
                 .build();
 
         Option<IridiumGameOptions.TextContrast> overlayContrastOption = Option.<IridiumGameOptions.TextContrast>createBuilder()
                 .name(Component.translatable("iridium.options.advancedGraphics.overlayContrast"))
                 .description(OptionDescription.of(Component.translatable("iridium.options.advancedGraphics.textContrast.description")))
-                .binding(IridiumGameOptions.defaults().textContrast, () -> this.iridiumGameOptions.textContrast, newValue -> this.iridiumGameOptions.textContrast = newValue)
+                .binding(IridiumGameOptions.defaults().advancedGraphicsOptions.textContrast, () -> this.iridiumGameOptions.advancedGraphicsOptions.textContrast, newValue -> this.iridiumGameOptions.advancedGraphicsOptions.textContrast = newValue)
                 .customController(option -> new EnumController<>(option, IridiumGameOptions.TextContrast.class))
                 .build();
 
         Option<IridiumGameOptions.OverlayPosition> overlayPositionOption = Option.<IridiumGameOptions.OverlayPosition>createBuilder()
                 .name(Component.translatable("iridium.options.advancedGraphics.overlayPosition"))
                 .description(OptionDescription.of(Component.translatable("iridium.options.advancedGraphics.overlayPosition.description")))
-                .binding(IridiumGameOptions.defaults().overlayPosition, () -> this.iridiumGameOptions.overlayPosition, newValue -> this.iridiumGameOptions.overlayPosition = newValue)
+                .binding(IridiumGameOptions.defaults().advancedGraphicsOptions.overlayPosition, () -> this.iridiumGameOptions.advancedGraphicsOptions.overlayPosition, newValue -> this.iridiumGameOptions.advancedGraphicsOptions.overlayPosition = newValue)
                 .customController(option -> new EnumController<>(option, overlayPosition -> switch (overlayPosition)
                 {
                     case TopLeft -> Component.translatable("iridium.options.overlayPosition.topLeft");

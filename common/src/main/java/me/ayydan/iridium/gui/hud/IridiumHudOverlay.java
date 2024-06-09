@@ -19,10 +19,10 @@ public class IridiumHudOverlay
     {
         if (!this.minecraftClient.getDebugOverlay().showDebugScreen())
         {
-            if (this.iridiumGameOptions.showFPSOverlay)
+            if (this.iridiumGameOptions.advancedGraphicsOptions.showFPSOverlay)
                 this.renderFramerateOverlay(guiGraphics);
 
-            if (this.iridiumGameOptions.showCoordinates)
+            if (this.iridiumGameOptions.advancedGraphicsOptions.showCoordinates)
                 this.renderCoordinatesOverlay(guiGraphics);
         }
     }
@@ -37,7 +37,7 @@ public class IridiumHudOverlay
 
         int xPosition = 0;
         int yPosition = 0;
-        switch (this.iridiumGameOptions.overlayPosition)
+        switch (this.iridiumGameOptions.advancedGraphicsOptions.overlayPosition)
         {
             case TopLeft ->
             {
@@ -82,7 +82,7 @@ public class IridiumHudOverlay
 
         int xPosition = 0;
         int yPosition = 0;
-        switch (this.iridiumGameOptions.overlayPosition)
+        switch (this.iridiumGameOptions.advancedGraphicsOptions.overlayPosition)
         {
             case TopLeft ->
             {
@@ -114,7 +114,7 @@ public class IridiumHudOverlay
 
     private void drawString(GuiGraphics guiGraphics, Component text, int xPosition, int yPosition)
     {
-        switch (this.iridiumGameOptions.textContrast)
+        switch (this.iridiumGameOptions.advancedGraphicsOptions.textContrast)
         {
             case None -> guiGraphics.drawString(this.minecraftClient.font, text, xPosition, yPosition, Color.WHITE.getRGB(), false);
 

@@ -373,7 +373,7 @@ public class VulkanSwapChain implements WindowResizeEvent
             }
         }
 
-        IridiumRenderer.getInstance().currentFrameIndex = (IridiumRenderer.getInstance().currentFrameIndex + 1) % IridiumClientMod.getInstance().getGameOptions().framesInFlight;
+        IridiumRenderer.getInstance().currentFrameIndex = (IridiumRenderer.getInstance().currentFrameIndex + 1) % IridiumClientMod.getInstance().getGameOptions().rendererOptions.framesInFlight;
 
         // Wait and make sure that the frame that we're going to present has finished rendering.
         vkCheckResult(vkWaitForFences(logicalDevice, waitFence, true, IridiumConstants.UINT64_MAX));

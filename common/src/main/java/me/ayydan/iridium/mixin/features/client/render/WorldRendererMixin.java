@@ -12,7 +12,7 @@ public class WorldRendererMixin
     @ModifyVariable(method = "renderSnowAndRain", at = @At("STORE"), ordinal = 3)
     public int getAmountOfRainDroplets(int original)
     {
-        return switch (IridiumClientMod.getInstance().getGameOptions().weatherQuality)
+        return switch (IridiumClientMod.getInstance().getGameOptions().qualityOptions.weatherQuality)
         {
             case Low -> 5;
             case Medium -> 10;
