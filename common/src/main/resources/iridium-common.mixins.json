@@ -3,7 +3,6 @@
   "package": "me.ayydan.iridium.mixin",
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
-  "plugin": "me.ayydan.iridium.mixin.IridiumMixinPlugin",
   "client": [
     "core.blaze3d.glfw.WindowMixin",
     "core.blaze3d.platform.GLDebugInfoMixin",
@@ -13,6 +12,7 @@
     "core.blaze3d.shader.ShaderStageMixin",
     "core.blaze3d.systems.RenderSystemMixin",
     "core.blaze3d.vertex.VertexBufferMixin",
+    "core.blaze3d.vertex.VertexFormatMixin",
     "core.client.gui.hud.DebugHudMixin",
     "core.client.render.ShaderProgramMixin",
     "core.client.MinecraftClientMixin",

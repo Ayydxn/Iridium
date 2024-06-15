@@ -496,6 +496,16 @@ public class VulkanSwapChain implements WindowResizeEvent
         this.create(newWindowWidth, newWindowHeight, this.isVSyncEnabled);
     }
 
+    public VkExtent2D getExtent()
+    {
+        return this.swapChainExtent;
+    }
+
+    public int getImageFormat()
+    {
+        return this.swapChainImageFormat;
+    }
+
     public int getWidth()
     {
         return this.width;

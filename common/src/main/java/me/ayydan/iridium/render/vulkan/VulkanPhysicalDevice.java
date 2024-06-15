@@ -1,5 +1,6 @@
 package me.ayydan.iridium.render.vulkan;
 
+import com.google.common.collect.Lists;
 import me.ayydan.iridium.render.exceptions.IridiumRendererException;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
@@ -11,6 +12,7 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
 
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,6 +31,7 @@ public class VulkanPhysicalDevice
 
     private final VkPhysicalDevice physicalDevice;
     private final PhysicalDeviceInfo physicalDeviceInfo;
+    private final int depthFormat;
 
     public VulkanPhysicalDevice(VkInstance vulkanInstance)
     {
@@ -37,6 +40,7 @@ public class VulkanPhysicalDevice
             throw new IridiumRendererException("No physical device was selected as a suitable graphics card isn't available!!");
 
         this.physicalDeviceInfo = new PhysicalDeviceInfo(this.physicalDevice);
+        this.depthFormat = this.findDepthFormat();
 
         if (!(this.physicalDeviceInfo.physicalDeviceProperties.apiVersion() >= VK_API_VERSION_1_2))
         {
@@ -108,6 +112,26 @@ public class VulkanPhysicalDevice
         }
     }
 
+    private int findDepthFormat()
+    {
+        ArrayList<Integer> depthFormatCandidates = Lists.newArrayList(VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D32_SFLOAT, VK_FORMAT_D24_UNORM_S8_UINT,
+                VK_FORMAT_D16_UNORM_S8_UINT, VK_FORMAT_D16_UNORM);
+
+        try (MemoryStack memoryStack = MemoryStack.stackPush())
+        {
+            for (Integer depthFormat : depthFormatCandidates)
+            {
+                VkFormatProperties formatProperties = VkFormatProperties.calloc(memoryStack);
+                vkGetPhysicalDeviceFormatProperties(this.physicalDevice, depthFormat, formatProperties);
+
+                if ((formatProperties.optimalTilingFeatures() & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT) == VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT)
+                    return depthFormat;
+            }
+        }
+
+        return VK_FORMAT_UNDEFINED;
+    }
+
     public VkPhysicalDevice getHandle()
     {
         return this.physicalDevice;
@@ -131,6 +155,11 @@ public class VulkanPhysicalDevice
     public String getVulkanAPIVersion()
     {
         return this.physicalDeviceInfo.vulkanAPIVersion;
+    }
+
+    public int getDepthFormat()
+    {
+        return this.depthFormat;
     }
 
     private static final class PhysicalDeviceInfo

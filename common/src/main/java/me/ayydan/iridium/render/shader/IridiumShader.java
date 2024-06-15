@@ -57,6 +57,12 @@ public class IridiumShader
         this.createShaderModules();
     }
 
+    public void destroy()
+    {
+        vkDestroyShaderModule(this.logicalDevice, this.vertexShaderModule, null);
+        vkDestroyShaderModule(this.logicalDevice, this.fragmentShaderModule, null);
+    }
+
     private void createShaderModules()
     {
         try (MemoryStack memoryStack = MemoryStack.stackPush())

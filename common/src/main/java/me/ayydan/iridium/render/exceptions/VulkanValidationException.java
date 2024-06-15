@@ -1,6 +1,6 @@
 package me.ayydan.iridium.render.exceptions;
 
-import me.ayydan.iridium.render.vulkan.VulkanDebugUtils;
+import me.ayydan.iridium.render.vulkan.utils.VulkanDebugUtils;
 
 public class VulkanValidationException extends RuntimeException
 {

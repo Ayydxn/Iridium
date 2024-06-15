@@ -1,7 +1,13 @@
 package me.ayydan.iridium.render;
 
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import me.ayydan.iridium.render.shader.IridiumShader;
 import me.ayydan.iridium.render.shader.IridiumShaderCompiler;
 import me.ayydan.iridium.render.vulkan.VulkanContext;
+import me.ayydan.iridium.render.vulkan.VulkanGraphicsPipeline;
+import me.ayydan.iridium.render.vulkan.VulkanPipeline;
+import me.ayydan.iridium.render.vulkan.VulkanPipelineType;
 import me.ayydan.iridium.utils.logging.IridiumLogger;
 import net.minecraft.client.Minecraft;
 
@@ -36,6 +42,16 @@ public class IridiumRenderer
         LOGGER.info("Initializing Iridium Renderer..");
 
         INSTANCE = new IridiumRenderer();
+
+        VulkanGraphicsPipeline graphicsPipeline = (VulkanGraphicsPipeline) new VulkanPipeline.Builder()
+                .type(VulkanPipelineType.Graphics)
+                .shader(new IridiumShader("minecraft/core/blit_screen"))
+                .vertexFormat(DefaultVertexFormat.BLIT_SCREEN)
+                .build();
+
+        graphicsPipeline.create();
+
+        int a = 1;
     }
 
     public void shutdown()

@@ -2,6 +2,8 @@ package me.ayydan.iridium.render;
 
 public class IridiumRenderSystem
 {
+    public static boolean isCullingEnabled = true;
+
     public static void initRenderer()
     {
         IridiumRenderer.initialize();

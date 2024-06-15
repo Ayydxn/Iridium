@@ -3,6 +3,7 @@ package me.ayydan.iridium.render.vulkan;
 import dev.architectury.platform.Platform;
 import me.ayydan.iridium.render.IridiumRenderer;
 import me.ayydan.iridium.render.exceptions.IridiumRendererException;
+import me.ayydan.iridium.render.vulkan.utils.VulkanDebugUtils;
 import me.ayydan.iridium.utils.PointerUtils;
 import me.ayydan.iridium.utils.VersioningUtils;
 import net.minecraft.client.Minecraft;

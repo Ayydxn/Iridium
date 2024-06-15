@@ -1,4 +1,4 @@
-package me.ayydan.iridium.render.vulkan;
+package me.ayydan.iridium.render.vulkan.utils;
 
 import com.google.common.collect.Lists;
 import org.lwjgl.system.MemoryStack;
