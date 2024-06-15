@@ -42,16 +42,6 @@ public class IridiumRenderer
         LOGGER.info("Initializing Iridium Renderer..");
 
         INSTANCE = new IridiumRenderer();
-
-        VulkanGraphicsPipeline graphicsPipeline = (VulkanGraphicsPipeline) new VulkanPipeline.Builder()
-                .type(VulkanPipelineType.Graphics)
-                .shader(new IridiumShader("minecraft/core/blit_screen"))
-                .vertexFormat(DefaultVertexFormat.BLIT_SCREEN)
-                .build();
-
-        graphicsPipeline.create();
-
-        int a = 1;
     }
 
     public void shutdown()
