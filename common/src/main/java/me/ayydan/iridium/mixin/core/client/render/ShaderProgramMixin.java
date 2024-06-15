@@ -5,6 +5,10 @@ import com.mojang.blaze3d.shaders.Program;
 import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import me.ayydan.iridium.render.shader.IridiumShader;
+import me.ayydan.iridium.render.vulkan.VulkanGraphicsPipeline;
+import me.ayydan.iridium.render.vulkan.VulkanPipeline;
+import me.ayydan.iridium.render.vulkan.VulkanPipelineType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.server.packs.resources.ResourceProvider;
@@ -12,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -35,10 +40,19 @@ public class ShaderProgramMixin
     @Shadow @Final @Nullable public Uniform SCREEN_SIZE;
     @Shadow @Final @Nullable public Uniform LINE_WIDTH;
 
+    @Unique
+    private VulkanGraphicsPipeline shaderGraphicsPipeline;
+
     @Inject(method = "<init>", at = @At("RETURN"))
     public void createShader(ResourceProvider resourceProvider, String name, VertexFormat vertexFormat, CallbackInfo ci)
     {
-        // TODO: (Ayydan) Initialize and create the graphics pipeline here.
+        this.shaderGraphicsPipeline = (VulkanGraphicsPipeline) new VulkanPipeline.Builder()
+                .type(VulkanPipelineType.Graphics)
+                .shader(new IridiumShader("minecraft/core/" + name))
+                .vertexFormat(vertexFormat)
+                .build();
+
+        this.shaderGraphicsPipeline.create();
     }
 
     @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/shaders/Uniform;glBindAttribLocation(IILjava/lang/CharSequence;)V"))
@@ -111,7 +125,7 @@ public class ShaderProgramMixin
     @Inject(method = "close", at = @At("HEAD"), cancellable = true)
     public void destroyGraphicsPipelines(CallbackInfo ci)
     {
-        // TODO: (Ayydan) Destroy graphics pipeline here.
+        this.shaderGraphicsPipeline.destroy();
 
         ci.cancel();
     }
