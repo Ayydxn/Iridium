@@ -14,11 +14,11 @@ public abstract class VulkanPipeline
 
     public static class Builder
     {
-        private VulkanPipelineType pipelineType;
+        private Type pipelineType;
         private IridiumShader shader;
         private VertexFormat vertexFormat;
 
-        public Builder type(VulkanPipelineType pipelineType)
+        public Builder type(Type pipelineType)
         {
             this.pipelineType = pipelineType;
 
@@ -50,5 +50,11 @@ public abstract class VulkanPipeline
                 case Compute -> throw new NotImplementedException("Iridium currently does not support compute shaders/pipelines!");
             };
         }
+    }
+
+    public enum Type
+    {
+        Graphics,
+        Compute
     }
 }

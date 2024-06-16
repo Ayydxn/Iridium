@@ -1,13 +1,7 @@
 package me.ayydan.iridium.render;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import me.ayydan.iridium.render.shader.IridiumShader;
 import me.ayydan.iridium.render.shader.IridiumShaderCompiler;
 import me.ayydan.iridium.render.vulkan.VulkanContext;
-import me.ayydan.iridium.render.vulkan.VulkanGraphicsPipeline;
-import me.ayydan.iridium.render.vulkan.VulkanPipeline;
-import me.ayydan.iridium.render.vulkan.VulkanPipelineType;
 import me.ayydan.iridium.utils.logging.IridiumLogger;
 import net.minecraft.client.Minecraft;
 

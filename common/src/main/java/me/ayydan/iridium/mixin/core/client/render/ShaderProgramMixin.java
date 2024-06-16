@@ -8,7 +8,6 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import me.ayydan.iridium.render.shader.IridiumShader;
 import me.ayydan.iridium.render.vulkan.VulkanGraphicsPipeline;
 import me.ayydan.iridium.render.vulkan.VulkanPipeline;
-import me.ayydan.iridium.render.vulkan.VulkanPipelineType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.server.packs.resources.ResourceProvider;
@@ -47,7 +46,7 @@ public class ShaderProgramMixin
     public void createShader(ResourceProvider resourceProvider, String name, VertexFormat vertexFormat, CallbackInfo ci)
     {
         this.shaderGraphicsPipeline = (VulkanGraphicsPipeline) new VulkanPipeline.Builder()
-                .type(VulkanPipelineType.Graphics)
+                .type(VulkanPipeline.Type.Graphics)
                 .shader(new IridiumShader("minecraft/core/" + name))
                 .vertexFormat(vertexFormat)
                 .build();
