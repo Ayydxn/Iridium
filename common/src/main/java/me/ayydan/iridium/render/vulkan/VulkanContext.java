@@ -106,6 +106,8 @@ public class VulkanContext
 
         this.vulkanLogicalDevice = new VulkanLogicalDevice(this.vulkanPhysicalDevice.getHandle());
 
+        VulkanMemoryAllocator.initialize();
+
         this.vulkanSwapChain = new VulkanSwapChain(this);
         this.vulkanSwapChain.initialize();
         this.vulkanSwapChain.create(Minecraft.getInstance().getWindow().getWidth(), Minecraft.getInstance().getWindow().getHeight(),
@@ -114,6 +116,8 @@ public class VulkanContext
 
     public void destroy()
     {
+        VulkanMemoryAllocator.getInstance().shutdown();
+
         this.vulkanSwapChain.destroy();
 
         this.vulkanLogicalDevice.destroy();

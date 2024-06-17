@@ -33,6 +33,12 @@ public class RenderSystemMixin
         throw new NotImplementedException("RenderSystem::enableCull has not been implemented by Iridium!");
     }
 
+    @Redirect(method = "clearColor", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;_clearColor(FFFF)V"), remap = false)
+    private static void setClearColor(float red, float green, float blue, float alpha)
+    {
+        IridiumRenderSystem.setClearColor(red, green, blue, alpha);
+    }
+
     @Inject(method = "maxSupportedTextureSize", at = @At("HEAD"), remap = false, cancellable = true)
     private static void getMaxSupportedTextureSize(CallbackInfoReturnable<Integer> cir)
     {

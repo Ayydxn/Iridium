@@ -30,6 +30,8 @@ public class ByteBufferUtils
         {
             FileChannel fileChannel = fileOutputStream.getChannel();
             Validate.isTrue(fileChannel.write(byteBuffer) != 0);
+
+            fileChannel.close();
         }
         catch (IOException exception)
         {

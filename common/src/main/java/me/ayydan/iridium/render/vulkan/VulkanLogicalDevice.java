@@ -12,6 +12,7 @@ import static org.lwjgl.vulkan.KHRDynamicRendering.VK_STRUCTURE_TYPE_PHYSICAL_DE
 import static org.lwjgl.vulkan.KHRSynchronization2.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES_KHR;
 import static org.lwjgl.vulkan.VK10.*;
 import static org.lwjgl.vulkan.VK12.VK_API_VERSION_1_2;
+import static org.lwjgl.vulkan.VK13.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
 
 public class VulkanLogicalDevice
 {
@@ -56,20 +57,16 @@ public class VulkanLogicalDevice
                 deviceQueueCreateInfos.put(i, deviceQueueCreateInfo);
             }
 
-            VkPhysicalDeviceDynamicRenderingFeaturesKHR dynamicRenderingFeaturesKHR = VkPhysicalDeviceDynamicRenderingFeaturesKHR.calloc(memoryStack)
-                    .sType(VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR)
-                    .dynamicRendering(true);
-
-            VkPhysicalDeviceSynchronization2FeaturesKHR synchronization2FeaturesKHR = VkPhysicalDeviceSynchronization2FeaturesKHR.calloc(memoryStack)
-                    .sType(VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES_KHR)
+            VkPhysicalDeviceVulkan13Features physicalDeviceVulkan13Features = VkPhysicalDeviceVulkan13Features.calloc(memoryStack)
+                    .sType(VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES)
+                    .dynamicRendering(true)
                     .synchronization2(true);
 
             VkDeviceCreateInfo logicalDeviceCreateInfo = VkDeviceCreateInfo.calloc(memoryStack)
                     .sType(VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO)
                     .pQueueCreateInfos(deviceQueueCreateInfos)
                     .ppEnabledExtensionNames(PointerUtils.asPointerBuffer(VulkanPhysicalDevice.DEVICE_EXTENSIONS, memoryStack))
-                    .pNext(dynamicRenderingFeaturesKHR)
-                    .pNext(synchronization2FeaturesKHR);
+                    .pNext(physicalDeviceVulkan13Features);
 
             if (VulkanContext.areValidationLayersEnabled())
                 logicalDeviceCreateInfo.ppEnabledLayerNames(PointerUtils.asPointerBuffer(VulkanContext.getValidationLayers(), memoryStack));

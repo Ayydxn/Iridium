@@ -5,6 +5,7 @@ import me.ayydan.iridium.IridiumClientMod;
 import me.ayydan.iridium.event.WindowResizeEvent;
 import me.ayydan.iridium.render.IridiumRenderer;
 import me.ayydan.iridium.render.exceptions.IridiumRendererException;
+import me.ayydan.iridium.render.memory.AllocatedImage;
 import me.ayydan.iridium.utils.IridiumConstants;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.system.MemoryStack;
@@ -25,10 +26,13 @@ public class VulkanSwapChain implements WindowResizeEvent
     private final VkInstance vulkanInstance;
     private final VulkanPhysicalDevice vulkanPhysicalDevice;
     private final VulkanLogicalDevice vulkanLogicalDevice;
+    private final VulkanMemoryAllocator vulkanMemoryAllocator;
 
     private ArrayList<Long> swapChainImages;
     private ArrayList<Long> swapChainImageViews;
     private VkExtent2D swapChainExtent;
+    private AllocatedImage swapChainDepthImage;
+    private long swapChainDepthImageView;
     private int swapChainImageFormat;
     private int swapChainColorSpace;
 
@@ -49,6 +53,7 @@ public class VulkanSwapChain implements WindowResizeEvent
         this.vulkanInstance = vulkanContext.getVulkanInstance();
         this.vulkanPhysicalDevice = vulkanContext.getPhysicalDevice();
         this.vulkanLogicalDevice = vulkanContext.getLogicalDevice();
+        this.vulkanMemoryAllocator = VulkanMemoryAllocator.getInstance();
 
         this.width = 0;
         this.height = 0;
@@ -275,6 +280,7 @@ public class VulkanSwapChain implements WindowResizeEvent
                 this.swapChainImages.add(pSwapChainImages.get(i));
 
             this.createImageViews();
+            this.createDepthImageAndImageView();
 
             if (this.presentCompleteSemaphore == VK_NULL_HANDLE || this.renderCompleteSemaphore == VK_NULL_HANDLE)
             {
@@ -315,10 +321,13 @@ public class VulkanSwapChain implements WindowResizeEvent
     {
         this.vulkanLogicalDevice.waitIdle();
 
+        this.vulkanMemoryAllocator.destroyImage(this.swapChainDepthImage);
+
         vkDestroySurfaceKHR(this.vulkanInstance, this.windowSurface, null);
         vkDestroySwapchainKHR(this.vulkanLogicalDevice.getHandle(), this.swapChainHandle, null);
         vkDestroySemaphore(this.vulkanLogicalDevice.getHandle(), this.presentCompleteSemaphore, null);
         vkDestroySemaphore(this.vulkanLogicalDevice.getHandle(), this.renderCompleteSemaphore, null);
+        vkDestroyImageView(this.vulkanLogicalDevice.getHandle(), this.swapChainDepthImageView, null);
 
         for (long swapChainImageView : this.swapChainImageViews)
             vkDestroyImageView(this.vulkanLogicalDevice.getHandle(), swapChainImageView, null);
@@ -460,6 +469,47 @@ public class VulkanSwapChain implements WindowResizeEvent
         }
     }
 
+    private void createDepthImageAndImageView()
+    {
+        VkDevice logicalDevice = this.vulkanLogicalDevice.getHandle();
+
+        try (MemoryStack memoryStack = MemoryStack.stackPush())
+        {
+            VkImageCreateInfo imageCreateInfo = VkImageCreateInfo.calloc(memoryStack)
+                    .sType(VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO)
+                    .imageType(VK_IMAGE_TYPE_2D)
+                    .extent(VkExtent3D.calloc(memoryStack).set(this.swapChainExtent.width(), this.swapChainExtent.height(), 1))
+                    .mipLevels(1)
+                    .arrayLayers(1)
+                    .format(this.vulkanPhysicalDevice.getDepthFormat())
+                    .tiling(VK_IMAGE_TILING_OPTIMAL)
+                    .initialLayout(VK_IMAGE_LAYOUT_UNDEFINED)
+                    .usage(VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT)
+                    .samples(VK_SAMPLE_COUNT_1_BIT) // TODO: (Ayydan) When multisampling is configurable, make this match the config's value.
+                    .sharingMode(VK_SHARING_MODE_EXCLUSIVE);
+
+            AllocatedImage depthImage = this.vulkanMemoryAllocator.allocateImage(imageCreateInfo);
+
+            VkImageViewCreateInfo imageViewCreateInfo = VkImageViewCreateInfo.calloc(memoryStack)
+                    .sType(VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO)
+                    .image(depthImage.image())
+                    .viewType(VK_IMAGE_VIEW_TYPE_2D)
+                    .format(this.vulkanPhysicalDevice.getDepthFormat());
+
+            imageViewCreateInfo.subresourceRange().aspectMask(VK_IMAGE_ASPECT_DEPTH_BIT)
+                    .baseMipLevel(0)
+                    .levelCount(1)
+                    .baseArrayLayer(0)
+                    .layerCount(1);
+
+            LongBuffer pDepthImageView = memoryStack.longs(VK_NULL_HANDLE);
+            vkCheckResult(vkCreateImageView(logicalDevice, imageViewCreateInfo, null, pDepthImageView));
+
+            this.swapChainDepthImage = depthImage;
+            this.swapChainDepthImageView = pDepthImageView.get(0);
+        }
+    }
+
     private int acquireNextImage()
     {
         try (MemoryStack memoryStack = MemoryStack.stackPush())
@@ -496,9 +546,29 @@ public class VulkanSwapChain implements WindowResizeEvent
         this.create(newWindowWidth, newWindowHeight, this.isVSyncEnabled);
     }
 
+    public ArrayList<Long> getImages()
+    {
+        return this.swapChainImages;
+    }
+
+    public ArrayList<Long> getImageViews()
+    {
+        return this.swapChainImageViews;
+    }
+
     public VkExtent2D getExtent()
     {
         return this.swapChainExtent;
+    }
+
+    public AllocatedImage getDepthImage()
+    {
+        return this.swapChainDepthImage;
+    }
+
+    public long getDepthImageView()
+    {
+        return this.swapChainDepthImageView;
     }
 
     public int getImageFormat()
