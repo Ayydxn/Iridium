@@ -44,9 +44,9 @@ public class VulkanUtils
 
     public static int getVertexFormatElementVulkanFormat(VertexFormatElement vertexFormatElement)
     {
-        VertexFormatElement.Type elementDataType = vertexFormatElement.getType();
+        VertexFormatElement.Type elementDataType = vertexFormatElement.type();
 
-        return switch (vertexFormatElement.getUsage())
+        return switch (vertexFormatElement.usage())
         {
             case POSITION ->
             {
@@ -82,9 +82,9 @@ public class VulkanUtils
 
             case NORMAL -> VK_FORMAT_R8G8B8A8_SNORM;
 
-            case PADDING, GENERIC -> VK_FORMAT_UNDEFINED;
+            case GENERIC -> VK_FORMAT_UNDEFINED;
 
-            default -> throw new IllegalArgumentException("Failed to get Vulkan format for vertex format element: " + vertexFormatElement.getType());
+            default -> throw new IllegalArgumentException("Failed to get Vulkan format for vertex format element: " + vertexFormatElement.type());
         };
     }
 }

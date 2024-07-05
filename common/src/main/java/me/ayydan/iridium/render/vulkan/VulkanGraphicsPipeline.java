@@ -89,8 +89,6 @@ public class VulkanGraphicsPipeline extends VulkanPipeline
             if (this.vertexFormat != null)
             {
                 int vertexFormatElementCount = this.vertexFormat.getElements().size();
-                if (this.vertexFormat.getElements().stream().anyMatch(vertexFormatElement -> vertexFormatElement.getUsage() == VertexFormatElement.Usage.PADDING))
-                    vertexFormatElementCount--;
 
                 VkVertexInputBindingDescription.Buffer vertexInputBindingDescription = VkVertexInputBindingDescription.calloc(1, memoryStack)
                         .binding(0)

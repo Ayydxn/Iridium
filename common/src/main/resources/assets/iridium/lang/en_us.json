@@ -35,7 +35,7 @@
   "iridium.options.graphicsQuality.simulationDistance.description": "Similar to render distance, but instead controls the number of chunks in which entities are updated, and blocks and fluids are ticked. Shorter distances can reduce load on the integrated server and may improve frame rates.",
   "iridium.options.graphicsQuality.entityDistance.description": "Controls how far away entities are rendered from the player. Higher values mean that entities can be seen from further, but at the expense of frame rates.",
   "iridium.options.graphicsQuality.graphicsMode": "Graphics Quality",
-  "iridium.options.graphicsQuality.graphicsMode.description": "Adjusts the game's visual fidelity. Lower settings will result in better performance.\n\nNote that a lot of the effects that were previously managed by the equivalent setting in vanilla Minecraft, such as transparent leaves and the vignette, are now standalone settings managed by Iridium.",
+  "iridium.options.graphicsQuality.graphicsMode.description": "Controls some legacy options and is necessary for compatibility with mods.\n\nIn the context of Iridium, the only thing that this settings affects the rendering of particles behind transparent blocks such as slime and water. Other visual effects that were originally managed by this settings such as transparent leaves and the vignette are now standalone settings.",
   "iridium.options.graphicsQuality.clouds": "Clouds Quality",
   "iridium.options.graphicsQuality.clouds.description": "Controls how clouds are rendered in-game.\n\n§lOff§r - Clouds are disabled and will not be rendered.\n§lFast§r - Clouds are rendered in 2D.\n§lFancy§r - Clouds are rendered in 3D.",
   "iridium.options.graphicsQuality.weather": "Weather Quality",

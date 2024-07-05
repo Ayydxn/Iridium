@@ -1,6 +1,6 @@
 package me.ayydan.iridium.mixin.core.blaze3d.vertex;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import org.apache.commons.lang3.NotImplementedException;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,7 +25,7 @@ public class VertexBufferMixin
     }
 
     @Inject(method = "upload", at = @At("HEAD"))
-    public void uploadBuffer(BufferBuilder.RenderedBuffer renderedBuffer, CallbackInfo ci)
+    public void uploadBuffer(MeshData renderedBuffer, CallbackInfo ci)
     {
         throw new NotImplementedException("VertexBuffer::upload has not been implemented by Iridium!");
     }

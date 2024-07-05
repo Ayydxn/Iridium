@@ -2,8 +2,8 @@ package me.ayydan.iridium.mixin.features.client.gui.screens;
 
 import me.ayydan.iridium.gui.screens.IridiumOptionsScreen;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.OptionsScreen;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.options.OptionsScreen;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

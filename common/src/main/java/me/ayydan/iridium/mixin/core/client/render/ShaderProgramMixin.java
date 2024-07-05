@@ -28,7 +28,6 @@ public class ShaderProgramMixin
     @Shadow @Final @Nullable public Uniform MODEL_VIEW_MATRIX;
     @Shadow @Final @Nullable public Uniform PROJECTION_MATRIX;
     @Shadow @Final @Nullable public Uniform COLOR_MODULATOR;
-    @Shadow @Final @Nullable public Uniform INVERSE_VIEW_ROTATION_MATRIX;
     @Shadow @Final @Nullable public Uniform GLINT_ALPHA;
     @Shadow @Final @Nullable public Uniform FOG_START;
     @Shadow @Final @Nullable public Uniform FOG_END;
@@ -77,9 +76,6 @@ public class ShaderProgramMixin
 
         if (this.COLOR_MODULATOR != null)
             this.COLOR_MODULATOR.set(RenderSystem.getShaderColor());
-
-        if (this.INVERSE_VIEW_ROTATION_MATRIX != null)
-            this.INVERSE_VIEW_ROTATION_MATRIX.set(RenderSystem.getInverseViewRotationMatrix());
 
         if (this.GLINT_ALPHA != null)
             this.GLINT_ALPHA.set(RenderSystem.getShaderGlintAlpha());

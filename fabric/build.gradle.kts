@@ -28,8 +28,8 @@ dependencies {
     // Remove the next line if you don't want to depend on the API
     modApi("dev.architectury:architectury-fabric:${rootProject.property("architectury_version")}")
 
-    modRuntimeOnly("dev.isxander.yacl:yet-another-config-lib-fabric:${rootProject.property("yacl_version")}")
-    include("dev.isxander.yacl:yet-another-config-lib-fabric:${rootProject.property("yacl_version")}")
+    modRuntimeOnly("dev.isxander:yet-another-config-lib:${rootProject.property("yacl_version")}-fabric")
+    include("dev.isxander:yet-another-config-lib:${rootProject.property("yacl_version")}-fabric")
 
     // LWJGL and Vulkan. Thanks to Minecraft, LWJGL's core is already present, so we don't need to include it here.
     implementation("org.lwjgl:lwjgl-shaderc:${rootProject.property("lwjgl_version")}")

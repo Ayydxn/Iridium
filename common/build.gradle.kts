@@ -17,7 +17,7 @@ dependencies {
 
     // Can't always rely on 'common' builds for the latest versions of YACL being available.
     // So, we just use the Fabric version.
-    modImplementation("dev.isxander.yacl:yet-another-config-lib-fabric:${rootProject.property("yacl_version")}")
+    modImplementation("dev.isxander:yet-another-config-lib:${rootProject.property("yacl_version")}-fabric")
 
     // LWJGL and Vulkan. Thanks to Minecraft, LWJGL's core is already present, so we don't need to include it here.
     implementation("org.lwjgl:lwjgl-shaderc:${rootProject.property("lwjgl_version")}")

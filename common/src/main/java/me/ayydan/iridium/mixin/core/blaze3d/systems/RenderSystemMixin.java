@@ -28,7 +28,7 @@ public class RenderSystemMixin
     @Redirect(method = "enableCull", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;_enableCull()V"), remap = false)
     private static void enableCulling()
     {
-        RenderSystem.assertOnGameThread();
+        RenderSystem.assertOnRenderThread();
 
         throw new NotImplementedException("RenderSystem::enableCull has not been implemented by Iridium!");
     }
