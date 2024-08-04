@@ -34,7 +34,7 @@ Like most Minecraft mods, Iridium uses the standard Gradle project structure and
 
 ### 📃 Requirements
 
-- **Java 17 JDK**
+- **Java 21 JDK**
   - I recommend using the [Azul Zulu](https://www.azul.com) distribution as it is what is used to build Iridium. However, this isn't strictly required. You should be able to use whichever JDK distribution you want without issues.
 
 ---

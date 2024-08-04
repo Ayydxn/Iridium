@@ -29,7 +29,7 @@ dependencies {
     modRuntimeOnly("dev.isxander:yet-another-config-lib:${rootProject.property("yacl_version")}-neoforge") {
         isTransitive = false
     }
-    include("dev.isxander:yet-another-config-lib-neoforge:${rootProject.property("yacl_version")}-neoforge")
+    include("dev.isxander:yet-another-config-lib:${rootProject.property("yacl_version")}-neoforge")
 
     // LWJGL and Vulkan. Thanks to Minecraft, LWJGL's core is already present, so we don't need to include it here.
     implementation("org.lwjgl:lwjgl-shaderc:${rootProject.property("lwjgl_version")}")

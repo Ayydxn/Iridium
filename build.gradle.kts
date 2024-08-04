@@ -7,14 +7,11 @@ plugins {
     id("architectury-plugin") version "3.4-SNAPSHOT"
     id("dev.architectury.loom") version "1.7-SNAPSHOT" apply false
     id("org.ajoberstar.grgit") version "5.2.2"
-    id("io.github.pacifistmc.forgix") version "1.2.6"
+    id("io.github.pacifistmc.forgix") version "1.2.9"
 }
 
 // Sets which platforms native libraries from LWJGL we will use.
-rootProject.setProperty("lwjgl_natives", Pair(
-        System.getProperty("os.name")!!,
-        System.getProperty("os.arch")!!
-).let { (name, arch) ->
+rootProject.setProperty("lwjgl_natives", Pair(System.getProperty("os.name")!!, System.getProperty("os.arch")!!).let { (name, arch) ->
     when {
         arrayOf("Linux", "SunOS", "Unit").any { name.startsWith(it) } ->
             if (arrayOf("arm", "aarch64").any { arch.startsWith(it) })
