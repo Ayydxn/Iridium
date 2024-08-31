@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ItemBlockRenderTypes.class)
 public class RenderLayersMixin
 {
-    @Inject(method = "getChunkRenderType", at = @At("RETURN"), cancellable = true)
-    private static void getLeavesRenderBasedOnIridiumOption(BlockState state, CallbackInfoReturnable<RenderType> cir)
+    @Inject(method = { "getChunkRenderType", "getMovingBlockRenderType" }, at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/ItemBlockRenderTypes;renderCutout:Z"), require = 2, cancellable = true)
+    private static void getLeavesRenderTypeBasedOnIridiumOption(BlockState state, CallbackInfoReturnable<RenderType> cir)
     {
         IridiumGameOptions.GraphicsQuality leavesGraphicsQuality = IridiumClientMod.getInstance().getGameOptions().qualityOptions.leavesQuality;
 
@@ -24,8 +24,8 @@ public class RenderLayersMixin
             switch (leavesGraphicsQuality)
             {
                 case Low -> cir.setReturnValue(RenderType.solid());
-                case Medium -> cir.setReturnValue(RenderType.cutoutMipped());
-                case High -> cir.setReturnValue(RenderType.cutout());
+                case Medium -> cir.setReturnValue(RenderType.cutout());
+                case High -> cir.setReturnValue(RenderType.cutoutMipped());
             }
         }
     }
