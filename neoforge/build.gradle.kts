@@ -26,7 +26,7 @@ dependencies {
 
     modApi("dev.architectury:architectury-neoforge:${rootProject.property("architectury_version")}")
 
-    modRuntimeOnly("dev.isxander:yet-another-config-lib:${rootProject.property("yacl_version")}-neoforge") {
+    runtimeOnly("dev.isxander:yet-another-config-lib:${rootProject.property("yacl_version")}-neoforge") {
         isTransitive = false
     }
     include("dev.isxander:yet-another-config-lib:${rootProject.property("yacl_version")}-neoforge")
