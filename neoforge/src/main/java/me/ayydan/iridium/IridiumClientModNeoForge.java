@@ -1,6 +1,5 @@
-package me.ayydan.iridium.neoforge;
+package me.ayydan.iridium;
 
-import me.ayydan.iridium.IridiumClientMod;
 import me.ayydan.iridium.utils.IridiumConstants;
 import net.neoforged.fml.common.Mod;
 
