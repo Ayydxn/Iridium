@@ -172,7 +172,7 @@ public class IridiumVideoOptionsCategory extends IridiumOptionCategory
                 .binding(true, () -> client.options.enableVsync().get(), newValue ->
                 {
                     client.options.enableVsync().set(newValue);
-                    IridiumRenderer.getInstance().getVulkanContext().getSwapChain().enableVSync(newValue);
+                    Minecraft.getInstance().getWindow().getSwapChain().enableVSync(newValue);
                 })
                 .customController(BooleanController::new)
                 .build();

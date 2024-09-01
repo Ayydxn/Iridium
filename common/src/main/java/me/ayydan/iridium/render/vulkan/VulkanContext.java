@@ -3,6 +3,7 @@ package me.ayydan.iridium.render.vulkan;
 import dev.architectury.platform.Platform;
 import me.ayydan.iridium.render.IridiumRenderer;
 import me.ayydan.iridium.render.exceptions.IridiumRendererException;
+import me.ayydan.iridium.render.interfaces.IridiumWindow;
 import me.ayydan.iridium.render.vulkan.utils.VulkanDebugUtils;
 import me.ayydan.iridium.utils.PointerUtils;
 import me.ayydan.iridium.utils.VersioningUtils;
@@ -33,7 +34,6 @@ public class VulkanContext
     private long debugMessenger;
     private VulkanPhysicalDevice vulkanPhysicalDevice;
     private VulkanLogicalDevice vulkanLogicalDevice;
-    private VulkanSwapChain vulkanSwapChain;
 
     static
     {
@@ -107,18 +107,13 @@ public class VulkanContext
         this.vulkanLogicalDevice = new VulkanLogicalDevice(this.vulkanPhysicalDevice.getHandle());
 
         VulkanMemoryAllocator.initialize();
-
-        this.vulkanSwapChain = new VulkanSwapChain(this);
-        this.vulkanSwapChain.initialize();
-        this.vulkanSwapChain.create(Minecraft.getInstance().getWindow().getWidth(), Minecraft.getInstance().getWindow().getHeight(),
-                Minecraft.getInstance().options.enableVsync().get());
     }
 
     public void destroy()
     {
         VulkanMemoryAllocator.getInstance().shutdown();
 
-        this.vulkanSwapChain.destroy();
+        Minecraft.getInstance().getWindow().getSwapChain().destroy();
 
         this.vulkanLogicalDevice.destroy();
 
@@ -226,10 +221,5 @@ public class VulkanContext
     public VulkanLogicalDevice getLogicalDevice()
     {
         return this.vulkanLogicalDevice;
-    }
-
-    public VulkanSwapChain getSwapChain()
-    {
-        return this.vulkanSwapChain;
     }
 }

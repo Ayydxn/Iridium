@@ -46,7 +46,7 @@ public class IridiumRenderer
         }
 
         LOGGER = new IridiumLogger("Iridium Renderer");
-        LOGGER.info("Initializing Iridium Renderer..");
+        LOGGER.info("Initializing Iridium Renderer...");
 
         // Call the constructor to initialize the renderer.
         new IridiumRenderer();
@@ -65,8 +65,8 @@ public class IridiumRenderer
 
     public void beginFrame()
     {
-        int swapChainWidth = this.vulkanContext.getSwapChain().getWidth();
-        int swapChainHeight = this.vulkanContext.getSwapChain().getHeight();
+        int swapChainWidth = Minecraft.getInstance().getWindow().getSwapChain().getWidth();
+        int swapChainHeight = Minecraft.getInstance().getWindow().getSwapChain().getHeight();
 
         this.shouldSkipFrame = swapChainWidth == 0 || swapChainHeight == 0;
 
@@ -76,8 +76,8 @@ public class IridiumRenderer
             return;
 
         VkCommandBuffer commandBuffer = this.rendererCommandBuffer.getActiveCommandBuffer();
-        long swapChainImage = this.vulkanContext.getSwapChain().getImages().get(this.currentFrameIndex);
-        long swapChainDepthImage = this.vulkanContext.getSwapChain().getDepthImage().image();
+        long swapChainImage = Minecraft.getInstance().getWindow().getSwapChain().getImages().get(this.currentFrameIndex);
+        long swapChainDepthImage = Minecraft.getInstance().getWindow().getSwapChain().getDepthImage().image();
 
         try (MemoryStack memoryStack = MemoryStack.stackPush())
         {
@@ -97,7 +97,7 @@ public class IridiumRenderer
 
             VkRenderingAttachmentInfoKHR.Buffer colorRenderingAttachmentInfo = VkRenderingAttachmentInfoKHR.calloc(1, memoryStack)
                     .sType(VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR)
-                    .imageView(this.vulkanContext.getSwapChain().getImageViews().get(this.currentFrameIndex))
+                    .imageView(Minecraft.getInstance().getWindow().getSwapChain().getImageViews().get(this.currentFrameIndex))
                     .imageLayout(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
                     .loadOp(VK_ATTACHMENT_LOAD_OP_CLEAR)
                     .storeOp(VK_ATTACHMENT_STORE_OP_STORE)
@@ -105,7 +105,7 @@ public class IridiumRenderer
 
             VkRenderingAttachmentInfoKHR depthStencilAttachmentInfo = VkRenderingAttachmentInfoKHR.calloc(memoryStack)
                     .sType(VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR)
-                    .imageView(this.vulkanContext.getSwapChain().getDepthImageView())
+                    .imageView(Minecraft.getInstance().getWindow().getSwapChain().getDepthImageView())
                     .imageLayout(VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
                     .loadOp(VK_ATTACHMENT_LOAD_OP_CLEAR)
                     .storeOp(VK_ATTACHMENT_STORE_OP_STORE)
@@ -146,7 +146,7 @@ public class IridiumRenderer
             return;
 
         VkCommandBuffer commandBuffer = this.rendererCommandBuffer.getActiveCommandBuffer();
-        long swapChainImage = this.vulkanContext.getSwapChain().getImages().get(this.currentFrameIndex);
+        long swapChainImage = Minecraft.getInstance().getWindow().getSwapChain().getImages().get(this.currentFrameIndex);
 
         vkCmdEndRenderingKHR(commandBuffer);
 

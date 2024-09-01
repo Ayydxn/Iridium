@@ -64,7 +64,7 @@ public class VulkanSwapChain implements WindowResizeEvent
         this.swapChainHandle = VK_NULL_HANDLE;
     }
 
-    public void initialize()
+    public void initialize(long window)
     {
         try (MemoryStack memoryStack = MemoryStack.stackPush())
         {
@@ -73,7 +73,7 @@ public class VulkanSwapChain implements WindowResizeEvent
             /*-------------------------------*/
 
             LongBuffer pWindowSurface = memoryStack.longs(VK_NULL_HANDLE);
-            vkCheckResult(glfwCreateWindowSurface(this.vulkanInstance, Minecraft.getInstance().getWindow().getWindow(), null, pWindowSurface));
+            vkCheckResult(glfwCreateWindowSurface(this.vulkanInstance, window, null, pWindowSurface));
 
             this.windowSurface = pWindowSurface.get(0);
 

@@ -7,6 +7,7 @@ import me.ayydan.iridium.render.interfaces.VertexFormatAccessor;
 import me.ayydan.iridium.render.pipeline.GraphicsPipelineState;
 import me.ayydan.iridium.render.shader.IridiumShader;
 import me.ayydan.iridium.render.vulkan.utils.VulkanUtils;
+import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
@@ -34,7 +35,7 @@ public class VulkanGraphicsPipeline extends VulkanPipeline
         this.shader = shader;
         this.vertexFormat = vertexFormat;
         this.logicalDevice = IridiumRenderer.getInstance().getVulkanContext().getLogicalDevice().getHandle();
-        this.swapChain = IridiumRenderer.getInstance().getVulkanContext().getSwapChain();
+        this.swapChain = Minecraft.getInstance().getWindow().getSwapChain();
         this.graphicsPipelineState = new GraphicsPipelineState(GraphicsPipelineState.DEFAULT_BLEND_STATE, GraphicsPipelineState.DEFAULT_DEPTH_STATE,
                 GraphicsPipelineState.DEFAULT_LOGICOP_STATE, GraphicsPipelineState.DEFAULT_COLORMASK);
 
@@ -50,7 +51,7 @@ public class VulkanGraphicsPipeline extends VulkanPipeline
 
         try (MemoryStack memoryStack = MemoryStack.stackPush())
         {
-            int swapChainImageFormat = IridiumRenderer.getInstance().getVulkanContext().getSwapChain().getImageFormat();
+            int swapChainImageFormat = Minecraft.getInstance().getWindow().getSwapChain().getImageFormat();
             int depthFormat = IridiumRenderer.getInstance().getVulkanContext().getPhysicalDevice().getDepthFormat();
 
             VkViewport.Buffer viewport = VkViewport.calloc(1, memoryStack)

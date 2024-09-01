@@ -7,6 +7,7 @@
     "core.blaze3d.glfw.WindowMixin",
     "core.blaze3d.platform.GLDebugInfoMixin",
     "core.blaze3d.platform.GLStateManagerMixin",
+    "core.blaze3d.platform.GLXMixin",
     "core.blaze3d.shader.GLProgramManagerMixin",
     "core.blaze3d.shader.GLUniformMixin",
     "core.blaze3d.shader.ShaderStageMixin",
