@@ -1,6 +1,6 @@
 # Iridium
 
-<img src="common/src/main/resources/icon.png" width="128" alt="common/src/main/resources/icon.png">
+<img src="src/main/resources/assets/iridium/icon.png" width="128" alt="src/main/resources/assets/iridium/icon.png">
 
 ![GitHub License](https://img.shields.io/github/license/Ayydxn/Iridium)
 ![GitHub Issues](https://img.shields.io/github/issues/Ayydxn/Iridium)

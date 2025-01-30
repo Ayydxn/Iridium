@@ -1,8 +1,0 @@
-{
-  "accessWidener": "iridium.accesswidener",
-  "injected_interfaces": {
-    "net/minecraft/class_1041": [
-      "me/ayydan/iridium/render/interfaces/IridiumWindow"
-    ]
-  }
-}
