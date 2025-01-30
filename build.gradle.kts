@@ -18,6 +18,10 @@ repositories {
     maven("https://maven.parchmentmc.org") {
         name = "ParchmentMC"
     }
+
+    maven("https://maven.isxander.dev/releases") {
+        name = "Xander's Maven"
+    }
 }
 
 dependencies {
@@ -31,6 +35,13 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation("net.fabricmc.fabric-api:fabric-api:${rootProject.property("fabric_api_version")}")
+
+    // YetAnotherConfigLib. Used for Iridium's custom settings screen.
+    modImplementation("dev.isxander:yet-another-config-lib:${rootProject.property("yacl_version")}")
+
+    // Utility Libraries
+    implementation("org.reflections:reflections:${rootProject.property("reflections_version")}")
+    include("org.reflections:reflections:${rootProject.property("reflections_version")}")
 }
 
 tasks {
@@ -45,7 +56,8 @@ tasks {
             "license" to rootProject.property("mod_license"),
             "minecraft_version" to rootProject.property("minecraft_version"),
             "fabric_api_version" to rootProject.property("fabric_api_version"),
-            "fabric_loader_version" to rootProject.property("fabric_loader_version")
+            "fabric_loader_version" to rootProject.property("fabric_loader_version"),
+            "yacl_version" to rootProject.property("yacl_version")
         )
 
         inputs.properties(expandProperties)

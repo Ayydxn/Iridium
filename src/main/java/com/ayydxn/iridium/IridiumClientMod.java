@@ -1,5 +1,6 @@
 package com.ayydxn.iridium;
 
+import com.ayydxn.iridium.options.IridiumGameOptions;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -14,6 +15,7 @@ public class IridiumClientMod implements ClientModInitializer
 
     private static final Logger LOGGER = (Logger) LogManager.getLogger("Iridium");
 
+    private IridiumGameOptions iridiumGameOptions;
     private String modVersion = "Unknown";
 
     @Override
@@ -25,6 +27,8 @@ public class IridiumClientMod implements ClientModInitializer
                         .getMetadata().getVersion().getFriendlyString();
 
         LOGGER.info("Initializing Iridium... (Version: {})", this.modVersion);
+
+        this.iridiumGameOptions = IridiumGameOptions.load();
     }
 
     public static IridiumClientMod getInstance()
@@ -33,6 +37,16 @@ public class IridiumClientMod implements ClientModInitializer
             throw new IllegalStateException("Tried to access an instance of Iridium before one was available!");
 
         return INSTANCE;
+    }
+
+    public static Logger getLogger()
+    {
+        return LOGGER;
+    }
+
+    public IridiumGameOptions getGameOptions()
+    {
+        return this.iridiumGameOptions;
     }
 
     public String getModVersion()

@@ -5,6 +5,8 @@
 	"mixins": [
 	],
 	"client": [
+		"features.client.gui.screens.OptionsScreenMixin",
+		"features.client.gui.screens.TitleScreenMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
