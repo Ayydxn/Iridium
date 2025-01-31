@@ -1,9 +1,13 @@
 package com.ayydxn.iridium;
 
+import com.ayydxn.iridium.hud.IridiumHudOverlay;
 import com.ayydxn.iridium.options.IridiumGameOptions;
+import com.ayydxn.iridium.util.ClientFramerateTracker;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
@@ -16,6 +20,7 @@ public class IridiumClientMod implements ClientModInitializer
     private static final Logger LOGGER = (Logger) LogManager.getLogger("Iridium");
 
     private IridiumGameOptions iridiumGameOptions;
+    private ClientFramerateTracker clientFramerateTracker;
     private String modVersion = "Unknown";
 
     @Override
@@ -29,6 +34,10 @@ public class IridiumClientMod implements ClientModInitializer
         LOGGER.info("Initializing Iridium... (Version: {})", this.modVersion);
 
         this.iridiumGameOptions = IridiumGameOptions.load();
+        this.clientFramerateTracker = new ClientFramerateTracker();
+
+        ClientTickEvents.START_CLIENT_TICK.register(this.clientFramerateTracker::tick);
+        HudRenderCallback.EVENT.register(new IridiumHudOverlay());
     }
 
     public static IridiumClientMod getInstance()
@@ -47,6 +56,11 @@ public class IridiumClientMod implements ClientModInitializer
     public IridiumGameOptions getGameOptions()
     {
         return this.iridiumGameOptions;
+    }
+
+    public ClientFramerateTracker getClientFramerateTracker()
+    {
+        return this.clientFramerateTracker;
     }
 
     public String getModVersion()
