@@ -5,8 +5,13 @@
 	"mixins": [
 	],
 	"client": [
+		"features.block.LeavesBlockMixin",
+		"features.client.gui.hud.DebugHudMixin",
+		"features.client.gui.hud.InGameHudMixin",
 		"features.client.gui.screens.OptionsScreenMixin",
-		"features.client.gui.screens.TitleScreenMixin"
+		"features.client.gui.screens.TitleScreenMixin",
+		"features.client.render.RenderLayersMixin",
+		"features.client.render.WeatherEffectRendererMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

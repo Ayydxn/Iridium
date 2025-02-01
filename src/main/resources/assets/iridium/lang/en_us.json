@@ -147,6 +147,7 @@
 
   "iridium.options.category.accessibility": "Accessibility",
   "iridium.options.accessibility.highContrast.description": "Enhances the contrast on the game's UI elements.",
+  "iridium.options.accessibility.menuBackgroundBlur.description": "Controls how blurry the background of menus will be.",
   "iridium.options.accessibility.darknessPulsing.description": "Determines how dark the darkness effect gets when a Warden or Sculk Shrieker gives it to the player.\n\nThis setting doesn't affect fog distance.",
   "iridium.options.accessibility.damageTilt.description": "Controls the amount of camera shake that happens when you take damage.",
   "iridium.options.accessibility.glintSpeed.description": "Controls how fast the visual glint shimmers across enchanted items.",

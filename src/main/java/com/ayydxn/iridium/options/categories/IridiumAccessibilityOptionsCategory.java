@@ -8,6 +8,7 @@ import dev.isxander.yacl3.api.OptionGroup;
 import dev.isxander.yacl3.gui.controllers.BooleanController;
 import dev.isxander.yacl3.gui.controllers.cycling.EnumController;
 import dev.isxander.yacl3.gui.controllers.slider.DoubleSliderController;
+import dev.isxander.yacl3.gui.controllers.slider.IntegerSliderController;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.NarratorStatus;
 import net.minecraft.network.chat.CommonComponents;
@@ -64,6 +65,19 @@ public class IridiumAccessibilityOptionsCategory extends IridiumOptionCategory
                     }
                 })
                 .customController(BooleanController::new)
+                .build();
+
+        Option<Integer> menuBackgroundBlurOption = Option.<Integer>createBuilder()
+                .name(Component.translatable("options.accessibility.menu_background_blurriness"))
+                .description(OptionDescription.of(Component.translatable("iridium.options.accessibility.menuBackgroundBlur.description")))
+                .binding(Binding.minecraft(client.options.menuBackgroundBlurriness()))
+                .customController(option -> new IntegerSliderController(option, 0, 10, 1, value ->
+                {
+                    if (value == 0)
+                        return Component.translatable("options.off");
+
+                    return Component.literal(String.valueOf(value));
+                }))
                 .build();
 
         Option<Double> darknessPulsingOption = Option.<Double>createBuilder()
@@ -152,7 +166,7 @@ public class IridiumAccessibilityOptionsCategory extends IridiumOptionCategory
                 .customController(BooleanController::new)
                 .build();
 
-        return List.of(narrartorOption, narrartorHotkeyOption, highContrastOption, darknessPulsingOption, damageTiltOption, glintSpeedOption,
+        return List.of(narrartorOption, narrartorHotkeyOption, highContrastOption, menuBackgroundBlurOption, darknessPulsingOption, damageTiltOption, glintSpeedOption,
                 glintStrengthOption, hideLightingFlashesOption, monochromeLogoOption, panoramaScrollSpeedOption, hideSplashTextsOption);
     }
 
