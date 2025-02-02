@@ -8,6 +8,30 @@ group = rootProject.property("maven_group").toString()
 
 base.archivesName.set("${rootProject.property("archives_base_name").toString()}-fabric")
 
+// Sets which platforms native libraries from LWJGL we will use.
+rootProject.setProperty("lwjgl_natives", Pair(System.getProperty("os.name")!!, System.getProperty("os.arch")!!).let { (name, arch) ->
+    when {
+        arrayOf("Linux", "SunOS", "Unit").any { name.startsWith(it) } ->
+            if (arrayOf("arm", "aarch64").any { arch.startsWith(it) })
+                "natives-linux${if (arch.contains("64") || arch.startsWith("armv8")) "-arm64" else "-arm32"}"
+            else if (arch.startsWith("ppc"))
+                "natives-linux-ppc64le"
+            else if (arch.startsWith("riscv"))
+                "natives-linux-riscv64"
+            else
+                "natives-linux"
+        arrayOf("Mac OS X", "Darwin").any { name.startsWith(it) }     ->
+            "natives-macos${if (arch.startsWith("aarch64")) "-arm64" else ""}"
+        arrayOf("Windows").any { name.startsWith(it) }                ->
+            if (arch.contains("64"))
+                "natives-windows${if (arch.startsWith("aarch64")) "-arm64" else ""}"
+            else
+                "natives-windows-x86"
+        else                                                                            ->
+            throw Error("Unrecognized or unsupported platform. Please set the \"lwjgl_natives\" property manually")
+    }
+})
+
 repositories {
     // Add repositories to retrieve artifacts from in here.
     // You should only use this when depending on other mods because
@@ -39,9 +63,26 @@ dependencies {
     // YetAnotherConfigLib. Used for Iridium's custom settings screen.
     modImplementation("dev.isxander:yet-another-config-lib:${rootProject.property("yacl_version")}")
 
+    // LWJGL and Vulkan. Thanks to Minecraft, LWJGL's core is already present, so we don't need to include it here.
+    implementation("org.lwjgl:lwjgl-shaderc:${rootProject.property("lwjgl_version")}")
+    implementation("org.lwjgl:lwjgl-spvc:${rootProject.property("lwjgl_version")}")
+    implementation("org.lwjgl:lwjgl-vma:${rootProject.property("lwjgl_version")}")
+    implementation("org.lwjgl:lwjgl-vulkan:${rootProject.property("lwjgl_version")}")
+
+    runtimeOnly("org.lwjgl:lwjgl::${rootProject.property("lwjgl_natives")}")
+    runtimeOnly("org.lwjgl:lwjgl-shaderc::${rootProject.property("lwjgl_natives")}")
+    runtimeOnly("org.lwjgl:lwjgl-spvc::${rootProject.property("lwjgl_natives")}")
+    runtimeOnly("org.lwjgl:lwjgl-vma::${rootProject.property("lwjgl_natives")}")
+
+    if (rootProject.property("lwjgl_natives") == "natives-macos" || rootProject.property("lwjgl_natives") == "natives-macos-arm64")
+        runtimeOnly("org.lwjgl:lwjgl-vulkan::${rootProject.property("lwjgl_natives")}")
+
     // Utility Libraries
     implementation("org.reflections:reflections:${rootProject.property("reflections_version")}")
     include("org.reflections:reflections:${rootProject.property("reflections_version")}")
+
+    implementation("org.apache.maven:maven-artifact:${rootProject.property("maven_artifact_version")}")
+    include("org.apache.maven:maven-artifact:${rootProject.property("maven_artifact_version")}")
 }
 
 tasks {

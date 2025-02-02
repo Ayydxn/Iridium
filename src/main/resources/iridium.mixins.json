@@ -5,6 +5,8 @@
 	"mixins": [
 	],
 	"client": [
+		"core.blaze3d.platform.WindowMixin",
+
 		"features.block.LeavesBlockMixin",
 		"features.client.gui.hud.DebugHudMixin",
 		"features.client.gui.hud.InGameHudMixin",
