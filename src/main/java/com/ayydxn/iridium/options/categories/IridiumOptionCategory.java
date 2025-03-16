@@ -2,7 +2,6 @@ package com.ayydxn.iridium.options.categories;
 
 import com.ayydxn.iridium.IridiumClientMod;
 import com.ayydxn.iridium.options.IridiumGameOptions;
-import com.google.common.collect.Lists;
 import dev.isxander.yacl3.api.ConfigCategory;
 import dev.isxander.yacl3.api.Option;
 import dev.isxander.yacl3.api.OptionGroup;
