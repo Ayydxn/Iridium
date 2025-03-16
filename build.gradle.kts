@@ -78,9 +78,6 @@ dependencies {
         runtimeOnly("org.lwjgl:lwjgl-vulkan::${rootProject.property("lwjgl_natives")}")
 
     // Utility Libraries
-    implementation("org.reflections:reflections:${rootProject.property("reflections_version")}")
-    include("org.reflections:reflections:${rootProject.property("reflections_version")}")
-
     implementation("org.apache.maven:maven-artifact:${rootProject.property("maven_artifact_version")}")
     include("org.apache.maven:maven-artifact:${rootProject.property("maven_artifact_version")}")
 }

@@ -10,6 +10,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.PlayerModelPart;
+import org.apache.commons.compress.utils.Lists;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +24,7 @@ public class IridiumSkinOptionsCategory extends IridiumOptionCategory
     }
 
     @Override
-    public List<Option<?>> getCategoryOptions()
+    public @NotNull List<Option<?>> getCategoryOptions()
     {
         List<Option<?>> skinCategoryOptions = new ArrayList<>();
         Minecraft client = Minecraft.getInstance();
@@ -59,9 +61,9 @@ public class IridiumSkinOptionsCategory extends IridiumOptionCategory
     }
 
     @Override
-    public List<OptionGroup> getCategoryGroups()
+    public @NotNull List<OptionGroup> getCategoryGroups()
     {
-        return null;
+        return Lists.newArrayList();
     }
 
     private Component getPlayerModelPartDescription(PlayerModelPart playerModelPart)

@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.options.LanguageSelectScreen;
 import net.minecraft.network.chat.Component;
 import org.apache.commons.compress.utils.Lists;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class IridiumLanguageOptionsCategory extends IridiumOptionCategory
     }
 
     @Override
-    public List<Option<?>> getCategoryOptions()
+    public @NotNull List<Option<?>> getCategoryOptions()
     {
         Minecraft client = Minecraft.getInstance();
 
@@ -37,8 +38,8 @@ public class IridiumLanguageOptionsCategory extends IridiumOptionCategory
     }
 
     @Override
-    public List<OptionGroup> getCategoryGroups()
+    public @NotNull List<OptionGroup> getCategoryGroups()
     {
-        return null;
+        return Lists.newArrayList();
     }
 }

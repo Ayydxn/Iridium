@@ -14,6 +14,8 @@ import net.minecraft.client.NarratorStatus;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.repository.PackRepository;
+import org.apache.commons.compress.utils.Lists;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -25,7 +27,7 @@ public class IridiumAccessibilityOptionsCategory extends IridiumOptionCategory
     }
 
     @Override
-    public List<Option<?>> getCategoryOptions()
+    public @NotNull List<Option<?>> getCategoryOptions()
     {
         Minecraft client = Minecraft.getInstance();
         
@@ -171,8 +173,8 @@ public class IridiumAccessibilityOptionsCategory extends IridiumOptionCategory
     }
 
     @Override
-    public List<OptionGroup> getCategoryGroups()
+    public @NotNull List<OptionGroup> getCategoryGroups()
     {
-        return null;
+        return Lists.newArrayList();
     }
 }

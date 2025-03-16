@@ -7,6 +7,8 @@ import dev.isxander.yacl3.api.OptionGroup;
 import dev.isxander.yacl3.gui.controllers.BooleanController;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import org.apache.commons.compress.utils.Lists;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -18,7 +20,7 @@ public class IridiumOnlineOptionsCategory extends IridiumOptionCategory
     }
 
     @Override
-    public List<Option<?>> getCategoryOptions()
+    public @NotNull List<Option<?>> getCategoryOptions()
     {
         Minecraft client = Minecraft.getInstance();
 
@@ -40,8 +42,8 @@ public class IridiumOnlineOptionsCategory extends IridiumOptionCategory
     }
 
     @Override
-    public List<OptionGroup> getCategoryGroups()
+    public @NotNull List<OptionGroup> getCategoryGroups()
     {
-        return null;
+        return Lists.newArrayList();
     }
 }

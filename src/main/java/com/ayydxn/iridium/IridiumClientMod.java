@@ -2,6 +2,8 @@ package com.ayydxn.iridium;
 
 import com.ayydxn.iridium.hud.IridiumHudOverlay;
 import com.ayydxn.iridium.options.IridiumGameOptions;
+import com.ayydxn.iridium.options.categories.*;
+import com.ayydxn.iridium.options.categories.util.OptionCategoryRegistry;
 import com.ayydxn.iridium.util.ClientFramerateTracker;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
@@ -35,6 +37,15 @@ public class IridiumClientMod implements ClientModInitializer
 
         this.iridiumGameOptions = IridiumGameOptions.load();
         this.clientFramerateTracker = new ClientFramerateTracker();
+
+        OptionCategoryRegistry.register("video", IridiumVideoOptionsCategory::new, 1);
+        OptionCategoryRegistry.register("audio", IridiumAudioOptionsCategory::new, 2);
+        OptionCategoryRegistry.register("controls", IridiumControlsOptionsCategory::new, 3);
+        OptionCategoryRegistry.register("skin", IridiumSkinOptionsCategory::new, 4);
+        OptionCategoryRegistry.register("language", IridiumLanguageOptionsCategory::new, 5);
+        OptionCategoryRegistry.register("chat", IridiumChatOptionsCategory::new, 6);
+        OptionCategoryRegistry.register("online", IridiumOnlineOptionsCategory::new, 7);
+        OptionCategoryRegistry.register("extras", IridiumExtraOptionsCategory::new, 8);
 
         ClientTickEvents.START_CLIENT_TICK.register(this.clientFramerateTracker::tick);
         HudRenderCallback.EVENT.register(new IridiumHudOverlay());

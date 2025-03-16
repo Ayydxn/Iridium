@@ -14,6 +14,7 @@ import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
 import org.apache.commons.compress.utils.Lists;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,13 +30,13 @@ public class IridiumAudioOptionsCategory extends IridiumOptionCategory
     }
 
     @Override
-    public List<Option<?>> getCategoryOptions()
+    public @NotNull List<Option<?>> getCategoryOptions()
     {
-        return null;
+        return Lists.newArrayList();
     }
 
     @Override
-    public List<OptionGroup> getCategoryGroups()
+    public @NotNull List<OptionGroup> getCategoryGroups()
     {
         this.createVolumeOptions();
         this.createSoundOptions();

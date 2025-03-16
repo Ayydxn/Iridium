@@ -3,6 +3,7 @@ package com.ayydxn.iridium.options.categories;
 import com.ayydxn.iridium.gui.screens.IridiumOptionsScreen;
 import com.ayydxn.iridium.options.IridiumGameOptions;
 import com.ayydxn.iridium.options.util.OptionPerformanceImpact;
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.Monitor;
 import com.mojang.blaze3d.platform.VideoMode;
 import com.mojang.blaze3d.platform.Window;
@@ -18,6 +19,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ParticleStatus;
 import org.apache.commons.compress.utils.Lists;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -27,6 +29,7 @@ public class IridiumVideoOptionsCategory extends IridiumOptionCategory
     private List<Option<?>> graphicsOptions;
     private List<Option<?>> graphicsQualityOptions;
     private List<Option<?>> advancedGraphicsOptions;
+    private List<Option<?>> rendererOptions;
 
     public IridiumVideoOptionsCategory()
     {
@@ -34,18 +37,19 @@ public class IridiumVideoOptionsCategory extends IridiumOptionCategory
     }
 
     @Override
-    public List<Option<?>> getCategoryOptions()
+    public @NotNull List<Option<?>> getCategoryOptions()
     {
-        return null;
+        return Lists.newArrayList();
     }
 
     @Override
-    public List<OptionGroup> getCategoryGroups()
+    public @NotNull List<OptionGroup> getCategoryGroups()
     {
         this.createDisplayOptions();
         this.createGraphicsOptions();
         this.createGraphicsQualityOptions();
         this.createAdvancedGraphicsOptions();
+        this.createRendererOptions();
 
         OptionGroup displayOptionsGroup = OptionGroup.createBuilder()
                 .name(Component.translatable("iridium.options.group.display"))
@@ -67,7 +71,13 @@ public class IridiumVideoOptionsCategory extends IridiumOptionCategory
                 .options(this.advancedGraphicsOptions)
                 .build();
 
-        return List.of(displayOptionsGroup, graphicsOptionsGroup, graphicsQualityOptionsGroup, advancedGraphicsOptionsGroup);
+        OptionGroup rendererOptionsGroup = OptionGroup.createBuilder()
+                .name(Component.translatable("iridium.options.group.renderer"))
+                .options(this.rendererOptions)
+                .build();
+
+        return List.of(displayOptionsGroup, graphicsOptionsGroup, graphicsQualityOptionsGroup, advancedGraphicsOptionsGroup,
+                rendererOptionsGroup);
     }
 
     private void createDisplayOptions()
@@ -516,5 +526,35 @@ public class IridiumVideoOptionsCategory extends IridiumOptionCategory
                 .build();
 
         Collections.addAll(this.advancedGraphicsOptions, showFPSOverlayOption, showCoordinatesOption, overlayContrastOption, overlayPositionOption);
+    }
+
+    private void createRendererOptions()
+    {
+        this.rendererOptions = Lists.newArrayList();
+
+        Option<Boolean> shaderCachingOption = Option.<Boolean>createBuilder()
+                .name(Component.translatable("iridium.options.renderer.enableShaderCaching"))
+                .description(OptionDescription.createBuilder()
+                        .text(Component.translatable("iridium.options.renderer.enableShaderCaching.description")
+                                .append("\n\n")
+                                .append(OptionPerformanceImpact.None.getText()))
+                        .build())
+                .binding(IridiumGameOptions.defaults().rendererOptions.enableShaderCaching, () -> this.iridiumGameOptions.rendererOptions.enableShaderCaching, newValue -> this.iridiumGameOptions.rendererOptions.enableShaderCaching = newValue)
+                .customController(BooleanController::new)
+                .build();
+
+        Option<Integer> framesInFlightOption = Option.<Integer>createBuilder()
+                .name(Component.translatable("iridium.options.renderer.framesInFlight"))
+                .description(OptionDescription.createBuilder()
+                        .text(Component.translatable("iridium.options.renderer.framesInFlight.description")
+                                .append("\n\n")
+                                .append(OptionPerformanceImpact.High.getText()))
+                        .build())
+                .binding(IridiumGameOptions.defaults().rendererOptions.framesInFlight, () -> this.iridiumGameOptions.rendererOptions.framesInFlight, newValue -> this.iridiumGameOptions.rendererOptions.framesInFlight = newValue)
+                .customController(option -> new IntegerSliderController(option, 0, 9, 1))
+                .flag(OptionFlag.GAME_RESTART)
+                .build();
+
+        Collections.addAll(this.rendererOptions, shaderCachingOption, framesInFlightOption);
     }
 }
