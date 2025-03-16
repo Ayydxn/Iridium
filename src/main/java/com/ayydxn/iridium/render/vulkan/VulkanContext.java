@@ -30,6 +30,8 @@ public class VulkanContext
 
     private VkInstance vulkanInstance;
     private long debugMessenger;
+    private VulkanPhysicalDevice physicalDevice;
+    private VulkanLogicalDevice logicalDevice;
 
     static
     {
@@ -45,8 +47,6 @@ public class VulkanContext
 
     public void initialize()
     {
-        System.out.println("VulkanContext::initialize");
-
         if (!glfwVulkanSupported())
             throw new IridiumRendererException("The Vulkan loader and an ICD (Installable Client Driver) weren't found!");
 
@@ -94,10 +94,21 @@ public class VulkanContext
         }
 
         this.initializeDebugMessenger();
+
+        this.physicalDevice = new VulkanPhysicalDevice(this.vulkanInstance);
+
+        IridiumClientMod.getLogger().info("Graphics Card Info:");
+        IridiumClientMod.getLogger().info("  Vendor: {}", this.physicalDevice.getVendorName());
+        IridiumClientMod.getLogger().info("  Device: {}", this.physicalDevice.getProperties().deviceNameString());
+        IridiumClientMod.getLogger().info("  Driver Version: {}", this.physicalDevice.getDriverVersion());
+
+        this.logicalDevice = new VulkanLogicalDevice(this.physicalDevice.getHandle());
     }
 
     public void destroy()
     {
+        this.logicalDevice.destroy();
+
         if (enableValidationLayers)
             VulkanDebugUtils.destroyDebugUtilsMessenger(this.vulkanInstance, this.debugMessenger, null);
 
@@ -187,5 +198,14 @@ public class VulkanContext
         }
 
         return glfwInstanceExtensions;
+    }
+
+    public VulkanPhysicalDevice getPhysicalDevice()
+    {
+        return this.physicalDevice;
+    }
+    public VulkanLogicalDevice getLogicalDevice()
+    {
+        return this.logicalDevice;
     }
 }

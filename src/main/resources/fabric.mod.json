@@ -30,7 +30,6 @@
 		"yet_another_config_lib_v3": "${yacl_version}"
 	},
 	"custom": {
-		"fabric-renderer-api-v1:contains_renderer" : true,
 		"loom:injected_interfaces": {
 			"net/minecraft/class_1041": [
 				"com/ayydxn/iridium/interfaces/VulkanContextHandler"
