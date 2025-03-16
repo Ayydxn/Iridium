@@ -37,7 +37,7 @@ public class VulkanPhysicalDevice
     {
         this.physicalDevice = this.selectPhysicalDevice(vulkanInstance);
         if (this.physicalDevice == null)
-            throw new IridiumRendererException("No physical device was selected as a suitable graphics card isn't available!!");
+            throw new IridiumRendererException("No physical device was selected as a suitable graphics card isn't available!");
 
         this.physicalDeviceInfo = new PhysicalDeviceInfo(this.physicalDevice);
         this.depthFormat = this.findDepthFormat();
