@@ -31,6 +31,11 @@ public class VulkanLogicalDevice
         vkDestroyDevice(this.logicalDevice, null);
     }
 
+    public void waitIdle()
+    {
+        vkDeviceWaitIdle(this.logicalDevice);
+    }
+
     private VkDevice createLogicalDevice(VkPhysicalDevice physicalDevice)
     {
         try (MemoryStack memoryStack = MemoryStack.stackPush())

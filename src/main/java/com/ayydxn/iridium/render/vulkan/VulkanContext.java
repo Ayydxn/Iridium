@@ -200,6 +200,11 @@ public class VulkanContext
         return glfwInstanceExtensions;
     }
 
+    public VkInstance getVulkanInstance()
+    {
+        return this.vulkanInstance;
+    }
+
     public VulkanPhysicalDevice getPhysicalDevice()
     {
         return this.physicalDevice;

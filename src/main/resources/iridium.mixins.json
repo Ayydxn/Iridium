@@ -5,7 +5,10 @@
 	"mixins": [
 	],
 	"client": [
+		"core.blaze3d.platform.GLXMixin",
 		"core.blaze3d.platform.WindowMixin",
+		"core.blaze3d.systems.RenderSystemMixin",
+		"core.client.MinecraftMixin",
 
 		"features.block.LeavesBlockMixin",
 		"features.client.gui.hud.DebugHudMixin",

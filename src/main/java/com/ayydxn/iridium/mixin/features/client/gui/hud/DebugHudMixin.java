@@ -21,7 +21,7 @@ public class DebugHudMixin
     private ArrayList<String> addIridiumDebugInfo(Object[] elements)
     {
         ArrayList<String> iridiumDebugStrings = Lists.newArrayList((String[]) elements);
-        VulkanPhysicalDevice vulkanPhysicalDevice = ((VulkanContextHandler) Minecraft.getInstance().getWindow()).getVulkanContext().getPhysicalDevice();
+        VulkanPhysicalDevice vulkanPhysicalDevice = Minecraft.getInstance().getWindow().getVulkanContext().getPhysicalDevice();
 
         iridiumDebugStrings.add("");
 
