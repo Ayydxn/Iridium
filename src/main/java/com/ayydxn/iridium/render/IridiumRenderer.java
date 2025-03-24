@@ -1,6 +1,9 @@
 package com.ayydxn.iridium.render;
 
 import com.ayydxn.iridium.IridiumClientMod;
+import com.ayydxn.iridium.render.shader.IridiumShaderCompiler;
+import com.ayydxn.iridium.render.shader.ShaderSPIRV;
+import com.ayydxn.iridium.render.shader.ShaderStage;
 import net.minecraft.client.Minecraft;
 
 public class IridiumRenderer
@@ -8,6 +11,11 @@ public class IridiumRenderer
     private static IridiumRenderer INSTANCE;
 
     private boolean shouldSkipCurrentFrame;
+
+    public IridiumRenderer()
+    {
+        IridiumShaderCompiler.initialize();
+    }
 
     public static void initialize()
     {
@@ -24,6 +32,8 @@ public class IridiumRenderer
 
     public void shutdown()
     {
+        IridiumShaderCompiler.getInstance().shutdown();
+
         INSTANCE = null;
     }
 
