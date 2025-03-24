@@ -71,7 +71,7 @@ public class IridiumShaderCompiler
     public ShaderSPIRV compileShader(String shaderName, String shaderSource, ShaderStage shaderStage)
     {
         if (FabricLoader.getInstance().isDevelopmentEnvironment())
-            IridiumClientMod.getLogger().info("Compiling shader '{}'", shaderName);
+            IridiumClientMod.getLogger().info("Compiling shader '{}{}'", shaderName, shaderStage.getFileExtension());
 
         long shaderCompilationResult = shaderc_compile_into_spv(this.shadercCompiler, shaderSource, shaderStage.getID(), shaderName, "main",
                 this.shadercCompilerOptions);

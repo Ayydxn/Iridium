@@ -4,8 +4,10 @@
     "srcrgb": "one",
     "dstrgb": "zero"
   },
-  "vertex": "sobel",
-  "fragment": "ntsc_decode",
+  "stages": {
+    "vertex": "sobel",
+    "fragment": "ntsc_decode"
+  },
   "attributes": [
     "Position"
   ],

@@ -4,8 +4,10 @@
     "srcrgb": "one",
     "dstrgb": "zero"
   },
-  "vertex": "sobel",
-  "fragment": "scan_pincushion",
+  "stages": {
+    "vertex": "sobel",
+    "fragment": "scan_pincushion"
+  },
   "attributes": [
     "Position"
   ],

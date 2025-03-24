@@ -4,8 +4,10 @@
     "srcrgb": "one",
     "dstrgb": "zero"
   },
-  "vertex": "sobel",
-  "fragment": "color_convolve",
+  "stages": {
+    "vertex": "sobel",
+    "fragment": "color_convolve"
+  },
   "attributes": [
     "Position"
   ],

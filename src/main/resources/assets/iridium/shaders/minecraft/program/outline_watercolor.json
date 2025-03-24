@@ -4,8 +4,10 @@
     "srcrgb": "one",
     "dstrgb": "zero"
   },
-  "vertex": "sobel",
-  "fragment": "outline_watercolor",
+  "stages": {
+    "vertex": "sobel",
+    "fragment": "outline_watercolor"
+  },
   "attributes": [
     "Position"
   ],

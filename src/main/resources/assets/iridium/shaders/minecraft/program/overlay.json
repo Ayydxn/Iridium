@@ -4,8 +4,10 @@
     "srcrgb": "one",
     "dstrgb": "zero"
   },
-  "vertex": "blit",
-  "fragment": "overlay",
+  "stages": {
+    "vertex": "blit",
+    "fragment": "overlay"
+  },
   "attributes": [
     "Position"
   ],

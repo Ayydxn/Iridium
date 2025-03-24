@@ -4,8 +4,10 @@
     "srcrgb": "srcalpha",
     "dstrgb": "1-srcalpha"
   },
-  "vertex": "sobel",
-  "fragment": "bits",
+  "stages": {
+    "vertex": "sobel",
+    "fragment": "bits"
+  },
   "attributes": [
     "Position"
   ],

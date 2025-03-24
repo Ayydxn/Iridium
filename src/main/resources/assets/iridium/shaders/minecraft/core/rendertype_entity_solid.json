@@ -4,8 +4,10 @@
     "srcrgb": "srcalpha",
     "dstrgb": "1-srcalpha"
   },
-  "vertex": "rendertype_entity_solid",
-  "fragment": "rendertype_entity_solid",
+  "stages": {
+    "vertex": "rendertype_entity_solid",
+    "fragment": "rendertype_entity_solid"
+  },
   "attributes": [
     "Position",
     "Color",

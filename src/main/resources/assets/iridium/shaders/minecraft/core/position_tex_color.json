@@ -4,8 +4,10 @@
     "srcrgb": "srcalpha",
     "dstrgb": "1-srcalpha"
   },
-  "vertex": "position_tex_color",
-  "fragment": "position_tex_color",
+  "stages": {
+    "vertex": "position_tex_color",
+    "fragment": "position_tex_color"
+  },
   "attributes": [
     "Position",
     "UV0",

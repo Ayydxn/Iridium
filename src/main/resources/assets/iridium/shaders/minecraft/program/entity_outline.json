@@ -4,8 +4,10 @@
     "srcrgb": "srcalpha",
     "dstrgb": "1-srcalpha"
   },
-  "vertex": "sobel",
-  "fragment": "entity_sobel",
+  "stages": {
+    "vertex": "sobel",
+    "fragment": "entity_sobel"
+  },
   "attributes": [
     "Position"
   ],

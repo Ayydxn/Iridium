@@ -4,8 +4,10 @@
     "srcrgb": "one",
     "dstrgb": "zero"
   },
-  "vertex": "bumpy",
-  "fragment": "bumpy",
+  "stages": {
+    "vertex": "bumpy",
+    "fragment": "bumpy"
+  },
   "attributes": [
     "Position"
   ],

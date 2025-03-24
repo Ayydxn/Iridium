@@ -4,8 +4,10 @@
     "srcrgb": "one",
     "dstrgb": "zero"
   },
-  "vertex": "blobs",
-  "fragment": "blobs",
+  "stages": {
+    "vertex": "blobs",
+    "fragment": "blobs"
+  },
   "attributes": [
     "Position"
   ],

@@ -4,8 +4,10 @@
     "srcrgb": "one",
     "dstrgb": "zero"
   },
-  "vertex": "rotscale",
-  "fragment": "spiderclip",
+  "stages": {
+    "vertex": "rotscale",
+    "fragment": "spiderclip"
+  },
   "attributes": [
     "Position"
   ],

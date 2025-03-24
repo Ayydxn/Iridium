@@ -4,8 +4,10 @@
     "srcrgb": "one",
     "dstrgb": "zero"
   },
-  "vertex": "sobel",
-  "fragment": "phosphor",
+  "stages": {
+    "vertex": "sobel",
+    "fragment": "phosphor"
+  },
   "attributes": [
     "Position"
   ],

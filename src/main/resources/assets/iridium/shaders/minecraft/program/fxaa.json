@@ -4,8 +4,10 @@
     "srcrgb": "one",
     "dstrgb": "zero"
   },
-  "vertex": "fxaa",
-  "fragment": "fxaa",
+  "stages": {
+    "vertex": "fxaa",
+    "fragment": "fxaa"
+  },
   "attributes": [
     "Position"
   ],

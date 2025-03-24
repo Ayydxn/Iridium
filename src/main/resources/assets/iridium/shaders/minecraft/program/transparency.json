@@ -4,8 +4,10 @@
     "srcrgb": "one",
     "dstrgb": "zero"
   },
-  "vertex": "screenquad",
-  "fragment": "transparency",
+  "stages": {
+    "vertex": "screenquad",
+    "fragment": "transparency"
+  },
   "attributes": [
     "Position"
   ],

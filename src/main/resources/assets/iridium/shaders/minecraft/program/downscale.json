@@ -4,8 +4,10 @@
     "srcrgb": "one",
     "dstrgb": "zero"
   },
-  "vertex": "downscale",
-  "fragment": "downscale",
+  "stages": {
+    "vertex": "downscale",
+    "fragment": "downscale"
+  },
   "attributes": [
     "Position"
   ],

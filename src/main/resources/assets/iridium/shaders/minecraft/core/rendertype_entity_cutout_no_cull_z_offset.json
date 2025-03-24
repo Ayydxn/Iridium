@@ -4,8 +4,10 @@
     "srcrgb": "srcalpha",
     "dstrgb": "1-srcalpha"
   },
-  "vertex": "rendertype_entity_cutout_no_cull_z_offset",
-  "fragment": "rendertype_entity_cutout_no_cull_z_offset",
+  "stages": {
+    "vertex": "rendertype_entity_cutout_no_cull_z_offset",
+    "fragment": "rendertype_entity_cutout_no_cull_z_offset"
+  },
   "attributes": [
     "Position",
     "Color",

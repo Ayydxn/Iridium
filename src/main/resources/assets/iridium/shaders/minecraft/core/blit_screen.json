@@ -4,8 +4,10 @@
     "srcrgb": "srcalpha",
     "dstrgb": "1-srcalpha"
   },
-  "vertex": "blit_screen",
-  "fragment": "blit_screen",
+  "stages": {
+    "vertex": "blit_screen",
+    "fragment": "blit_screen"
+  },
   "attributes": [
     "Position",
     "UV",

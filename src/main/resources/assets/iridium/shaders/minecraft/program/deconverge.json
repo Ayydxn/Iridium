@@ -4,8 +4,10 @@
     "srcrgb": "one",
     "dstrgb": "zero"
   },
-  "vertex": "sobel",
-  "fragment": "deconverge",
+  "stages": {
+    "vertex": "sobel",
+    "fragment": "deconverge"
+  },
   "attributes": [
     "Position"
   ],

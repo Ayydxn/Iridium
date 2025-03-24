@@ -4,8 +4,10 @@
     "srcrgb": "one",
     "dstrgb": "zero"
   },
-  "vertex": "sobel",
-  "fragment": "outline_combine",
+  "stages": {
+    "vertex": "sobel",
+    "fragment": "outline_combine"
+  },
   "attributes": [
     "Position"
   ],

@@ -4,8 +4,10 @@
     "srcrgb": "one",
     "dstrgb": "zero"
   },
-  "vertex": "sobel",
-  "fragment": "wobble",
+  "stages": {
+    "vertex": "sobel",
+    "fragment": "wobble"
+  },
   "attributes": [
     "Position"
   ],
