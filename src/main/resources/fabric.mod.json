@@ -20,6 +20,7 @@
 			"com.ayydxn.iridium.IridiumClientMod"
 		]
 	},
+	"accessWidener": "iridium.accesswidener",
 	"mixins": [
 		"${id}.mixins.json"
 	],

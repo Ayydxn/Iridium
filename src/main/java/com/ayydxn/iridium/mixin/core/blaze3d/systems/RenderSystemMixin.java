@@ -19,6 +19,12 @@ public class RenderSystemMixin
         IridiumRenderSystem.initRenderer();
     }
 
+    @Inject(method = "setupDefaultState", at = @At("HEAD"), cancellable = true, remap = false)
+    private static void cancelSetupDefaultState(int x, int y, int width, int height, CallbackInfo ci)
+    {
+        ci.cancel();
+    }
+
     @Redirect(method = "flipFrame", at = @At(value = "INVOKE", target = "Lorg/lwjgl/glfw/GLFW;glfwSwapBuffers(J)V"), remap = false)
     private static void presentCurrentSwapChainImage(long window)
     {

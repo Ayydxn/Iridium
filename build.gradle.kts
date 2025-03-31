@@ -32,6 +32,10 @@ rootProject.setProperty("lwjgl_natives", Pair(System.getProperty("os.name")!!, S
     }
 })
 
+loom {
+    accessWidenerPath = file("src/main/resources/iridium.accesswidener")
+}
+
 repositories {
     // Add repositories to retrieve artifacts from in here.
     // You should only use this when depending on other mods because
@@ -46,6 +50,8 @@ repositories {
     maven("https://maven.isxander.dev/releases") {
         name = "Xander's Maven"
     }
+
+    maven("https://api.modrinth.com/maven")
 }
 
 dependencies {
@@ -80,6 +86,8 @@ dependencies {
     // Utility Libraries
     implementation("org.apache.maven:maven-artifact:${rootProject.property("maven_artifact_version")}")
     include("org.apache.maven:maven-artifact:${rootProject.property("maven_artifact_version")}")
+
+    modCompileOnly("maven.modrinth:vulkanmod:9BnBJI0w")
 }
 
 tasks {

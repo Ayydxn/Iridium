@@ -1,10 +1,13 @@
 package com.ayydxn.iridium.render;
 
 import com.ayydxn.iridium.IridiumClientMod;
+import com.ayydxn.iridium.render.exceptions.NotImplementedByIridiumException;
 import com.ayydxn.iridium.render.shader.IridiumShaderCompiler;
 import com.ayydxn.iridium.render.shader.ShaderSPIRV;
 import com.ayydxn.iridium.render.shader.ShaderStage;
 import net.minecraft.client.Minecraft;
+import org.lwjgl.system.MemoryStack;
+import org.lwjgl.vulkan.VkViewport;
 
 public class IridiumRenderer
 {
@@ -58,6 +61,28 @@ public class IridiumRenderer
             return;
 
         // TODO: (Ayydxn) Implement.
+    }
+
+    public void clearAttachments(int mask)
+    {
+        // TODO: (Ayydxn) Implement
+        //throw new NotImplementedByIridiumException("IridiumRenderer::clearAttachments");
+    }
+
+    public void setViewport(int x, int y, int width, int height)
+    {
+        try (MemoryStack memoryStack = MemoryStack.stackPush())
+        {
+            VkViewport.Buffer viewport = VkViewport.calloc(1, memoryStack)
+                    .x(x)
+                    .y(height + y)
+                    .width(width)
+                    .height(-height)
+                    .minDepth(0.0f)
+                    .maxDepth(1.0f);
+
+            // TODO: (Ayydxn) Call vkCmdSetViewport
+        }
     }
 
     public boolean shouldSkipCurrentFrame()
