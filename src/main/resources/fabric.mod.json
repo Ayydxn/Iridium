@@ -18,6 +18,9 @@
 	"entrypoints": {
 		"client": [
 			"com.ayydxn.iridium.IridiumClientMod"
+		],
+		"modmenu": [
+			"com.ayydxn.iridium.IridiumModMenuEntrypoint"
 		]
 	},
 	"accessWidener": "iridium.accesswidener",

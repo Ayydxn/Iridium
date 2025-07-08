@@ -5,6 +5,7 @@ import com.ayydxn.iridium.options.IridiumGameOptions;
 import com.ayydxn.iridium.options.categories.*;
 import com.ayydxn.iridium.options.categories.util.OptionCategoryRegistry;
 import com.ayydxn.iridium.util.ClientFramerateTracker;
+import me.ayydxn.moonblast.MoonblastRenderer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -34,6 +35,7 @@ public class IridiumClientMod implements ClientModInitializer
                         .getMetadata().getVersion().getFriendlyString();
 
         LOGGER.info("Initializing Iridium... (Version: {})", this.modVersion);
+        MoonblastRenderer.sayHello();
 
         this.iridiumGameOptions = IridiumGameOptions.load();
         this.clientFramerateTracker = new ClientFramerateTracker();

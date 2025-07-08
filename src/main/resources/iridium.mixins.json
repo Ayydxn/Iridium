@@ -1,6 +1,7 @@
 {
 	"required": true,
 	"package": "com.ayydxn.iridium.mixin",
+	"plugin": "com.ayydxn.iridium.mixin.IridiumMixinPlugin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 	],

@@ -1,5 +1,5 @@
 plugins {
-    id("fabric-loom") version "1.10-SNAPSHOT"
+    id("fabric-loom") version "1.11-SNAPSHOT"
     id("maven-publish")
 }
 
@@ -51,6 +51,10 @@ repositories {
         name = "Xander's Maven"
     }
 
+    maven("https://maven.terraformersmc.com/") {
+        name = "TerraformersMC"
+    }
+
     maven("https://api.modrinth.com/maven")
 }
 
@@ -69,6 +73,13 @@ dependencies {
     // YetAnotherConfigLib. Used for Iridium's custom settings screen.
     modImplementation("dev.isxander:yet-another-config-lib:${rootProject.property("yacl_version")}")
 
+    // ModMenu
+    modImplementation("com.terraformersmc:modmenu:${rootProject.property("modmenu_version")}")
+
+    // Moonblast Renderer. The actual internal renderer implementation for Iridium.
+    implementation(project(path = ":renderer", configuration = "namedElements"))
+    include(project(path = ":renderer", configuration = "namedElements"))
+
     // LWJGL and Vulkan. Thanks to Minecraft, LWJGL's core is already present, so we don't need to include it here.
     implementation("org.lwjgl:lwjgl-shaderc:${rootProject.property("lwjgl_version")}")
     implementation("org.lwjgl:lwjgl-spvc:${rootProject.property("lwjgl_version")}")
@@ -86,8 +97,6 @@ dependencies {
     // Utility Libraries
     implementation("org.apache.maven:maven-artifact:${rootProject.property("maven_artifact_version")}")
     include("org.apache.maven:maven-artifact:${rootProject.property("maven_artifact_version")}")
-
-    modCompileOnly("maven.modrinth:vulkanmod:9BnBJI0w")
 }
 
 tasks {
