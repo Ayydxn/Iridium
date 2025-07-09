@@ -35,6 +35,8 @@ replay_*.log
 *.jfr
 
 # Misc
+logs/
+
 .metadata
 .settings
 .architectury-transformer

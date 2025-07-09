@@ -1,0 +1,6 @@
+﻿{
+  "stages": {
+    "vertex": "default_shader",
+    "fragment": "default_shader"
+  }
+}

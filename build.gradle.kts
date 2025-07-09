@@ -76,10 +76,6 @@ dependencies {
     // ModMenu
     modImplementation("com.terraformersmc:modmenu:${rootProject.property("modmenu_version")}")
 
-    // Moonblast Renderer. The actual internal renderer implementation for Iridium.
-    implementation(project(path = ":renderer", configuration = "namedElements"))
-    include(project(path = ":renderer", configuration = "namedElements"))
-
     // LWJGL and Vulkan. Thanks to Minecraft, LWJGL's core is already present, so we don't need to include it here.
     implementation("org.lwjgl:lwjgl-shaderc:${rootProject.property("lwjgl_version")}")
     implementation("org.lwjgl:lwjgl-spvc:${rootProject.property("lwjgl_version")}")
@@ -94,9 +90,9 @@ dependencies {
     if (rootProject.property("lwjgl_natives") == "natives-macos" || rootProject.property("lwjgl_natives") == "natives-macos-arm64")
         runtimeOnly("org.lwjgl:lwjgl-vulkan::${rootProject.property("lwjgl_natives")}")
 
-    // Utility Libraries
-    implementation("org.apache.maven:maven-artifact:${rootProject.property("maven_artifact_version")}")
-    include("org.apache.maven:maven-artifact:${rootProject.property("maven_artifact_version")}")
+    // Moonblast Renderer. The actual internal renderer implementation for Iridium.
+    implementation(project(path = ":renderer", configuration = "namedElements"))
+    include(project(path = ":renderer", configuration = "namedElements"))
 }
 
 tasks {

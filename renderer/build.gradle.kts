@@ -12,6 +12,7 @@ repositories {
    maven("https://maven.parchmentmc.org") {
         name = "ParchmentMC"
     }
+    mavenCentral()
 }
 
 dependencies {
@@ -22,6 +23,23 @@ dependencies {
         parchment("org.parchmentmc.data:parchment-${rootProject.property("minecraft_version")}:${rootProject.property("mappings_version")}@zip")
     })
     modImplementation("net.fabricmc:fabric-loader:${rootProject.property("fabric_loader_version")}")
+
+    // Fabric API. This is technically optional, but you probably want it anyway.
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${rootProject.property("fabric_api_version")}")
+
+    // LWJGL and Vulkan. Thanks to Minecraft, LWJGL's core is already present, so we don't need to include it here.
+    implementation("org.lwjgl:lwjgl-shaderc:${rootProject.property("lwjgl_version")}")
+    implementation("org.lwjgl:lwjgl-spvc:${rootProject.property("lwjgl_version")}")
+    implementation("org.lwjgl:lwjgl-vma:${rootProject.property("lwjgl_version")}")
+    implementation("org.lwjgl:lwjgl-vulkan:${rootProject.property("lwjgl_version")}")
+
+    runtimeOnly("org.lwjgl:lwjgl::${rootProject.property("lwjgl_natives")}")
+    runtimeOnly("org.lwjgl:lwjgl-shaderc::${rootProject.property("lwjgl_natives")}")
+    runtimeOnly("org.lwjgl:lwjgl-spvc::${rootProject.property("lwjgl_natives")}")
+    runtimeOnly("org.lwjgl:lwjgl-vma::${rootProject.property("lwjgl_natives")}")
+
+    if (rootProject.property("lwjgl_natives") == "natives-macos" || rootProject.property("lwjgl_natives") == "natives-macos-arm64")
+        runtimeOnly("org.lwjgl:lwjgl-vulkan::${rootProject.property("lwjgl_natives")}")
 }
 
 tasks {
@@ -36,8 +54,7 @@ tasks {
             "license" to rootProject.property("mod_license"),
             "minecraft_version" to rootProject.property("minecraft_version"),
             "fabric_api_version" to rootProject.property("fabric_api_version"),
-            "fabric_loader_version" to rootProject.property("fabric_loader_version"),
-            "yacl_version" to rootProject.property("yacl_version")
+            "fabric_loader_version" to rootProject.property("fabric_loader_version")
         )
 
         inputs.properties(expandProperties)

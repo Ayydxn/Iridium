@@ -1,12 +1,11 @@
-package com.ayydxn.iridium.util;
+package me.ayydxn.moonblast.utils;
 
-import com.ayydxn.iridium.IridiumClientMod;
 import net.minecraft.DetectedVersion;
 
 public class VersioningUtils
 {
     private static final SemanticVersion MINECRAFT_ARTIFACT_VERSION = SemanticVersion.parse(DetectedVersion.BUILT_IN.getName());
-    private static final SemanticVersion IRIDIUM_ARTIFACT_VERSION = SemanticVersion.parse(IridiumClientMod.getInstance().getModVersion());
+    private static final SemanticVersion IRIDIUM_ARTIFACT_VERSION = SemanticVersion.parse("2025.1.0"); // TODO: (Ayydxn) Somehow not hardcode this.
 
     public static int getMinecraftMajorVersion()
     {

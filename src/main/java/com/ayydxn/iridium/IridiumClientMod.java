@@ -35,7 +35,6 @@ public class IridiumClientMod implements ClientModInitializer
                         .getMetadata().getVersion().getFriendlyString();
 
         LOGGER.info("Initializing Iridium... (Version: {})", this.modVersion);
-        MoonblastRenderer.sayHello();
 
         this.iridiumGameOptions = IridiumGameOptions.load();
         this.clientFramerateTracker = new ClientFramerateTracker();
