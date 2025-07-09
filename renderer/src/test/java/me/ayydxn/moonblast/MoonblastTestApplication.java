@@ -1,6 +1,8 @@
 package me.ayydxn.moonblast;
 
 import me.ayydxn.moonblast.options.RendererConfig;
+import me.ayydxn.moonblast.renderer.CommandBuffer;
+import me.ayydxn.moonblast.renderer.GraphicsPipeline;
 import me.ayydxn.moonblast.renderer.SwapChain;
 import me.ayydxn.moonblast.shaders.MoonblastShader;
 import net.fabricmc.loader.api.FabricLoader;
@@ -36,14 +38,18 @@ public class MoonblastTestApplication
         swapChain.initialize(MoonblastRenderer.getInstance().getRendererConfig());
         swapChain.create(WINDOW_SIZE.getLeft(), WINDOW_SIZE.getRight());
 
-        MoonblastShader shader = new MoonblastShader("shaders/default_shader");
+        GraphicsPipeline graphicsPipeline = new GraphicsPipeline(new MoonblastShader("shaders/default_shader"), swapChain);
+        graphicsPipeline.create();
+
+        CommandBuffer commandBuffer = new CommandBuffer(swapChain.getImageCount());
 
         while (!window.shouldWindowClose())
         {
             window.update();
         }
 
-        shader.destroy();
+        commandBuffer.destroy();
+        graphicsPipeline.destroy();
         swapChain.destroy();
         window.cleanup();
     }

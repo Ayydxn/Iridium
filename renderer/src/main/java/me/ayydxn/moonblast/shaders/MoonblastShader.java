@@ -87,9 +87,9 @@ public class MoonblastShader
         });
     }
 
-    public int getShaderStageCount()
+    public Map<ShaderStage, Long> getShaderStagesAndModules()
     {
-        return this.shaderStageToShaderModule.size();
+        return shaderStageToShaderModule;
     }
 
     public long getShaderModule(ShaderStage shaderStage)

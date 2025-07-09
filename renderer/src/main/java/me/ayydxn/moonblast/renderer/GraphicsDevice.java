@@ -1,5 +1,6 @@
 package me.ayydxn.moonblast.renderer;
 
+import com.google.common.collect.Lists;
 import me.ayydxn.moonblast.renderer.exceptions.MoonblastRendererException;
 import me.ayydxn.moonblast.renderer.utils.QueueFamilyIndices;
 import me.ayydxn.moonblast.utils.PointerUtils;
@@ -9,6 +10,7 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
 
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,6 +33,7 @@ public class GraphicsDevice
     private final VkPhysicalDevice physicalDevice;
     private final VkDevice logicalDevice;
     private final DeviceInfo deviceInfo;
+    private final int depthFormat;
 
     private VkQueue graphicsQueue;
 
@@ -42,6 +45,7 @@ public class GraphicsDevice
 
         this.logicalDevice = this.createLogicalDevice(this.physicalDevice);
         this.deviceInfo = new DeviceInfo(this.physicalDevice);
+        this.depthFormat = this.findDepthFormat();
     }
 
     public void destroy()
@@ -163,6 +167,26 @@ public class GraphicsDevice
         return new VkQueue(pQueue.get(0), logicalDevice);
     }
 
+    private int findDepthFormat()
+    {
+        ArrayList<Integer> depthFormatCandidates = Lists.newArrayList(VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D32_SFLOAT, VK_FORMAT_D24_UNORM_S8_UINT,
+                VK_FORMAT_D16_UNORM_S8_UINT, VK_FORMAT_D16_UNORM);
+
+        try (MemoryStack memoryStack = MemoryStack.stackPush())
+        {
+            for (Integer depthFormat : depthFormatCandidates)
+            {
+                VkFormatProperties formatProperties = VkFormatProperties.calloc(memoryStack);
+                vkGetPhysicalDeviceFormatProperties(this.physicalDevice, depthFormat, formatProperties);
+
+                if ((formatProperties.optimalTilingFeatures() & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT) == VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT)
+                    return depthFormat;
+            }
+        }
+
+        return VK_FORMAT_UNDEFINED;
+    }
+
     public VkPhysicalDevice getPhysicalDevice()
     {
         return this.physicalDevice;
@@ -181,6 +205,11 @@ public class GraphicsDevice
     public DeviceInfo getDeviceInfo()
     {
         return this.deviceInfo;
+    }
+
+    public int getDepthFormat()
+    {
+        return this.depthFormat;
     }
 
     public static final class DeviceInfo

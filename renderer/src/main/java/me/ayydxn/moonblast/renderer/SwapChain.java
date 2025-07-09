@@ -16,9 +16,7 @@ import java.util.List;
 import static me.ayydxn.moonblast.renderer.debug.VulkanDebugUtils.vkCheckResult;
 import static org.lwjgl.glfw.GLFWVulkan.glfwCreateWindowSurface;
 import static org.lwjgl.vulkan.KHRSurface.*;
-import static org.lwjgl.vulkan.KHRSurface.vkGetPhysicalDeviceSurfaceFormatsKHR;
 import static org.lwjgl.vulkan.KHRSwapchain.*;
-import static org.lwjgl.vulkan.KHRSwapchain.vkGetSwapchainImagesKHR;
 import static org.lwjgl.vulkan.VK10.*;
 
 public class SwapChain
@@ -414,8 +412,18 @@ public class SwapChain
         return this.height;
     }
 
+    public int getImageCount()
+    {
+        return this.swapChainImages.size();
+    }
+
     public VkExtent2D getExtent()
     {
         return this.swapChainExtent;
+    }
+
+    public int getImageFormat()
+    {
+        return this.swapChainImageFormat;
     }
 }
