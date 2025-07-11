@@ -1,13 +1,9 @@
 package me.ayydxn.moonblast;
 
-import me.ayydxn.moonblast.options.RendererConfig;
+import me.ayydxn.moonblast.options.MoonblastRendererOptions;
 import me.ayydxn.moonblast.renderer.GraphicsContext;
 import me.ayydxn.moonblast.shaders.MoonblastShaderCompiler;
 import me.ayydxn.moonblast.utils.MoonblastConstants;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.appender.ConsoleAppender;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.lwjgl.Version;
 
 public class MoonblastRenderer
@@ -15,19 +11,21 @@ public class MoonblastRenderer
     private static MoonblastRenderer INSTANCE;
 
     private final GraphicsContext graphicsContext;
-    private final RendererConfig rendererConfig;
+    private final MoonblastRendererOptions moonblastRendererOptions;
+    private final long windowHandle;
 
-    private MoonblastRenderer(RendererConfig rendererConfig)
+    private MoonblastRenderer(long windowHandle, MoonblastRendererOptions moonblastRendererOptions)
     {
         MoonblastShaderCompiler.initialize();
 
-        this.graphicsContext = new GraphicsContext(rendererConfig);
+        this.graphicsContext = new GraphicsContext(moonblastRendererOptions);
         this.graphicsContext.initialize();
 
-        this.rendererConfig = rendererConfig;
+        this.moonblastRendererOptions = moonblastRendererOptions;
+        this.windowHandle = windowHandle;
     }
 
-    public static void initialize(RendererConfig rendererConfig)
+    public static void initialize(long windowHandle, MoonblastRendererOptions moonblastRendererOptions)
     {
         if (INSTANCE != null)
         {
@@ -37,7 +35,7 @@ public class MoonblastRenderer
 
         MoonblastConstants.LOGGER.info("Initializing Moonblast Renderer...\n- Version: {}\n- LWJGL Version: {}", "2025.1.0", Version.getVersion());
 
-        INSTANCE = new MoonblastRenderer(rendererConfig);
+        INSTANCE = new MoonblastRenderer(windowHandle, moonblastRendererOptions);
     }
 
     public void shutdown()
@@ -60,8 +58,13 @@ public class MoonblastRenderer
         return this.graphicsContext;
     }
 
-    public RendererConfig getRendererConfig()
+    public MoonblastRendererOptions getOptions()
     {
-        return this.rendererConfig;
+        return this.moonblastRendererOptions;
+    }
+
+    public long getWindowHandle()
+    {
+        return this.windowHandle;
     }
 }

@@ -2,7 +2,8 @@ package me.ayydxn.moonblast.renderer;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import me.ayydxn.moonblast.options.RendererConfig;
+import me.ayydxn.moonblast.MoonblastRenderer;
+import me.ayydxn.moonblast.options.MoonblastRendererOptions;
 import me.ayydxn.moonblast.renderer.exceptions.MoonblastRendererException;
 import me.ayydxn.moonblast.renderer.utils.QueueFamilyIndices;
 import me.ayydxn.moonblast.utils.MoonblastConstants;
@@ -42,9 +43,9 @@ public class SwapChain
     private long windowSurface;
     private int presentFamily;
 
-    public SwapChain(GraphicsContext graphicsContext)
+    public SwapChain()
     {
-        this.graphicsContext = graphicsContext;
+        this.graphicsContext = MoonblastRenderer.getInstance().getGraphicsContext();
         this.graphicsDevice = graphicsContext.getGraphicsDevice();
 
         this.width = 0;
@@ -57,16 +58,16 @@ public class SwapChain
         this.presentFamily = 0;
     }
 
-    public void initialize(RendererConfig rendererConfig)
+    public void initialize()
     {
-        this.windowSurface = this.createWindowSurface(rendererConfig.windowHandle(), this.graphicsContext.getVulkanInstance());
+        this.windowSurface = this.createWindowSurface(MoonblastRenderer.getInstance().getWindowHandle(), this.graphicsContext.getVulkanInstance());
 
         if (!this.isPresentationSupported(this.graphicsDevice.getPhysicalDevice(), this.windowSurface))
             throw new MoonblastRendererException("The selected physical device doesn't support presenting to a window surface!");
 
         this.selectImageFormatAndColorSpace();
 
-        this.vSync = rendererConfig.enableVSync();
+        this.vSync = MoonblastRenderer.getInstance().getOptions().rendererOptions.enableVSync;
         this.isInitialized = true;
     }
 

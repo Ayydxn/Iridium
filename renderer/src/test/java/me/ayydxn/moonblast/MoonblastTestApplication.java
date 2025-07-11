@@ -1,11 +1,10 @@
 package me.ayydxn.moonblast;
 
-import me.ayydxn.moonblast.options.RendererConfig;
+import me.ayydxn.moonblast.options.MoonblastRendererOptions;
 import me.ayydxn.moonblast.renderer.CommandBuffer;
 import me.ayydxn.moonblast.renderer.GraphicsPipeline;
 import me.ayydxn.moonblast.renderer.SwapChain;
 import me.ayydxn.moonblast.shaders.MoonblastShader;
-import net.fabricmc.loader.api.FabricLoader;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -32,10 +31,18 @@ public class MoonblastTestApplication
         Window window = new Window(String.format("Moonblast Renderer Demo // v%s (Graphics API: Vulkan)", VERSION), WINDOW_SIZE.getLeft(), WINDOW_SIZE.getRight());
         window.create();
 
-        MoonblastRenderer.initialize(new RendererConfig(window.getHandle(), ENABLE_VSYNC, ENABLE_SHADER_CACHING, ENABLE_VALIDATION));
+        MoonblastRendererOptions moonblastRendererOptions = MoonblastRendererOptions.load();
+        moonblastRendererOptions.rendererOptions.enableVSync = ENABLE_VSYNC;
+        moonblastRendererOptions.rendererOptions.enableShaderCaching = ENABLE_SHADER_CACHING;
 
-        SwapChain swapChain = new SwapChain(MoonblastRenderer.getInstance().getGraphicsContext());
-        swapChain.initialize(MoonblastRenderer.getInstance().getRendererConfig());
+        moonblastRendererOptions.debugOptions.enableValidationLayers = ENABLE_VALIDATION;
+
+        moonblastRendererOptions.write();
+
+        MoonblastRenderer.initialize(window.getHandle(), moonblastRendererOptions);
+
+        SwapChain swapChain = new SwapChain();
+        swapChain.initialize();
         swapChain.create(WINDOW_SIZE.getLeft(), WINDOW_SIZE.getRight());
 
         GraphicsPipeline graphicsPipeline = new GraphicsPipeline(new MoonblastShader("shaders/default_shader"), swapChain);

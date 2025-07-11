@@ -22,4 +22,9 @@ public class PathUtils
 
         return shaderCacheDirectory;
     }
+
+    public static Path getConfigFilePath()
+    {
+        return Path.of(System.getProperty("user.home") + "/.moonblast/options.json");
+    }
 }

@@ -87,7 +87,7 @@ public class MoonblastShaderCompiler
         Path shaderCacheDirectory = PathUtils.getShaderCacheDirectory();
         String shaderFilename = StringUtils.substringBefore(FilenameUtils.getName(shaderFilepath), ".");
 
-        if (MoonblastRenderer.getInstance().getRendererConfig().enableShaderCaching())
+        if (MoonblastRenderer.getInstance().getOptions().rendererOptions.enableShaderCaching)
         {
             Path shaderCacheFilepath = Path.of(shaderCacheDirectory + "/" + shaderFilename + "_" + shaderStage.getCacheID() +
                     MoonblastConstants.SHADER_CACHE_FILE_EXTENSION);

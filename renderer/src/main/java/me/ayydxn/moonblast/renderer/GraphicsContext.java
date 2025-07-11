@@ -1,6 +1,6 @@
 package me.ayydxn.moonblast.renderer;
 
-import me.ayydxn.moonblast.options.RendererConfig;
+import me.ayydxn.moonblast.options.MoonblastRendererOptions;
 import me.ayydxn.moonblast.renderer.debug.VulkanDebugUtils;
 import me.ayydxn.moonblast.renderer.exceptions.MoonblastRendererException;
 import me.ayydxn.moonblast.utils.MoonblastConstants;
@@ -31,12 +31,12 @@ public class GraphicsContext
     private long debugMessenger;
     private GraphicsDevice graphicsDevice;
 
-    public GraphicsContext(RendererConfig rendererConfig)
+    public GraphicsContext(MoonblastRendererOptions moonblastRendererOptions)
     {
-        validationLayers = rendererConfig.enableValidationLayers() ? new HashSet<>(VulkanDebugUtils.getSupportedValidationLayers()) :
+        validationLayers = moonblastRendererOptions.debugOptions.enableValidationLayers ? new HashSet<>(VulkanDebugUtils.getSupportedValidationLayers()) :
                 Sets.newHashSet();
 
-        enableValidationLayers = rendererConfig.enableValidationLayers();
+        enableValidationLayers = moonblastRendererOptions.debugOptions.enableValidationLayers;
     }
 
     public void initialize()
