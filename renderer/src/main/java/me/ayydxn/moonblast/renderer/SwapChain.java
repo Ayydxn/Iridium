@@ -2,7 +2,6 @@ package me.ayydxn.moonblast.renderer;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.sun.jna.platform.win32.Netapi32Util;
 import me.ayydxn.moonblast.MoonblastRenderer;
 import me.ayydxn.moonblast.renderer.exceptions.MoonblastRendererException;
 import me.ayydxn.moonblast.renderer.utils.QueueFamilyIndices;
@@ -13,6 +12,7 @@ import org.lwjgl.vulkan.*;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static me.ayydxn.moonblast.renderer.debug.VulkanDebugUtils.vkCheckResult;
 import static org.lwjgl.glfw.GLFWVulkan.glfwCreateWindowSurface;
@@ -24,16 +24,18 @@ public class SwapChain
 {
     private final GraphicsContext graphicsContext;
     private final GraphicsDevice graphicsDevice;
+    private final int framesInFlight;
 
     private List<Long> swapChainImages;
     private List<Long> swapChainImageViews;
     private VkExtent2D swapChainExtent;
-    private long waitFence;
-    private long presentCompleteSemaphore;
-    private long renderCompleteSemaphore;
+    private List<Long> presentCompleteSemaphores;
+    private List<Long> renderCompleteSemaphores;
+    private List<Long> waitFences;
     private int swapChainImageFormat;
     private int swapChainColorSpace;
     private int swapChainImageIndex;
+    private int swapChainFrameIndex;
 
     private int width;
     private int height;
@@ -48,6 +50,7 @@ public class SwapChain
     {
         this.graphicsContext = MoonblastRenderer.getInstance().getGraphicsContext();
         this.graphicsDevice = graphicsContext.getGraphicsDevice();
+        this.framesInFlight = MoonblastRenderer.getInstance().getOptions().rendererOptions.framesInFlight;
 
         this.width = 0;
         this.height = 0;
@@ -241,32 +244,43 @@ public class SwapChain
 
             this.createImageViews();
 
-            if (this.presentCompleteSemaphore == VK_NULL_HANDLE || this.renderCompleteSemaphore == VK_NULL_HANDLE)
+            if (this.presentCompleteSemaphores == null || this.renderCompleteSemaphores == null)
             {
+                this.presentCompleteSemaphores = Lists.newArrayListWithCapacity(this.framesInFlight);
+                this.renderCompleteSemaphores = Lists.newArrayListWithCapacity(this.framesInFlight);
+
                 LongBuffer pPresentAvailableSemaphore = memoryStack.longs(VK_NULL_HANDLE);
                 LongBuffer pRenderFinishedSemaphore = memoryStack.longs(VK_NULL_HANDLE);
 
                 VkSemaphoreCreateInfo semaphoreCreateInfo = VkSemaphoreCreateInfo.calloc(memoryStack);
                 semaphoreCreateInfo.sType(VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO);
 
-                vkCheckResult(vkCreateSemaphore(this.graphicsDevice.getLogicalDevice(), semaphoreCreateInfo, null, pPresentAvailableSemaphore));
-                vkCheckResult(vkCreateSemaphore(this.graphicsDevice.getLogicalDevice(), semaphoreCreateInfo, null, pRenderFinishedSemaphore));
+                for (int i = 0; i < this.framesInFlight; i++)
+                {
+                    vkCheckResult(vkCreateSemaphore(this.graphicsDevice.getLogicalDevice(), semaphoreCreateInfo, null, pPresentAvailableSemaphore));
+                    vkCheckResult(vkCreateSemaphore(this.graphicsDevice.getLogicalDevice(), semaphoreCreateInfo, null, pRenderFinishedSemaphore));
 
-                this.presentCompleteSemaphore = pPresentAvailableSemaphore.get(0);
-                this.renderCompleteSemaphore = pRenderFinishedSemaphore.get(0);
+                    this.presentCompleteSemaphores.add(pPresentAvailableSemaphore.get(0));
+                    this.renderCompleteSemaphores.add(pRenderFinishedSemaphore.get(0));
+                }
             }
 
-            if (this.waitFence == VK_NULL_HANDLE)
+            if (this.waitFences == null)
             {
+                this.waitFences = Lists.newArrayListWithCapacity(this.framesInFlight);
+
                 LongBuffer pWaitFence = memoryStack.longs(VK_NULL_HANDLE);
 
                 VkFenceCreateInfo fenceCreateInfo = VkFenceCreateInfo.calloc(memoryStack);
                 fenceCreateInfo.sType(VK_STRUCTURE_TYPE_FENCE_CREATE_INFO);
                 fenceCreateInfo.flags(VK_FENCE_CREATE_SIGNALED_BIT);
 
-                vkCheckResult(vkCreateFence(this.graphicsDevice.getLogicalDevice(), fenceCreateInfo, null, pWaitFence));
+                for (int i = 0; i < this.framesInFlight; i++)
+                {
+                    vkCheckResult(vkCreateFence(this.graphicsDevice.getLogicalDevice(), fenceCreateInfo, null, pWaitFence));
 
-                this.waitFence = pWaitFence.get(0);
+                    this.waitFences.add(pWaitFence.get(0));
+                }
             }
         }
     }
@@ -277,9 +291,12 @@ public class SwapChain
 
         vkDestroySwapchainKHR(this.graphicsDevice.getLogicalDevice(), this.swapChainHandle, null);
         vkDestroySurfaceKHR(this.graphicsContext.getVulkanInstance(), this.windowSurface, null);
-        vkDestroySemaphore(this.graphicsDevice.getLogicalDevice(), this.presentCompleteSemaphore, null);
-        vkDestroySemaphore(this.graphicsDevice.getLogicalDevice(), this.renderCompleteSemaphore, null);
-        vkDestroyFence(this.graphicsDevice.getLogicalDevice(), this.waitFence, null);
+
+        for (long semaphore : Stream.concat(this.presentCompleteSemaphores.stream(), this.renderCompleteSemaphores.stream()).toList())
+            vkDestroySemaphore(this.graphicsDevice.getLogicalDevice(), semaphore, null);
+
+        for (long waitFence : this.waitFences)
+            vkDestroyFence(this.graphicsDevice.getLogicalDevice(), waitFence, null);
 
         for (long swapChainImageView : this.swapChainImageViews)
             vkDestroyImageView(this.graphicsDevice.getLogicalDevice(), swapChainImageView, null);
@@ -291,37 +308,42 @@ public class SwapChain
     {
         VkDevice logicalDevice = this.graphicsDevice.getLogicalDevice();
         VkQueue graphicsQueue = this.graphicsDevice.getGraphicsQueue();
+        long presentCompleteSemaphore = this.presentCompleteSemaphores.get(this.swapChainFrameIndex);
+        long renderCompleteSemaphore = this.renderCompleteSemaphores.get(this.swapChainFrameIndex);
+        long waitFence = this.waitFences.get(this.swapChainFrameIndex);
 
         try (MemoryStack memoryStack = MemoryStack.stackPush())
         {
             // Wait for the previous frame to finish
-            vkWaitForFences(logicalDevice, this.waitFence, true, MoonblastConstants.UINT64_MAX);
-            vkResetFences(logicalDevice, this.waitFence);
+            vkWaitForFences(logicalDevice, waitFence, true, MoonblastConstants.UINT64_MAX);
+            vkResetFences(logicalDevice, waitFence);
 
             IntBuffer pCurrentImageIndex = memoryStack.ints(-1);
-            vkCheckResult(vkAcquireNextImageKHR(logicalDevice, this.swapChainHandle, MoonblastConstants.UINT64_MAX, this.presentCompleteSemaphore, VK_NULL_HANDLE, pCurrentImageIndex));
+            vkCheckResult(vkAcquireNextImageKHR(logicalDevice, this.swapChainHandle, MoonblastConstants.UINT64_MAX, presentCompleteSemaphore, VK_NULL_HANDLE, pCurrentImageIndex));
 
             this.swapChainImageIndex = pCurrentImageIndex.get(0);
 
             VkSubmitInfo submitInfo =  VkSubmitInfo.calloc(memoryStack)
                     .sType(VK_STRUCTURE_TYPE_SUBMIT_INFO)
-                    .pWaitSemaphores(memoryStack.longs(this.presentCompleteSemaphore))
+                    .pWaitSemaphores(memoryStack.longs(presentCompleteSemaphore))
                     .waitSemaphoreCount(1)
                     .pWaitDstStageMask(memoryStack.ints(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT))
-                    .pSignalSemaphores(memoryStack.longs(this.renderCompleteSemaphore));
+                    .pSignalSemaphores(memoryStack.longs(renderCompleteSemaphore));
 
-            vkCheckResult(vkQueueSubmit(graphicsQueue, submitInfo, this.waitFence));
+            vkCheckResult(vkQueueSubmit(graphicsQueue, submitInfo, waitFence));
 
             VkPresentInfoKHR presentInfo = VkPresentInfoKHR.calloc(memoryStack)
                     .sType(VK_STRUCTURE_TYPE_PRESENT_INFO_KHR)
 
-                    .pWaitSemaphores(memoryStack.longs(this.renderCompleteSemaphore))
+                    .pWaitSemaphores(memoryStack.longs(renderCompleteSemaphore))
                     .pSwapchains(memoryStack.longs(this.swapChainHandle))
                     .swapchainCount(1)
                     .pImageIndices(pCurrentImageIndex);
 
             vkCheckResult(vkQueuePresentKHR(graphicsQueue, presentInfo));
         }
+
+        this.swapChainFrameIndex = (this.swapChainFrameIndex + 1) % this.framesInFlight;
     }
 
     private long createWindowSurface(long window, VkInstance vulkanInstance)

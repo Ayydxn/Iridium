@@ -26,6 +26,9 @@ public class MoonblastTestApplication
     private static final boolean ENABLE_SHADER_CACHING = false;
     private static final boolean ENABLE_VALIDATION = true;
 
+    private static final int FRAMES_IN_FLIGHT = 3;
+    /*----------------------*/
+
     public static void main(String[] args)
     {
         Window window = new Window(String.format("Moonblast Renderer Demo // v%s (Graphics API: Vulkan)", VERSION), WINDOW_SIZE.getLeft(), WINDOW_SIZE.getRight());
@@ -34,6 +37,7 @@ public class MoonblastTestApplication
         MoonblastRendererOptions moonblastRendererOptions = MoonblastRendererOptions.load();
         moonblastRendererOptions.rendererOptions.enableVSync = ENABLE_VSYNC;
         moonblastRendererOptions.rendererOptions.enableShaderCaching = ENABLE_SHADER_CACHING;
+        moonblastRendererOptions.rendererOptions.framesInFlight = FRAMES_IN_FLIGHT;
         moonblastRendererOptions.debugOptions.enableValidationLayers = ENABLE_VALIDATION;
         moonblastRendererOptions.write();
 

@@ -82,6 +82,8 @@ public class MoonblastRendererOptions
     {
         public boolean enableVSync = true;
         public boolean enableShaderCaching = true;
+
+        public int framesInFlight = 3;
     }
 
     public static class DebugOptions

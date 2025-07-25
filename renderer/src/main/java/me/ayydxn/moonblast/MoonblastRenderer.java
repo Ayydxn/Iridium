@@ -57,10 +57,10 @@ public class MoonblastRenderer
 
     private void initialize()
     {
-        this.graphicsContext = new GraphicsContext(moonblastRendererOptions);
+        this.graphicsContext = new GraphicsContext(this.moonblastRendererOptions);
         this.graphicsContext.initialize();
 
-        this.rendererCommandBuffer = new CommandBuffer(1);
+        this.rendererCommandBuffer = new CommandBuffer(this.moonblastRendererOptions.rendererOptions.framesInFlight);
     }
 
     public void shutdown()
