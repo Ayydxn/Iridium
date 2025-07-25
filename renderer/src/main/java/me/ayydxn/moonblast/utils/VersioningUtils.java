@@ -1,11 +1,12 @@
 package me.ayydxn.moonblast.utils;
 
+import me.ayydxn.moonblast.MoonblastRenderer;
 import net.minecraft.DetectedVersion;
 
 public class VersioningUtils
 {
     private static final SemanticVersion MINECRAFT_ARTIFACT_VERSION = SemanticVersion.parse(DetectedVersion.BUILT_IN.getName());
-    private static final SemanticVersion IRIDIUM_ARTIFACT_VERSION = SemanticVersion.parse("2025.1.0"); // TODO: (Ayydxn) Somehow not hardcode this.
+    private static final SemanticVersion IRIDIUM_ARTIFACT_VERSION = SemanticVersion.parse(MoonblastRenderer.getVersion());
 
     public static int getMinecraftMajorVersion()
     {
@@ -60,6 +61,7 @@ public class VersioningUtils
             int major = parts.length > 0 ? parseIntSafe(parts[0]) : 0;
             int minor = parts.length > 1 ? parseIntSafe(parts[1]) : 0;
             int patch = parts.length > 2 ? parseIntSafe(parts[2]) : 0;
+
             return new SemanticVersion(major, minor, patch);
         }
 

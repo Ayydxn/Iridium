@@ -75,7 +75,7 @@ public class MoonblastShader
             {
                 LongBuffer pShaderModule = memoryStack.mallocLong(1);
 
-                // (Ayydxn) Set the position of the ByteBuffer back to 0 if it isn't already or else Vulkan is going to complain that isn't valid SPIR-V code.
+                // (Ayydxn) Set the position of the ByteBuffer back to 0 if it isn't already or else, Vulkan is going to complain that it isn't valid SPIR-V code.
                 VkShaderModuleCreateInfo shaderModuleCreateInfo = VkShaderModuleCreateInfo.calloc(memoryStack)
                         .sType(VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO)
                         .pCode(shaderSPIRV.getShaderBytecode().position() == 0 ? shaderSPIRV.getShaderBytecode() : shaderSPIRV.getShaderBytecode().rewind());

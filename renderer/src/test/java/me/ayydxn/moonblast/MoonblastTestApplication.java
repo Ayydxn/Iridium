@@ -23,7 +23,7 @@ public class MoonblastTestApplication
 
     /* -- Config Options -- */
     private static final boolean ENABLE_VSYNC = true;
-    private static final boolean ENABLE_SHADER_CACHING = true;
+    private static final boolean ENABLE_SHADER_CACHING = false;
     private static final boolean ENABLE_VALIDATION = true;
 
     public static void main(String[] args)
@@ -34,9 +34,7 @@ public class MoonblastTestApplication
         MoonblastRendererOptions moonblastRendererOptions = MoonblastRendererOptions.load();
         moonblastRendererOptions.rendererOptions.enableVSync = ENABLE_VSYNC;
         moonblastRendererOptions.rendererOptions.enableShaderCaching = ENABLE_SHADER_CACHING;
-
         moonblastRendererOptions.debugOptions.enableValidationLayers = ENABLE_VALIDATION;
-
         moonblastRendererOptions.write();
 
         MoonblastRenderer.initialize(window.getHandle(), moonblastRendererOptions);
@@ -48,14 +46,19 @@ public class MoonblastTestApplication
         GraphicsPipeline graphicsPipeline = new GraphicsPipeline(new MoonblastShader("shaders/default_shader"), swapChain);
         graphicsPipeline.create();
 
-        CommandBuffer commandBuffer = new CommandBuffer(swapChain.getImageCount());
-
         while (!window.shouldWindowClose())
         {
             window.update();
+
+            MoonblastRenderer.getInstance().beginFrame(swapChain);
+
+            MoonblastRenderer.getInstance().draw(graphicsPipeline);
+
+            MoonblastRenderer.getInstance().endFrame();
+
+            swapChain.present();
         }
 
-        commandBuffer.destroy();
         graphicsPipeline.destroy();
         swapChain.destroy();
         window.cleanup();

@@ -40,6 +40,58 @@ public class CommandBuffer
         vkDestroyCommandPool(this.logicalDevice, this.commandPool, null);
     }
 
+    public void begin()
+    {
+        try (MemoryStack memoryStack = MemoryStack.stackPush())
+        {
+            VkCommandBuffer commandBuffer = this.commandBuffers.getFirst();
+
+            VkCommandBufferBeginInfo commandBufferBeginInfo = VkCommandBufferBeginInfo.calloc(memoryStack)
+                    .sType(VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO)
+                    .flags(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+
+            vkCheckResult(vkBeginCommandBuffer(commandBuffer, commandBufferBeginInfo));
+
+            this.activeCommandBuffer = commandBuffer;
+        }
+    }
+
+    public void end()
+    {
+        VkCommandBuffer commandBuffer = this.commandBuffers.getFirst();
+
+        vkCheckResult(vkEndCommandBuffer(commandBuffer));
+
+        this.activeCommandBuffer = null;
+    }
+
+    public void submit()
+    {
+        try (MemoryStack memoryStack = MemoryStack.stackPush())
+        {
+            VkQueue graphicsQueue = MoonblastRenderer.getInstance().getGraphicsContext().getGraphicsDevice().getGraphicsQueue();
+            VkCommandBuffer commandBuffer = this.commandBuffers.getFirst();
+
+            VkSubmitInfo submitInfo = VkSubmitInfo.calloc(memoryStack)
+                    .sType(VK_STRUCTURE_TYPE_SUBMIT_INFO)
+                    .pCommandBuffers(memoryStack.pointers(commandBuffer));
+
+            vkCheckResult(vkQueueSubmit(graphicsQueue, submitInfo, VK_NULL_HANDLE));
+
+            vkQueueWaitIdle(graphicsQueue);
+        }
+    }
+
+    public VkCommandBuffer getActiveCommandBuffer()
+    {
+        return this.activeCommandBuffer;
+    }
+
+    public VkCommandBuffer getCommandBuffer(int index)
+    {
+        return this.commandBuffers.get(index);
+    }
+
     private long createCommandPool()
     {
         try (MemoryStack memoryStack = MemoryStack.stackPush())

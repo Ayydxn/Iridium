@@ -2,8 +2,8 @@ package me.ayydxn.moonblast.renderer;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.sun.jna.platform.win32.Netapi32Util;
 import me.ayydxn.moonblast.MoonblastRenderer;
-import me.ayydxn.moonblast.options.MoonblastRendererOptions;
 import me.ayydxn.moonblast.renderer.exceptions.MoonblastRendererException;
 import me.ayydxn.moonblast.renderer.utils.QueueFamilyIndices;
 import me.ayydxn.moonblast.utils.MoonblastConstants;
@@ -27,12 +27,13 @@ public class SwapChain
 
     private List<Long> swapChainImages;
     private List<Long> swapChainImageViews;
-    private List<Long> waitFences;
     private VkExtent2D swapChainExtent;
+    private long waitFence;
     private long presentCompleteSemaphore;
     private long renderCompleteSemaphore;
     private int swapChainImageFormat;
     private int swapChainColorSpace;
+    private int swapChainImageIndex;
 
     private int width;
     private int height;
@@ -255,22 +256,17 @@ public class SwapChain
                 this.renderCompleteSemaphore = pRenderFinishedSemaphore.get(0);
             }
 
-            if (this.waitFences == null)
+            if (this.waitFence == VK_NULL_HANDLE)
             {
-                this.waitFences = Lists.newArrayListWithCapacity(this.swapChainImages.size());
-
                 LongBuffer pWaitFence = memoryStack.longs(VK_NULL_HANDLE);
 
                 VkFenceCreateInfo fenceCreateInfo = VkFenceCreateInfo.calloc(memoryStack);
                 fenceCreateInfo.sType(VK_STRUCTURE_TYPE_FENCE_CREATE_INFO);
                 fenceCreateInfo.flags(VK_FENCE_CREATE_SIGNALED_BIT);
 
-                for (int i = 0; i < this.swapChainImages.size(); i++)
-                {
-                    vkCheckResult(vkCreateFence(this.graphicsDevice.getLogicalDevice(), fenceCreateInfo, null, pWaitFence));
+                vkCheckResult(vkCreateFence(this.graphicsDevice.getLogicalDevice(), fenceCreateInfo, null, pWaitFence));
 
-                    this.waitFences.add(pWaitFence.get(0));
-                }
+                this.waitFence = pWaitFence.get(0);
             }
         }
     }
@@ -283,14 +279,49 @@ public class SwapChain
         vkDestroySurfaceKHR(this.graphicsContext.getVulkanInstance(), this.windowSurface, null);
         vkDestroySemaphore(this.graphicsDevice.getLogicalDevice(), this.presentCompleteSemaphore, null);
         vkDestroySemaphore(this.graphicsDevice.getLogicalDevice(), this.renderCompleteSemaphore, null);
+        vkDestroyFence(this.graphicsDevice.getLogicalDevice(), this.waitFence, null);
 
         for (long swapChainImageView : this.swapChainImageViews)
             vkDestroyImageView(this.graphicsDevice.getLogicalDevice(), swapChainImageView, null);
-
-        for (long waitFence : this.waitFences)
-            vkDestroyFence(this.graphicsDevice.getLogicalDevice(), waitFence, null);
         
         this.graphicsDevice.waitIdle();
+    }
+
+    public void present()
+    {
+        VkDevice logicalDevice = this.graphicsDevice.getLogicalDevice();
+        VkQueue graphicsQueue = this.graphicsDevice.getGraphicsQueue();
+
+        try (MemoryStack memoryStack = MemoryStack.stackPush())
+        {
+            // Wait for the previous frame to finish
+            vkWaitForFences(logicalDevice, this.waitFence, true, MoonblastConstants.UINT64_MAX);
+            vkResetFences(logicalDevice, this.waitFence);
+
+            IntBuffer pCurrentImageIndex = memoryStack.ints(-1);
+            vkCheckResult(vkAcquireNextImageKHR(logicalDevice, this.swapChainHandle, MoonblastConstants.UINT64_MAX, this.presentCompleteSemaphore, VK_NULL_HANDLE, pCurrentImageIndex));
+
+            this.swapChainImageIndex = pCurrentImageIndex.get(0);
+
+            VkSubmitInfo submitInfo =  VkSubmitInfo.calloc(memoryStack)
+                    .sType(VK_STRUCTURE_TYPE_SUBMIT_INFO)
+                    .pWaitSemaphores(memoryStack.longs(this.presentCompleteSemaphore))
+                    .waitSemaphoreCount(1)
+                    .pWaitDstStageMask(memoryStack.ints(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT))
+                    .pSignalSemaphores(memoryStack.longs(this.renderCompleteSemaphore));
+
+            vkCheckResult(vkQueueSubmit(graphicsQueue, submitInfo, this.waitFence));
+
+            VkPresentInfoKHR presentInfo = VkPresentInfoKHR.calloc(memoryStack)
+                    .sType(VK_STRUCTURE_TYPE_PRESENT_INFO_KHR)
+
+                    .pWaitSemaphores(memoryStack.longs(this.renderCompleteSemaphore))
+                    .pSwapchains(memoryStack.longs(this.swapChainHandle))
+                    .swapchainCount(1)
+                    .pImageIndices(pCurrentImageIndex);
+
+            vkCheckResult(vkQueuePresentKHR(graphicsQueue, presentInfo));
+        }
     }
 
     private long createWindowSurface(long window, VkInstance vulkanInstance)
@@ -413,9 +444,14 @@ public class SwapChain
         return this.height;
     }
 
-    public int getImageCount()
+    public long getCurrentImage()
     {
-        return this.swapChainImages.size();
+        return this.swapChainImages.get(this.swapChainImageIndex);
+    }
+
+    public long getCurrentImageView()
+    {
+        return this.swapChainImageViews.get(this.swapChainImageIndex);
     }
 
     public VkExtent2D getExtent()
