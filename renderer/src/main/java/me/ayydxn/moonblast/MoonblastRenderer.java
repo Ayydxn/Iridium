@@ -31,6 +31,7 @@ public class MoonblastRenderer
     private GraphicsContext graphicsContext;
     private CommandBuffer rendererCommandBuffer;
     private SwapChain activeSwapChain;
+    private boolean skippingCurrentFrame;
 
     private MoonblastRenderer(long windowHandle, MoonblastRendererOptions moonblastRendererOptions)
     {
@@ -77,6 +78,11 @@ public class MoonblastRenderer
         int swapChainWidth = swapChain.getWidth();
         int swapChainHeight = swapChain.getHeight();
         long swapChainImage = swapChain.getCurrentImage();
+
+        this.skippingCurrentFrame = swapChainWidth == 0 || swapChainHeight == 0;
+
+        if (this.skippingCurrentFrame)
+            return;
 
         try (MemoryStack memoryStack = MemoryStack.stackPush())
         {
@@ -138,6 +144,9 @@ public class MoonblastRenderer
 
     public void endFrame()
     {
+        if (this.skippingCurrentFrame)
+            return;
+
         VkCommandBuffer commandBuffer = this.rendererCommandBuffer.getActiveCommandBuffer();
         long swapChainImage = this.activeSwapChain.getCurrentImage();
 

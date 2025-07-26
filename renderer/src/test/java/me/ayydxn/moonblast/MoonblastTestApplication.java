@@ -29,6 +29,8 @@ public class MoonblastTestApplication
     private static final int FRAMES_IN_FLIGHT = 3;
     /*----------------------*/
 
+    private static boolean isWindowMinimized = false;
+
     public static void main(String[] args)
     {
         Window window = new Window(String.format("Moonblast Renderer Demo // v%s (Graphics API: Vulkan)", VERSION), WINDOW_SIZE.getLeft(), WINDOW_SIZE.getRight());
@@ -50,13 +52,23 @@ public class MoonblastTestApplication
         GraphicsPipeline graphicsPipeline = new GraphicsPipeline(new MoonblastShader("shaders/default_shader"), swapChain);
         graphicsPipeline.create();
 
+        glfwSetFramebufferSizeCallback(window.getHandle(), (appWindow, newWidth, newHeight) ->
+        {
+            isWindowMinimized = newWidth == 0 || newHeight == 0;
+
+            swapChain.onResize(newWidth, newHeight);
+        });
+
         while (!window.shouldWindowClose())
         {
             window.update();
 
             MoonblastRenderer.getInstance().beginFrame(swapChain);
 
-            MoonblastRenderer.getInstance().draw(graphicsPipeline);
+            if (!isWindowMinimized)
+            {
+                MoonblastRenderer.getInstance().draw(graphicsPipeline);
+            }
 
             MoonblastRenderer.getInstance().endFrame();
 
@@ -94,7 +106,6 @@ public class MoonblastTestApplication
         public void create()
         {
             glfwDefaultWindowHints();
-            glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
             this.handle = glfwCreateWindow(this.width, this.height, this.title, MemoryUtil.NULL, MemoryUtil.NULL);

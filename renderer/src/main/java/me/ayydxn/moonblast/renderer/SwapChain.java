@@ -316,10 +316,19 @@ public class SwapChain
         {
             // Wait for the previous frame to finish
             vkWaitForFences(logicalDevice, waitFence, true, MoonblastConstants.UINT64_MAX);
-            vkResetFences(logicalDevice, waitFence);
 
             IntBuffer pCurrentImageIndex = memoryStack.ints(-1);
-            vkCheckResult(vkAcquireNextImageKHR(logicalDevice, this.swapChainHandle, MoonblastConstants.UINT64_MAX, presentCompleteSemaphore, VK_NULL_HANDLE, pCurrentImageIndex));
+            int acquireNextImageResult = vkAcquireNextImageKHR(logicalDevice, this.swapChainHandle, MoonblastConstants.UINT64_MAX, presentCompleteSemaphore, VK_NULL_HANDLE, pCurrentImageIndex);
+
+            if (acquireNextImageResult == VK_ERROR_OUT_OF_DATE_KHR)
+            {
+                this.onResize(this.width, this.height);
+                return;
+            }
+            else if (acquireNextImageResult != VK_SUCCESS && acquireNextImageResult != VK_SUBOPTIMAL_KHR)
+            {
+                throw new MoonblastRendererException("Failed to acquire the next swap chain image!");
+            }
 
             this.swapChainImageIndex = pCurrentImageIndex.get(0);
 
@@ -330,20 +339,39 @@ public class SwapChain
                     .pWaitDstStageMask(memoryStack.ints(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT))
                     .pSignalSemaphores(memoryStack.longs(renderCompleteSemaphore));
 
+            vkResetFences(logicalDevice, waitFence);
             vkCheckResult(vkQueueSubmit(graphicsQueue, submitInfo, waitFence));
 
             VkPresentInfoKHR presentInfo = VkPresentInfoKHR.calloc(memoryStack)
                     .sType(VK_STRUCTURE_TYPE_PRESENT_INFO_KHR)
-
                     .pWaitSemaphores(memoryStack.longs(renderCompleteSemaphore))
                     .pSwapchains(memoryStack.longs(this.swapChainHandle))
                     .swapchainCount(1)
                     .pImageIndices(pCurrentImageIndex);
 
-            vkCheckResult(vkQueuePresentKHR(graphicsQueue, presentInfo));
+            int presentResult = vkQueuePresentKHR(graphicsQueue, presentInfo);
+
+            if (presentResult == VK_ERROR_OUT_OF_DATE_KHR || presentResult == VK_SUBOPTIMAL_KHR)
+            {
+                this.onResize(this.width, this.height);
+            }
+            else if (presentResult != VK_SUCCESS)
+            {
+                throw new MoonblastRendererException("Failed to present the swap chain image!");
+            }
         }
 
         this.swapChainFrameIndex = (this.swapChainFrameIndex + 1) % this.framesInFlight;
+    }
+
+    public void onResize(int newWidth, int newHeight)
+    {
+        this.width = newWidth;
+        this.height = newHeight;
+
+        this.graphicsDevice.waitIdle();
+
+        this.create(newWidth, newHeight);
     }
 
     private long createWindowSurface(long window, VkInstance vulkanInstance)
