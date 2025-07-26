@@ -88,9 +88,9 @@ public class VulkanMemoryAllocator
         }
     }
 
-    public void destroyBuffer(long buffer, long bufferAllocation)
+    public void destroyBuffer(AllocatedBuffer buffer)
     {
-        vmaDestroyBuffer(this.vmaAllocator, buffer, bufferAllocation);
+        vmaDestroyBuffer(this.vmaAllocator, buffer.buffer(), buffer.bufferAllocation());
     }
 
     public PointerBuffer mapMemory(long allocation)
