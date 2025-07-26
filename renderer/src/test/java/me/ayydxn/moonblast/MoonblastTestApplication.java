@@ -1,15 +1,23 @@
 package me.ayydxn.moonblast;
 
+import me.ayydxn.moonblast.buffers.VertexBuffer;
 import me.ayydxn.moonblast.options.MoonblastRendererOptions;
 import me.ayydxn.moonblast.renderer.CommandBuffer;
 import me.ayydxn.moonblast.renderer.GraphicsPipeline;
 import me.ayydxn.moonblast.renderer.SwapChain;
 import me.ayydxn.moonblast.shaders.MoonblastShader;
+import me.ayydxn.moonblast.shaders.ShaderDataTypes;
+import me.ayydxn.moonblast.vertex.VertexBufferElement;
+import me.ayydxn.moonblast.vertex.VertexBufferLayout;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.system.MemoryUtil;
 
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.util.List;
 import java.util.Objects;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
@@ -49,8 +57,26 @@ public class MoonblastTestApplication
         swapChain.initialize();
         swapChain.create(WINDOW_SIZE.getLeft(), WINDOW_SIZE.getRight());
 
-        GraphicsPipeline graphicsPipeline = new GraphicsPipeline(new MoonblastShader("shaders/default_shader"), swapChain);
+        VertexBufferLayout vertexBufferLayout = new VertexBufferLayout(List.of(
+                new VertexBufferElement("Positions", ShaderDataTypes.Float3),
+                new VertexBufferElement("Colors", ShaderDataTypes.Float3)
+        ));
+
+        float[] vertices =
+        {
+                 0.0f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f,
+                 0.5f, 0.5f, 0.0f,      0.0f, 1.0f, 0.0f,
+                -0.5f, 0.5f, 0.0f,      0.0f, 0.0f, 1.0f,
+        };
+
+        FloatBuffer vertexData = BufferUtils.createFloatBuffer(vertices.length);
+        vertexData.put(vertices).flip();
+
+        GraphicsPipeline graphicsPipeline = new GraphicsPipeline(new MoonblastShader("shaders/default_shader"), vertexBufferLayout, swapChain);
         graphicsPipeline.create();
+
+        VertexBuffer vertexBuffer = new VertexBuffer(MemoryUtil.memByteBuffer(vertexData));
+        vertexBuffer.create();
 
         glfwSetFramebufferSizeCallback(window.getHandle(), (appWindow, newWidth, newHeight) ->
         {
@@ -67,7 +93,7 @@ public class MoonblastTestApplication
 
             if (!isWindowMinimized)
             {
-                MoonblastRenderer.getInstance().draw(graphicsPipeline);
+                MoonblastRenderer.getInstance().draw(graphicsPipeline, vertexBuffer);
             }
 
             MoonblastRenderer.getInstance().endFrame();
@@ -75,6 +101,7 @@ public class MoonblastTestApplication
             swapChain.present();
         }
 
+        vertexBuffer.destroy();
         graphicsPipeline.destroy();
         swapChain.destroy();
         window.cleanup();

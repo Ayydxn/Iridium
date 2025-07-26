@@ -3,6 +3,7 @@ package me.ayydxn.moonblast.renderer;
 import me.ayydxn.moonblast.options.MoonblastRendererOptions;
 import me.ayydxn.moonblast.renderer.debug.VulkanDebugUtils;
 import me.ayydxn.moonblast.renderer.exceptions.MoonblastRendererException;
+import me.ayydxn.moonblast.renderer.memory.VulkanMemoryAllocator;
 import me.ayydxn.moonblast.utils.MoonblastConstants;
 import me.ayydxn.moonblast.utils.PointerUtils;
 import me.ayydxn.moonblast.utils.VersioningUtils;
@@ -95,10 +96,14 @@ public class GraphicsContext
         MoonblastConstants.LOGGER.info("  Vendor: {}", this.graphicsDevice.getDeviceInfo().vendorName);
         MoonblastConstants.LOGGER.info("  Device: {}", this.graphicsDevice.getDeviceInfo().deviceProperties.deviceNameString());
         MoonblastConstants.LOGGER.info("  Driver Version: {}", this.graphicsDevice.getDeviceInfo().driverVersion);
+
+        VulkanMemoryAllocator.initialize();
     }
 
     public void destroy()
     {
+        VulkanMemoryAllocator.getInstance().shutdown();
+
         this.graphicsDevice.destroy();
 
         if (enableValidationLayers)

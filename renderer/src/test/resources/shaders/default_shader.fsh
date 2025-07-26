@@ -1,9 +1,10 @@
 #version 450
 
+layout(location = 0) in vec3 o_Color;
+
 layout(location = 0) out vec4 fragColor;
 
-layout(location = 0) in vec4 o_OutColor;
 
 void main() {
-    fragColor = o_OutColor;
+    fragColor = vec4(o_Color, 1.0);
 }

@@ -3,7 +3,10 @@ package me.ayydxn.moonblast.renderer;
 import me.ayydxn.moonblast.MoonblastRenderer;
 import me.ayydxn.moonblast.shaders.MoonblastShader;
 import me.ayydxn.moonblast.shaders.ShaderStage;
+import me.ayydxn.moonblast.vertex.VertexBufferElement;
+import me.ayydxn.moonblast.vertex.VertexBufferLayout;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
 
@@ -17,22 +20,29 @@ import static org.lwjgl.vulkan.VK13.VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_
 public class GraphicsPipeline
 {
     private final MoonblastShader shader;
-    private final VkDevice logicalDevice;
+    private final VertexBufferLayout vertexBufferLayout;
     private final SwapChain swapChain;
+    private final VkDevice logicalDevice;
 
     private long graphicsPipelineLayout;
     private long graphicsPipelineCache;
     private long graphicsPipelineHandle;
 
-    public GraphicsPipeline(@NotNull MoonblastShader shader, @NotNull SwapChain swapChain)
+    public GraphicsPipeline(@NotNull MoonblastShader shader, @NotNull VertexBufferLayout vertexBufferLayout, @NotNull SwapChain swapChain)
     {
         this.shader = shader;
-        this.logicalDevice = MoonblastRenderer.getInstance().getGraphicsContext().getGraphicsDevice().getLogicalDevice();
+        this.vertexBufferLayout = vertexBufferLayout;
         this.swapChain = swapChain;
+        this.logicalDevice = MoonblastRenderer.getInstance().getGraphicsContext().getGraphicsDevice().getLogicalDevice();
 
         this.graphicsPipelineLayout = VK_NULL_HANDLE;
         this.graphicsPipelineCache = VK_NULL_HANDLE;
         this.graphicsPipelineHandle = VK_NULL_HANDLE;
+    }
+
+    public GraphicsPipeline(@NotNull MoonblastShader shader, @NotNull SwapChain swapChain)
+    {
+        this(shader, new VertexBufferLayout(), swapChain);
     }
 
     public void create()
@@ -58,9 +68,9 @@ public class GraphicsPipeline
             VkPipelineShaderStageCreateInfo.Buffer pipelineShaderStageCreateInfos = VkPipelineShaderStageCreateInfo.calloc(this.shader.getShaderStagesAndModules().size(), memoryStack);
 
             int currentShaderStageIndex = 0;
-            for (Map.Entry<ShaderStage, Long>  shaderStageAndModule : this.shader.getShaderStagesAndModules().entrySet())
+            for (Map.Entry<ShaderStage, Long> shaderStageAndModule : this.shader.getShaderStagesAndModules().entrySet())
             {
-                VkPipelineShaderStageCreateInfo pipelineShaderStageCreateInfo = pipelineShaderStageCreateInfos.get(currentShaderStageIndex)
+                pipelineShaderStageCreateInfos.get(currentShaderStageIndex)
                         .sType(VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO)
                         .stage(this.convertMoonblastShaderStageToVulkan(shaderStageAndModule.getKey()))
                         .module(shaderStageAndModule.getValue())
@@ -74,43 +84,29 @@ public class GraphicsPipeline
                     .pDynamicStates(memoryStack.ints(VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR));
 
             VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo = VkPipelineVertexInputStateCreateInfo.calloc(memoryStack)
-                    .sType(VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO)
-                    .pVertexBindingDescriptions(null)
-                    .pVertexAttributeDescriptions(null);
+                    .sType(VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO);
 
-            // (Ayydxn) Will need this later.
-            /* if (this.vertexFormat != null)
+            VkVertexInputBindingDescription.Buffer vertexInputBindingDescription = VkVertexInputBindingDescription.calloc(1, memoryStack)
+                    .binding(0)
+                    .stride(this.vertexBufferLayout.getStride())
+                    .inputRate(VK_VERTEX_INPUT_RATE_VERTEX);
+
+            VkVertexInputAttributeDescription.Buffer vertexInputAttributeDescriptions = VkVertexInputAttributeDescription.calloc(this.vertexBufferLayout.getElementCount(), memoryStack);
+            int index = 0;
+
+            for (VertexBufferElement vertexBufferElement : this.vertexBufferLayout)
             {
-                int vertexFormatElementCount = this.vertexFormat.getElements().size();
-
-                VkVertexInputBindingDescription.Buffer vertexInputBindingDescription = VkVertexInputBindingDescription.calloc(1, memoryStack)
+                vertexInputAttributeDescriptions.get(index)
                         .binding(0)
-                        .stride(this.vertexFormat.getVertexSize())
-                        .inputRate(VK_VERTEX_INPUT_RATE_VERTEX);
+                        .location(index)
+                        .format(vertexBufferElement.shaderDataType.getVulkanFormat())
+                        .offset(vertexBufferElement.offset);
 
-                VkVertexInputAttributeDescription.Buffer vertexInputAttributeDescriptions = VkVertexInputAttributeDescription.calloc(vertexFormatElementCount, memoryStack);
-
-                for (int i = 0; i < vertexFormatElementCount; i++)
-                {
-                    VertexFormatElement vertexFormatElement = this.vertexFormat.getElements().get(i);
-                    int vertexFormatElementVulkanFormat = VulkanUtils.getVertexFormatElementVulkanFormat(vertexFormatElement);
-                    int vertexFormatOffset = ((VertexFormatAccessor) this.vertexFormat).getOffset(i);
-
-                    vertexInputAttributeDescriptions.get(i)
-                            .binding(0)
-                            .location(i)
-                            .format(vertexFormatElementVulkanFormat)
-                            .offset(vertexFormatOffset);
-                }
-
-                pipelineVertexInputStateCreateInfo.pVertexBindingDescriptions(vertexInputBindingDescription);
-                pipelineVertexInputStateCreateInfo.pVertexAttributeDescriptions(vertexInputAttributeDescriptions);
+                index++;
             }
-            else
-            {
-                pipelineVertexInputStateCreateInfo.pVertexBindingDescriptions(null)
-                        .pVertexAttributeDescriptions(null);
-            } */
+
+            pipelineVertexInputStateCreateInfo.pVertexBindingDescriptions(vertexInputBindingDescription)
+                    .pVertexAttributeDescriptions(vertexInputAttributeDescriptions);
 
             VkPipelineInputAssemblyStateCreateInfo pipelineInputAssemblyStateCreateInfo = VkPipelineInputAssemblyStateCreateInfo.calloc(memoryStack)
                     .sType(VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO)
