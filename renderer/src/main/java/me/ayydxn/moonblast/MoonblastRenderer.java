@@ -1,6 +1,7 @@
 package me.ayydxn.moonblast;
 
-import me.ayydxn.moonblast.buffers.GraphicsBuffer;
+import me.ayydxn.moonblast.buffers.IndexBuffer;
+import me.ayydxn.moonblast.buffers.VertexBuffer;
 import me.ayydxn.moonblast.options.MoonblastRendererOptions;
 import me.ayydxn.moonblast.renderer.CommandBuffer;
 import me.ayydxn.moonblast.renderer.GraphicsContext;
@@ -133,7 +134,7 @@ public class MoonblastRenderer
         this.activeSwapChain = swapChain;
     }
 
-    public void draw(GraphicsPipeline graphicsPipeline, GraphicsBuffer vertexBuffer, GraphicsBuffer indexBuffer)
+    public void draw(GraphicsPipeline graphicsPipeline, VertexBuffer vertexBuffer, IndexBuffer indexBuffer)
     {
         VkCommandBuffer commandBuffer = this.rendererCommandBuffer.getActiveCommandBuffer();
 
@@ -143,7 +144,7 @@ public class MoonblastRenderer
             vkCmdBindVertexBuffers(commandBuffer, 0, memoryStack.longs(vertexBuffer.getHandle()), memoryStack.longs(0L));
             vkCmdBindIndexBuffer(commandBuffer, indexBuffer.getHandle(), 0, VK_INDEX_TYPE_UINT32);
 
-            vkCmdDrawIndexed(commandBuffer, indexBuffer.getSize() / Integer.BYTES, 1, 0, 0, 0);
+            vkCmdDrawIndexed(commandBuffer, indexBuffer.getCount(), 1, 0, 0, 0);
         }
     }
 

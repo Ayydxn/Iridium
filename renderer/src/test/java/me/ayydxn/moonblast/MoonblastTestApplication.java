@@ -1,7 +1,7 @@
 package me.ayydxn.moonblast;
 
-import me.ayydxn.moonblast.buffers.BufferUsage;
-import me.ayydxn.moonblast.buffers.GraphicsBuffer;
+import me.ayydxn.moonblast.buffers.IndexBuffer;
+import me.ayydxn.moonblast.buffers.VertexBuffer;
 import me.ayydxn.moonblast.options.MoonblastRendererOptions;
 import me.ayydxn.moonblast.renderer.GraphicsPipeline;
 import me.ayydxn.moonblast.renderer.SwapChain;
@@ -64,9 +64,10 @@ public class MoonblastTestApplication
 
         float[] vertices =
         {
-                 0.0f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f,
-                 0.5f, 0.5f, 0.0f,      0.0f, 1.0f, 0.0f,
-                -0.5f, 0.5f, 0.0f,      0.0f, 0.0f, 1.0f,
+                 -0.5f, -0.5f, 0.0f,    1.0f, 0.0f, 0.0f,
+                  0.5f, -0.5f, 0.0f,    0.0f, 1.0f, 0.0f,
+                  0.5f,  0.5f, 0.0f,    0.0f, 0.0f, 1.0f,
+                 -0.5f,  0.5f, 0.0f,    1.0f, 0.0f, 0.0f,
         };
 
         int[] indices = { 0, 1, 2, 2, 3, 0 };
@@ -80,11 +81,11 @@ public class MoonblastTestApplication
         GraphicsPipeline graphicsPipeline = new GraphicsPipeline(new MoonblastShader("shaders/default_shader"), vertexBufferLayout, swapChain);
         graphicsPipeline.create();
 
-        GraphicsBuffer vertexBuffer = new GraphicsBuffer(MemoryUtil.memByteBuffer(vertexData));
-        vertexBuffer.create(BufferUsage.Vertex);
+        VertexBuffer vertexBuffer = new VertexBuffer(MemoryUtil.memByteBuffer(vertexData));
+        vertexBuffer.create();
 
-        GraphicsBuffer indexBuffer = new GraphicsBuffer(MemoryUtil.memByteBuffer(indexData));
-        indexBuffer.create(BufferUsage.Index);
+        IndexBuffer indexBuffer = new IndexBuffer(MemoryUtil.memByteBuffer(indexData));
+        indexBuffer.create();
 
         glfwSetFramebufferSizeCallback(window.getHandle(), (appWindow, newWidth, newHeight) ->
         {
