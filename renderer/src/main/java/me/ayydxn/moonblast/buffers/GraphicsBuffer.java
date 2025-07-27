@@ -15,22 +15,22 @@ import static org.lwjgl.util.vma.Vma.VMA_MEMORY_USAGE_CPU_TO_GPU;
 import static org.lwjgl.util.vma.Vma.VMA_MEMORY_USAGE_GPU_ONLY;
 import static org.lwjgl.vulkan.VK10.*;
 
-public class VertexBuffer
+public class GraphicsBuffer
 {
     private final VulkanMemoryAllocator vulkanMemoryAllocator;
     private final ByteBuffer data;
 
-    private AllocatedBuffer vertexBuffer;
+    private AllocatedBuffer handle;
 
-    public VertexBuffer(ByteBuffer data)
+    public GraphicsBuffer(ByteBuffer data)
     {
         this.vulkanMemoryAllocator = VulkanMemoryAllocator.getInstance();
         this.data = data;
 
-        this.vertexBuffer = null;
+        this.handle = null;
     }
 
-    public void create()
+    public void create(BufferUsage bufferUsage)
     {
         CommandBuffer commandBuffer = new CommandBuffer(1);
 
@@ -52,21 +52,21 @@ public class VertexBuffer
 
             this.vulkanMemoryAllocator.unmapMemory(stagingBuffer.bufferAllocation());
 
-            // Create the vertex buffer
+            // Create the buffer
             VkBufferCreateInfo vertexBufferCreateInfo =  VkBufferCreateInfo.calloc(memoryStack)
                     .sType(VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO)
                     .size(this.data.remaining())
-                    .usage(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+                    .usage(bufferUsage.vulkanUsage() | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 
-            AllocatedBuffer vertexBuffer = this.vulkanMemoryAllocator.allocateBuffer(vertexBufferCreateInfo, VMA_MEMORY_USAGE_GPU_ONLY);
+            AllocatedBuffer buffer = this.vulkanMemoryAllocator.allocateBuffer(vertexBufferCreateInfo, VMA_MEMORY_USAGE_GPU_ONLY);
 
-            // Copy data from the staging buffer to the vertex buffer
+            // Copy data from the staging buffer to the buffer
             VkBufferCopy.Buffer bufferCopy = VkBufferCopy.calloc(1, memoryStack)
                     .size(this.data.remaining());
 
             commandBuffer.begin();
 
-            vkCmdCopyBuffer(commandBuffer.getActiveCommandBuffer(), stagingBuffer.buffer(), vertexBuffer.buffer(), bufferCopy);
+            vkCmdCopyBuffer(commandBuffer.getActiveCommandBuffer(), stagingBuffer.buffer(), buffer.buffer(), bufferCopy);
 
             commandBuffer.end();
             commandBuffer.submit();
@@ -75,20 +75,20 @@ public class VertexBuffer
             this.vulkanMemoryAllocator.destroyBuffer(stagingBuffer);
             commandBuffer.destroy();
 
-            this.vertexBuffer = vertexBuffer;
+            this.handle = buffer;
         }
     }
 
     public void destroy()
     {
-        this.vulkanMemoryAllocator.destroyBuffer(this.vertexBuffer);
+        this.vulkanMemoryAllocator.destroyBuffer(this.handle);
 
         MemoryUtil.memFree(this.data);
     }
 
     public long getHandle()
     {
-        return this.vertexBuffer.buffer();
+        return this.handle.buffer();
     }
 
     public int getSize()

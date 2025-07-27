@@ -1,6 +1,6 @@
 package me.ayydxn.moonblast;
 
-import me.ayydxn.moonblast.buffers.VertexBuffer;
+import me.ayydxn.moonblast.buffers.GraphicsBuffer;
 import me.ayydxn.moonblast.options.MoonblastRendererOptions;
 import me.ayydxn.moonblast.renderer.CommandBuffer;
 import me.ayydxn.moonblast.renderer.GraphicsContext;
@@ -9,7 +9,6 @@ import me.ayydxn.moonblast.renderer.SwapChain;
 import me.ayydxn.moonblast.renderer.utils.VulkanUtils;
 import me.ayydxn.moonblast.shaders.MoonblastShaderCompiler;
 import me.ayydxn.moonblast.utils.MoonblastConstants;
-import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.Version;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
@@ -17,7 +16,6 @@ import org.lwjgl.vulkan.*;
 import static org.lwjgl.vulkan.KHRDynamicRendering.*;
 import static org.lwjgl.vulkan.KHRSwapchain.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 import static org.lwjgl.vulkan.VK10.*;
-import static org.lwjgl.vulkan.VK10.VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 
 public class MoonblastRenderer
 {
@@ -135,7 +133,7 @@ public class MoonblastRenderer
         this.activeSwapChain = swapChain;
     }
 
-    public void draw(GraphicsPipeline graphicsPipeline, VertexBuffer vertexBuffer)
+    public void draw(GraphicsPipeline graphicsPipeline, GraphicsBuffer vertexBuffer, GraphicsBuffer indexBuffer)
     {
         VkCommandBuffer commandBuffer = this.rendererCommandBuffer.getActiveCommandBuffer();
 
@@ -143,7 +141,9 @@ public class MoonblastRenderer
         {
             vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline.getHandle());
             vkCmdBindVertexBuffers(commandBuffer, 0, memoryStack.longs(vertexBuffer.getHandle()), memoryStack.longs(0L));
-            vkCmdDraw(commandBuffer, vertexBuffer.getSize() / Float.BYTES, 1, 0, 0);
+            vkCmdBindIndexBuffer(commandBuffer, indexBuffer.getHandle(), 0, VK_INDEX_TYPE_UINT32);
+
+            vkCmdDrawIndexed(commandBuffer, indexBuffer.getSize() / Integer.BYTES, 1, 0, 0, 0);
         }
     }
 

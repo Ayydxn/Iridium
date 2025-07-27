@@ -1,8 +1,8 @@
 package me.ayydxn.moonblast;
 
-import me.ayydxn.moonblast.buffers.VertexBuffer;
+import me.ayydxn.moonblast.buffers.BufferUsage;
+import me.ayydxn.moonblast.buffers.GraphicsBuffer;
 import me.ayydxn.moonblast.options.MoonblastRendererOptions;
-import me.ayydxn.moonblast.renderer.CommandBuffer;
 import me.ayydxn.moonblast.renderer.GraphicsPipeline;
 import me.ayydxn.moonblast.renderer.SwapChain;
 import me.ayydxn.moonblast.shaders.MoonblastShader;
@@ -15,8 +15,8 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.system.MemoryUtil;
 
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.List;
 import java.util.Objects;
 
@@ -69,14 +69,22 @@ public class MoonblastTestApplication
                 -0.5f, 0.5f, 0.0f,      0.0f, 0.0f, 1.0f,
         };
 
+        int[] indices = { 0, 1, 2, 2, 3, 0 };
+
         FloatBuffer vertexData = BufferUtils.createFloatBuffer(vertices.length);
         vertexData.put(vertices).flip();
+
+        IntBuffer indexData = BufferUtils.createIntBuffer(indices.length);
+        indexData.put(indices).flip();
 
         GraphicsPipeline graphicsPipeline = new GraphicsPipeline(new MoonblastShader("shaders/default_shader"), vertexBufferLayout, swapChain);
         graphicsPipeline.create();
 
-        VertexBuffer vertexBuffer = new VertexBuffer(MemoryUtil.memByteBuffer(vertexData));
-        vertexBuffer.create();
+        GraphicsBuffer vertexBuffer = new GraphicsBuffer(MemoryUtil.memByteBuffer(vertexData));
+        vertexBuffer.create(BufferUsage.Vertex);
+
+        GraphicsBuffer indexBuffer = new GraphicsBuffer(MemoryUtil.memByteBuffer(indexData));
+        indexBuffer.create(BufferUsage.Index);
 
         glfwSetFramebufferSizeCallback(window.getHandle(), (appWindow, newWidth, newHeight) ->
         {
@@ -93,7 +101,7 @@ public class MoonblastTestApplication
 
             if (!isWindowMinimized)
             {
-                MoonblastRenderer.getInstance().draw(graphicsPipeline, vertexBuffer);
+                MoonblastRenderer.getInstance().draw(graphicsPipeline, vertexBuffer, indexBuffer);
             }
 
             MoonblastRenderer.getInstance().endFrame();
@@ -102,6 +110,7 @@ public class MoonblastTestApplication
         }
 
         vertexBuffer.destroy();
+        indexBuffer.destroy();
         graphicsPipeline.destroy();
         swapChain.destroy();
         window.cleanup();
