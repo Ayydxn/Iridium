@@ -227,9 +227,17 @@ public class GraphicsPipeline
     {
         try (MemoryStack memoryStack = MemoryStack.stackPush())
         {
+            LongBuffer pSetLayouts = memoryStack.mallocLong(this.shader.getDescriptorSetLayouts().size());
+
+            for (long descriptorSetLayout : this.shader.getDescriptorSetLayouts())
+                pSetLayouts.put(descriptorSetLayout);
+
+            pSetLayouts.flip();
+
             VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = VkPipelineLayoutCreateInfo.calloc(memoryStack)
                     .sType(VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO)
-                    .pSetLayouts(memoryStack.longs(VK_NULL_HANDLE)) // TODO: (Ayydxn) Fill this in when shaders are able to create descriptor sets.
+                    .pSetLayouts(pSetLayouts)
+                    .setLayoutCount(this.shader.getDescriptorSetLayouts().size())
                     .pPushConstantRanges(null);
 
             VkPipelineCacheCreateInfo pipelineCacheCreateInfo = VkPipelineCacheCreateInfo.calloc(memoryStack)
