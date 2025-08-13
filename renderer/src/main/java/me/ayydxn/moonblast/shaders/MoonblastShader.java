@@ -28,9 +28,8 @@ public class MoonblastShader
     private final VkDevice logicalDevice = MoonblastRenderer.getInstance().getGraphicsContext().getGraphicsDevice().getLogicalDevice();
     private final Map<ShaderStage, ShaderSPIRV> shaderStageToSPIRV = Maps.newHashMap();
     private final Map<ShaderStage, Long> shaderStageToShaderModule = Maps.newHashMap();
-    private final List<ShaderResources.ShaderDescriptorSet> shaderDescriptorSets = Lists.newArrayList();
 
-    private List<Long> descriptorSetLayouts = Lists.newArrayList();
+    private final List<Long> descriptorSetLayouts = Lists.newArrayList();
 
     public MoonblastShader(String filepath)
     {
@@ -39,7 +38,6 @@ public class MoonblastShader
             throw new MoonblastRendererException(String.format("The JSON descriptor file for the shader '%s' wasn't found!", filepath));
 
         MoonblastShaderCompiler shaderCompiler = MoonblastShaderCompiler.getInstance();
-        ShaderReflector reflector = new ShaderReflector();
 
         try
         {
@@ -56,8 +54,6 @@ public class MoonblastShader
                 String shaderFilepath = baseShaderFilepath + shaderStage.getValue().getAsString() + stage.getFileExtension();
                 ShaderSPIRV shaderSPIRV = shaderCompiler.compileShaderFromFile(shaderFilepath, stage);
 
-                this.shaderDescriptorSets.add(reflector.reflect(shaderSPIRV));
-
                 shaderStageToSPIRV.put(stage, shaderSPIRV);
             }
         }
@@ -65,8 +61,6 @@ public class MoonblastShader
         {
             exception.printStackTrace();
         }
-
-        reflector.destroy();
 
         this.createShaderModules();
         this.createDescriptorSetLayout();
@@ -102,53 +96,6 @@ public class MoonblastShader
 
     private void createDescriptorSetLayout()
     {
-        try (MemoryStack memoryStack = MemoryStack.stackPush())
-        {
-            for (ShaderResources.ShaderDescriptorSet shaderDescriptorSet : this.shaderDescriptorSets)
-            {
-                int totalBindings = shaderDescriptorSet.uniformBuffers.size();
-                VkDescriptorSetLayoutBinding.Buffer descriptorSetLayoutBindings = VkDescriptorSetLayoutBinding.calloc(totalBindings, memoryStack);
-
-                /*-----------------------*/
-                /* -- Uniform Buffers -- */
-                /*-----------------------*/
-
-                int index = 0;
-                for (Map.Entry<Integer, ShaderResources.UniformBuffer> entry : shaderDescriptorSet.uniformBuffers.entrySet())
-                {
-                    int binding = entry.getKey();
-                    ShaderResources.UniformBuffer uniformBuffer = entry.getValue();
-
-                    VkDescriptorSetLayoutBinding descriptorSetLayoutBinding = descriptorSetLayoutBindings.get(index++)
-                            .descriptorType(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
-                            .descriptorCount(1)
-                            .binding(binding)
-                            .stageFlags(uniformBuffer.shaderStage)
-                            .pImmutableSamplers(null);
-
-                    VkWriteDescriptorSet writeDescriptorSet = VkWriteDescriptorSet.calloc(memoryStack)
-                            .sType(VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET)
-                            .descriptorType(descriptorSetLayoutBinding.descriptorType())
-                            .descriptorCount(1)
-                            .dstBinding(descriptorSetLayoutBinding.binding());
-
-                    shaderDescriptorSet.writeDescriptorSets.put(uniformBuffer.name, writeDescriptorSet);
-                }
-
-                /*--------------------------------------*/
-                /* -- Descriptor Set Layout Creation -- */
-                /*--------------------------------------*/
-
-                VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo = VkDescriptorSetLayoutCreateInfo.calloc(memoryStack)
-                        .sType(VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO)
-                        .pBindings(descriptorSetLayoutBindings);
-
-                LongBuffer pDescriptorSetLayout = memoryStack.mallocLong(1);
-                vkCheckResult(vkCreateDescriptorSetLayout(this.logicalDevice, descriptorSetLayoutCreateInfo, null, pDescriptorSetLayout));
-
-                this.descriptorSetLayouts.add(pDescriptorSetLayout.get(0));
-            }
-        }
     }
 
     public Map<ShaderStage, Long> getShaderStagesAndModules()

@@ -6,7 +6,6 @@ import me.ayydxn.moonblast.shaders.ShaderStage;
 import me.ayydxn.moonblast.vertex.VertexBufferElement;
 import me.ayydxn.moonblast.vertex.VertexBufferLayout;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
 
@@ -236,7 +235,7 @@ public class GraphicsPipeline
 
             VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = VkPipelineLayoutCreateInfo.calloc(memoryStack)
                     .sType(VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO)
-                    .pSetLayouts(pSetLayouts)
+                    .pSetLayouts(null)
                     .setLayoutCount(this.shader.getDescriptorSetLayouts().size())
                     .pPushConstantRanges(null);
 
