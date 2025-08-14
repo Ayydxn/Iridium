@@ -10,6 +10,7 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
 
 import java.nio.LongBuffer;
+import java.util.List;
 import java.util.Map;
 
 import static me.ayydxn.moonblast.renderer.debug.VulkanDebugUtils.vkCheckResult;
@@ -226,19 +227,36 @@ public class GraphicsPipeline
     {
         try (MemoryStack memoryStack = MemoryStack.stackPush())
         {
-            LongBuffer pSetLayouts = memoryStack.mallocLong(this.shader.getDescriptorSetLayouts().size());
+            // Setup descriptor set layouts
+            Map<Integer, Long> descriptorSetLayouts = this.shader.getDescriptorSetInfo().descriptorSetLayouts();
+            LongBuffer pSetLayouts = memoryStack.mallocLong(descriptorSetLayouts.size());
 
-            for (long descriptorSetLayout : this.shader.getDescriptorSetLayouts())
+            for (long descriptorSetLayout : descriptorSetLayouts.values())
                 pSetLayouts.put(descriptorSetLayout);
 
             pSetLayouts.flip();
 
+            // Setup push constants
+            List<MoonblastShader.PushConstantRange> pushConstants = this.shader.getPushConstantRanges();
+            VkPushConstantRange.Buffer pushConstantRanges = VkPushConstantRange.calloc(pushConstants.size(), memoryStack);
+
+            for (int i = 0; i < pushConstants.size(); ++i)
+            {
+                MoonblastShader.PushConstantRange pushConstantRange = pushConstants.get(i);
+
+                pushConstantRanges.get(i)
+                        .size(pushConstantRange.size())
+                        .offset(pushConstantRange.offset())
+                        .stageFlags(pushConstantRange.shaderStageFlags());
+            }
+
+            // Create the pipeline layout
             VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = VkPipelineLayoutCreateInfo.calloc(memoryStack)
                     .sType(VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO)
-                    .pSetLayouts(null)
-                    .setLayoutCount(this.shader.getDescriptorSetLayouts().size())
-                    .pPushConstantRanges(null);
+                    .pSetLayouts(pSetLayouts)
+                    .pPushConstantRanges(pushConstantRanges);
 
+            // We don't use the pipeline cache for anything so we can leave it like this.
             VkPipelineCacheCreateInfo pipelineCacheCreateInfo = VkPipelineCacheCreateInfo.calloc(memoryStack)
                     .sType(VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO);
 
