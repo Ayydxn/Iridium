@@ -3,22 +3,30 @@ package com.ayydxn.iridium.hud;
 import com.ayydxn.iridium.IridiumClientMod;
 import com.ayydxn.iridium.options.IridiumGameOptions;
 import com.ayydxn.iridium.util.ClientFramerateTracker;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
+import net.fabricmc.fabric.api.client.rendering.v1.LayeredDrawerWrapper;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.awt.*;
 
-public class IridiumHudOverlay implements HudRenderCallback
+public class IridiumHudOverlay implements HudLayerRegistrationCallback
 {
     private final Minecraft client = Minecraft.getInstance();
     private final IridiumGameOptions iridiumGameOptions = IridiumClientMod.getInstance().getGameOptions();
 
     @Override
-    public void onHudRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker)
+    public void register(LayeredDrawerWrapper layeredDrawer)
+    {
+        layeredDrawer.attachLayerAfter(IdentifiedLayer.SUBTITLES, IridiumClientMod.of("hud_overlay"), this::renderOverlay);
+    }
+
+    private void renderOverlay(GuiGraphics guiGraphics, DeltaTracker deltaTracker)
     {
         if (!this.client.getDebugOverlay().showDebugScreen())
         {
@@ -32,10 +40,9 @@ public class IridiumHudOverlay implements HudRenderCallback
 
     private void renderFramerateOverlay(GuiGraphics guiGraphics)
     {
-        int currentClientFPS = this.client.getFps();
         ClientFramerateTracker clientFramerateTracker = IridiumClientMod.getInstance().getClientFramerateTracker();
-        Component fpsOverlayText = Component.translatable("iridium.advancedGraphics.fpsOverlay", currentClientFPS,
-                clientFramerateTracker.getAverageFPS(), clientFramerateTracker.getHighestFPS(), clientFramerateTracker.getLowestFPS());
+        Component fpsOverlayText = Component.translatable("iridium.advancedGraphics.fpsOverlay", this.client.getFps(), clientFramerateTracker.getAverageFPS(),
+                clientFramerateTracker.getHighestFPS(), clientFramerateTracker.getLowestFPS());
         int xPosition = 0;
         int yPosition = 0;
 
@@ -46,20 +53,23 @@ public class IridiumHudOverlay implements HudRenderCallback
                 xPosition = 2;
                 yPosition = 2;
             }
+
             case TopRight ->
             {
                 xPosition = this.client.getWindow().getGuiScaledWidth() - this.client.font.width(fpsOverlayText) - 2;
                 yPosition = 2;
             }
+
             case BottomLeft ->
             {
                 xPosition = 2;
-                yPosition = this.client.getWindow().getGuiScaledWidth() - this.client.font.lineHeight - 2;
+                yPosition = this.client.getWindow().getGuiScaledHeight() - this.client.font.lineHeight - 2;
             }
+
             case BottomRight ->
             {
                 xPosition = this.client.getWindow().getGuiScaledWidth() - this.client.font.width(fpsOverlayText) - 2;
-                yPosition = this.client.getWindow().getGuiScaledWidth() - this.client.font.lineHeight - 2;
+                yPosition = this.client.getWindow().getGuiScaledHeight() - this.client.font.lineHeight - 2;
             }
         }
 
@@ -103,7 +113,7 @@ public class IridiumHudOverlay implements HudRenderCallback
             case BottomRight ->
             {
                 xPosition = this.client.getWindow().getGuiScaledWidth() - this.client.font.width(coordinatesOverlay) - 2;
-                yPosition = this.client.getWindow().getGuiScaledWidth() - this.client.font.lineHeight - 12;
+                yPosition = this.client.getWindow().getGuiScaledHeight() - this.client.font.lineHeight - 12;
             }
         }
 

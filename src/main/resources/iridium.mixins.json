@@ -1,24 +1,10 @@
 {
 	"required": true,
 	"package": "com.ayydxn.iridium.mixin",
-	"plugin": "com.ayydxn.iridium.mixin.IridiumMixinPlugin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 	],
 	"client": [
-		"core.blaze3d.pipeline.MainTargetMixin",
-		"core.blaze3d.pipeline.RenderTargetMixin",
-		"core.blaze3d.platform.GLStateManagerMixin",
-		"core.blaze3d.platform.GLXMixin",
-		"core.blaze3d.platform.TextureUtilMixin",
-		"core.blaze3d.platform.WindowMixin",
-		"core.blaze3d.systems.RenderSystemMixin",
-		"core.blaze3d.vertex.VertexBufferMixin",
-		"core.client.renderer.texture.AbstractTextureMixin",
-		"core.client.renderer.ShaderManagerMixin",
-		"core.client.MinecraftMixin",
-		"core.external.lwjgl.opengl.GL30Mixin",
-
 		"features.block.LeavesBlockMixin",
 		"features.client.gui.hud.DebugHudMixin",
 		"features.client.gui.hud.InGameHudMixin",

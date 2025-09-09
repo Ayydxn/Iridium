@@ -5,13 +5,14 @@ import com.ayydxn.iridium.options.IridiumGameOptions;
 import com.ayydxn.iridium.options.categories.*;
 import com.ayydxn.iridium.options.categories.util.OptionCategoryRegistry;
 import com.ayydxn.iridium.util.ClientFramerateTracker;
-import me.ayydxn.moonblast.MoonblastRenderer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 
@@ -21,6 +22,7 @@ public class IridiumClientMod implements ClientModInitializer
     private static IridiumClientMod INSTANCE;
 
     private static final Logger LOGGER = (Logger) LogManager.getLogger("Iridium");
+    private static final String MOD_ID = "iridium";
 
     private IridiumGameOptions iridiumGameOptions;
     private ClientFramerateTracker clientFramerateTracker;
@@ -31,7 +33,7 @@ public class IridiumClientMod implements ClientModInitializer
     {
         INSTANCE = this;
 
-        this.modVersion = FabricLoader.getInstance().getModContainer("iridium").orElseThrow()
+        this.modVersion = FabricLoader.getInstance().getModContainer(IridiumClientMod.MOD_ID).orElseThrow()
                         .getMetadata().getVersion().getFriendlyString();
 
         LOGGER.info("Initializing Iridium... (Version: {})", this.modVersion);
@@ -49,7 +51,7 @@ public class IridiumClientMod implements ClientModInitializer
         OptionCategoryRegistry.register("extras", IridiumExtraOptionsCategory::new, 8);
 
         ClientTickEvents.START_CLIENT_TICK.register(this.clientFramerateTracker::tick);
-        HudRenderCallback.EVENT.register(new IridiumHudOverlay());
+        HudLayerRegistrationCallback.EVENT.register(new IridiumHudOverlay());
     }
 
     public static IridiumClientMod getInstance()
@@ -63,6 +65,11 @@ public class IridiumClientMod implements ClientModInitializer
     public static Logger getLogger()
     {
         return LOGGER;
+    }
+
+    public static ResourceLocation of(String path)
+    {
+        return ResourceLocation.fromNamespaceAndPath(IridiumClientMod.MOD_ID, path);
     }
 
     public IridiumGameOptions getGameOptions()
