@@ -77,7 +77,6 @@ public class IridiumRenderer
         VkCommandBuffer commandBuffer = this.rendererCommandBuffer.getCommandBuffer(0);
         int swapChainWidth = swapChain.getWidth();
         int swapChainHeight = swapChain.getHeight();
-        long swapChainImage = swapChain.getCurrentImage();
 
         this.skippingCurrentFrame = swapChainWidth == 0 || swapChainHeight == 0;
 
@@ -86,6 +85,8 @@ public class IridiumRenderer
 
         try (MemoryStack memoryStack = MemoryStack.stackPush())
         {
+            swapChain.beginFrame(memoryStack);
+
             VkClearColorValue clearColorValue = VkClearColorValue.calloc(memoryStack)
                     .float32(0, 0.2f)
                     .float32(1, 0.2f)
@@ -119,6 +120,8 @@ public class IridiumRenderer
             VkRect2D.Buffer scissor = VkRect2D.calloc(1, memoryStack)
                     .extent(VkExtent2D.calloc(memoryStack).set(swapChainWidth, swapChainHeight))
                     .offset(VkOffset2D.calloc(memoryStack).set(0, 0));
+
+            long swapChainImage = swapChain.getCurrentImage();
 
             this.rendererCommandBuffer.begin();
 

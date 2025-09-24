@@ -6,6 +6,7 @@ import me.ayydxn.iridium.IridiumRenderer;
 import me.ayydxn.iridium.renderer.exceptions.IridiumRendererException;
 import me.ayydxn.iridium.renderer.utils.QueueFamilyIndices;
 import me.ayydxn.iridium.utils.IridiumConstants;
+import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
 
@@ -304,6 +305,29 @@ public class SwapChain
         this.graphicsDevice.waitIdle();
     }
 
+    @ApiStatus.Internal
+    public void beginFrame(MemoryStack memoryStack)
+    {
+        VkDevice logicalDevice = this.graphicsDevice.getLogicalDevice();
+        long presentCompleteSemaphore = this.presentCompleteSemaphores.get(this.swapChainFrameIndex);
+
+        IntBuffer pCurrentImageIndex = memoryStack.ints(-1);
+        int acquireNextImageResult = vkAcquireNextImageKHR(logicalDevice, this.swapChainHandle, IridiumConstants.UINT64_MAX, presentCompleteSemaphore,
+                VK_NULL_HANDLE, pCurrentImageIndex);
+
+        if (acquireNextImageResult == VK_ERROR_OUT_OF_DATE_KHR)
+        {
+            this.onResize(this.width, this.height);
+            return;
+        }
+        else if (acquireNextImageResult != VK_SUCCESS && acquireNextImageResult != VK_SUBOPTIMAL_KHR)
+        {
+            throw new IridiumRendererException("Failed to acquire the next swap chain image!");
+        }
+
+        this.swapChainImageIndex = pCurrentImageIndex.get(0);
+    }
+
     public void present()
     {
         VkDevice logicalDevice = this.graphicsDevice.getLogicalDevice();
@@ -316,21 +340,6 @@ public class SwapChain
         {
             // Wait for the previous frame to finish
             vkWaitForFences(logicalDevice, waitFence, true, IridiumConstants.UINT64_MAX);
-
-            IntBuffer pCurrentImageIndex = memoryStack.ints(-1);
-            int acquireNextImageResult = vkAcquireNextImageKHR(logicalDevice, this.swapChainHandle, IridiumConstants.UINT64_MAX, presentCompleteSemaphore, VK_NULL_HANDLE, pCurrentImageIndex);
-
-            if (acquireNextImageResult == VK_ERROR_OUT_OF_DATE_KHR)
-            {
-                this.onResize(this.width, this.height);
-                return;
-            }
-            else if (acquireNextImageResult != VK_SUCCESS && acquireNextImageResult != VK_SUBOPTIMAL_KHR)
-            {
-                throw new IridiumRendererException("Failed to acquire the next swap chain image!");
-            }
-
-            this.swapChainImageIndex = pCurrentImageIndex.get(0);
 
             VkSubmitInfo submitInfo =  VkSubmitInfo.calloc(memoryStack)
                     .sType(VK_STRUCTURE_TYPE_SUBMIT_INFO)
@@ -347,7 +356,7 @@ public class SwapChain
                     .pWaitSemaphores(memoryStack.longs(renderCompleteSemaphore))
                     .pSwapchains(memoryStack.longs(this.swapChainHandle))
                     .swapchainCount(1)
-                    .pImageIndices(pCurrentImageIndex);
+                    .pImageIndices(memoryStack.ints(this.swapChainImageIndex));
 
             int presentResult = vkQueuePresentKHR(graphicsQueue, presentInfo);
 
