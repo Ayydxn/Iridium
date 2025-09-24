@@ -45,11 +45,11 @@ public class IridiumRenderer
     {
         if (INSTANCE != null)
         {
-            IridiumConstants.LOGGER.warn("Moonblast cannot be initialized more than once!");
+            IridiumConstants.LOGGER.warn("Iridium's renderer cannot be initialized more than once!");
             return;
         }
 
-        IridiumConstants.LOGGER.info("Initializing Moonblast Renderer...\n- Version: {}\n- LWJGL Version: {}", VERSION,
+        IridiumConstants.LOGGER.info("Initializing Iridium Renderer...\n- Version: {}\n- LWJGL Version: {}", VERSION,
                 Version.getVersion());
 
         INSTANCE = new IridiumRenderer(windowHandle, iridiumRendererOptions);
@@ -140,7 +140,8 @@ public class IridiumRenderer
 
         try (MemoryStack memoryStack = MemoryStack.stackPush())
         {
-            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline.getHandle());
+            graphicsPipeline.bind(commandBuffer);
+
             vkCmdBindVertexBuffers(commandBuffer, 0, memoryStack.longs(vertexBuffer.getHandle()), memoryStack.longs(0L));
             vkCmdBindIndexBuffer(commandBuffer, indexBuffer.getHandle(), 0, VK_INDEX_TYPE_UINT32);
 
@@ -169,7 +170,7 @@ public class IridiumRenderer
     public static IridiumRenderer getInstance()
     {
         if (INSTANCE == null)
-            throw new IllegalStateException("Tried to access an instance of Moonblast before one was available!");
+            throw new IllegalStateException("Tried to access an instance of Iridium's renderer before one was available!");
 
         return INSTANCE;
     }

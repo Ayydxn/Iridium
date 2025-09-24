@@ -4,15 +4,15 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.GsonBuilder;
 import me.ayydxn.iridium.IridiumRenderer;
+import me.ayydxn.iridium.buffers.UniformBuffer;
+import me.ayydxn.iridium.renderer.DescriptorSetManager;
 import me.ayydxn.iridium.renderer.exceptions.IridiumRendererException;
 import me.ayydxn.iridium.utils.IridiumConstants;
 import net.minecraft.util.GsonHelper;
 import org.apache.commons.io.FilenameUtils;
+import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.system.MemoryStack;
-import org.lwjgl.vulkan.VkDescriptorSetLayoutBinding;
-import org.lwjgl.vulkan.VkDescriptorSetLayoutCreateInfo;
-import org.lwjgl.vulkan.VkDevice;
-import org.lwjgl.vulkan.VkShaderModuleCreateInfo;
+import org.lwjgl.vulkan.*;
 
 import java.net.URL;
 import java.nio.LongBuffer;
@@ -35,6 +35,7 @@ public class IridiumShader
     private final Map<ShaderStage, Long> shaderStageToShaderModule = Maps.newHashMap();
     private final List<PushConstantRange> pushConstantRanges;
     private final DescriptorSetInfo descriptorSetInfo;
+    private final DescriptorSetManager descriptorSetManager;
 
     private ShaderDefinition shaderDefinition;
 
@@ -74,6 +75,7 @@ public class IridiumShader
 
         this.descriptorSetInfo = this.createDescriptorSetLayout(shaderResources);
         this.pushConstantRanges = this.parsePushConstantsFromDefinition(shaderDefinition);
+        this.descriptorSetManager = new DescriptorSetManager();
     }
 
     public void destroy()
@@ -81,6 +83,26 @@ public class IridiumShader
         this.shaderStageToShaderModule.values().forEach(shaderModule -> vkDestroyShaderModule(this.logicalDevice, shaderModule, null));
 
         this.descriptorSetInfo.cleanup(this.logicalDevice);
+    }
+
+    public void bindUniformBuffer(String name, UniformBuffer uniformBuffer)
+    {
+        if (this.descriptorSetManager != null)
+            this.descriptorSetManager.bindUniformBuffer(name, uniformBuffer);
+    }
+
+    @ApiStatus.Internal
+    public void updateResources() {
+        if (this.descriptorSetManager != null) {
+            this.descriptorSetManager.updateDescriptorSets(this);
+        }
+    }
+
+    @ApiStatus.Internal
+    public void bindResources(VkCommandBuffer commandBuffer, long pipelineLayout, int pipelineBindPoint)
+    {
+        if (this.descriptorSetManager != null)
+            this.descriptorSetManager.bindDescriptorSets(commandBuffer, pipelineLayout, pipelineBindPoint);
     }
 
     private void createShaderModules()
@@ -129,7 +151,7 @@ public class IridiumShader
                     descriptorSetLayoutBindings.get(i)
                             .binding(shaderResource.binding())
                             .descriptorType(shaderResource.type().getVulkanDescriptorType())
-                            .descriptorCount(shaderResource.count())
+                            .descriptorCount(1)
                             .stageFlags(shaderResource.shaderStageFlags());
                 }
 
@@ -144,7 +166,7 @@ public class IridiumShader
             }
         }
 
-        return new DescriptorSetInfo(descriptorSetLayouts,  descriptorSetResources);
+        return new DescriptorSetInfo(descriptorSetLayouts, descriptorSetResources);
     }
 
     private List<ShaderResource> parseResourcesFromDefinition(ShaderDefinition shaderDefinition)
@@ -157,7 +179,6 @@ public class IridiumShader
                     ShaderResource.Type.getFromString(resourceDefinition.type),
                     resourceDefinition.binding,
                     resourceDefinition.set,
-                    resourceDefinition.count,
                     this.parseShaderStageFlags(resourceDefinition.stages)
             ));
         }
@@ -194,7 +215,7 @@ public class IridiumShader
 
     public Map<ShaderStage, Long> getShaderStagesAndModules()
     {
-        return shaderStageToShaderModule;
+        return this.shaderStageToShaderModule;
     }
 
     public DescriptorSetInfo getDescriptorSetInfo()
@@ -205,6 +226,11 @@ public class IridiumShader
     public List<PushConstantRange> getPushConstantRanges()
     {
         return this.pushConstantRanges;
+    }
+
+    public DescriptorSetManager getDescriptorSetManager()
+    {
+        return this.descriptorSetManager;
     }
 
     /**

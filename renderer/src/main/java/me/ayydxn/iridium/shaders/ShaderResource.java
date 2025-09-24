@@ -2,7 +2,7 @@ package me.ayydxn.iridium.shaders;
 
 import static org.lwjgl.vulkan.VK10.*;
 
-public record ShaderResource(String name, Type type, int binding, int set, int count, int shaderStageFlags)
+public record ShaderResource(String name, Type type, int binding, int set, int shaderStageFlags)
 {
     public enum Type
     {

@@ -30,9 +30,6 @@ public class ShaderDefinition
         @SerializedName("set")
         public int set;
 
-        @SerializedName("count")
-        public int count = 1;
-
         @SerializedName("stages")
         public List<String> stages;
     }

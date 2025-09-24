@@ -1,6 +1,7 @@
 package me.ayydxn.iridium.renderer;
 
 import me.ayydxn.iridium.IridiumRenderer;
+import me.ayydxn.iridium.buffers.UniformBuffer;
 import me.ayydxn.iridium.shaders.IridiumShader;
 import me.ayydxn.iridium.shaders.ShaderStage;
 import me.ayydxn.iridium.vertex.VertexBufferElement;
@@ -72,7 +73,7 @@ public class GraphicsPipeline
             {
                 pipelineShaderStageCreateInfos.get(currentShaderStageIndex)
                         .sType(VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO)
-                        .stage(this.convertMoonblastShaderStageToVulkan(shaderStageAndModule.getKey()))
+                        .stage(this.convertIridiumShaderStageToVulkan(shaderStageAndModule.getKey()))
                         .module(shaderStageAndModule.getValue())
                         .pName(memoryStack.UTF8("main"));
 
@@ -205,10 +206,17 @@ public class GraphicsPipeline
             LongBuffer pGraphicsPipeline = memoryStack.longs(VK_NULL_HANDLE);
             vkCheckResult(vkCreateGraphicsPipelines(this.logicalDevice, this.graphicsPipelineCache, graphicsPipelineCreateInfo, null, pGraphicsPipeline));
 
-            this.shader.destroy();
-
             this.graphicsPipelineHandle = pGraphicsPipeline.get(0);
         }
+    }
+
+    public void bind(VkCommandBuffer commandBuffer)
+    {
+        this.shader.updateResources();
+
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this.graphicsPipelineHandle);
+
+        this.shader.bindResources(commandBuffer, this.graphicsPipelineLayout, VK_PIPELINE_BIND_POINT_GRAPHICS);
     }
 
     public void destroy()
@@ -216,6 +224,16 @@ public class GraphicsPipeline
         vkDestroyPipeline(this.logicalDevice, this.graphicsPipelineHandle, null);
         vkDestroyPipelineLayout(this.logicalDevice, this.graphicsPipelineLayout, null);
         vkDestroyPipelineCache(this.logicalDevice, this.graphicsPipelineCache, null);
+
+        this.shader.destroy();
+        this.shader.getDescriptorSetManager().destroy();
+    }
+
+    public GraphicsPipeline bindUniformBuffer(String name, UniformBuffer uniformBuffer)
+    {
+        this.shader.bindUniformBuffer(name, uniformBuffer);
+
+        return this;
     }
 
     public long getHandle()
@@ -223,18 +241,25 @@ public class GraphicsPipeline
         return this.graphicsPipelineHandle;
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void createPipelineLayoutAndCache()
     {
         try (MemoryStack memoryStack = MemoryStack.stackPush())
         {
             // Setup descriptor set layouts
+            LongBuffer pSetLayouts = null;
             Map<Integer, Long> descriptorSetLayouts = this.shader.getDescriptorSetInfo().descriptorSetLayouts();
-            LongBuffer pSetLayouts = memoryStack.mallocLong(descriptorSetLayouts.size());
+            if (!descriptorSetLayouts.isEmpty())
+            {
+                pSetLayouts = memoryStack.mallocLong(descriptorSetLayouts.size());
 
-            for (long descriptorSetLayout : descriptorSetLayouts.values())
-                pSetLayouts.put(descriptorSetLayout);
-
-            pSetLayouts.flip();
+                for (int setIndex = 0; setIndex <  descriptorSetLayouts.size(); setIndex++)
+                {
+                    long descriptorSetLayout = descriptorSetLayouts.get(setIndex);
+                    if (descriptorSetLayout != VK_NULL_HANDLE)
+                        pSetLayouts.put(setIndex, descriptorSetLayout);
+                }
+            }
 
             // Setup push constants
             List<IridiumShader.PushConstantRange> pushConstants = this.shader.getPushConstantRanges();
@@ -271,7 +296,7 @@ public class GraphicsPipeline
         }
     }
 
-    private int convertMoonblastShaderStageToVulkan(ShaderStage shaderStage)
+    private int convertIridiumShaderStageToVulkan(ShaderStage shaderStage)
     {
         return switch(shaderStage)
         {

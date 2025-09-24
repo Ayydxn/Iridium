@@ -7,9 +7,8 @@
     {
       "name": "u_Camera",
       "type": "uniform_buffer",
-      "binding": 1,
+      "binding": 0,
       "set": 0,
-      "count": 1,
       "stages": [
         "vertex"
       ]

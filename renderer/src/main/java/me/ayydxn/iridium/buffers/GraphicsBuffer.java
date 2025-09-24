@@ -22,7 +22,7 @@ public abstract class GraphicsBuffer
 
     private AllocatedBuffer handle;
 
-    // (Ayydxn) Not currently used by Moonblast, but maybe useful to end users.
+    // (Ayydxn) Not currently used by Iridium, but maybe useful to end users.
     public GraphicsBuffer(ByteBuffer data)
     {
         this.vulkanMemoryAllocator = VulkanMemoryAllocator.getInstance();

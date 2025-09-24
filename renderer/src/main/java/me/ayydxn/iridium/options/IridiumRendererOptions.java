@@ -57,7 +57,7 @@ public class IridiumRendererOptions
         }
         else
         {
-            IridiumConstants.LOGGER.warn("Failed to load Moonblast's options! Loading defautls...");
+            IridiumConstants.LOGGER.warn("Failed to load renderer options! Loading defautls...");
 
             IridiumRendererOptions defaultRendererOptions = IridiumRendererOptions.defaults();
             defaultRendererOptions.write();

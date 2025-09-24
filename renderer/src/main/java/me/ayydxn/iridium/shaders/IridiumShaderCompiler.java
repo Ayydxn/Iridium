@@ -51,7 +51,7 @@ public class IridiumShaderCompiler
     {
         if (INSTANCE != null)
         {
-            IridiumConstants.LOGGER.warn("Moonblast's shader compiler can only be initialized once!");
+            IridiumConstants.LOGGER.warn("Iridium's shader compiler can only be initialized once!");
             return;
         }
 

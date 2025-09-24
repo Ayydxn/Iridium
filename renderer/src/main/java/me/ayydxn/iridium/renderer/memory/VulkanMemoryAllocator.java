@@ -112,7 +112,7 @@ public class VulkanMemoryAllocator
     public static VulkanMemoryAllocator getInstance()
     {
         if (INSTANCE == null)
-            throw new IllegalStateException("Tried to access an instance of Moonblast's memory allocator before one was available!");
+            throw new IllegalStateException("Tried to access an instance of the renderer's memory allocator before one was available!");
 
         return INSTANCE;
     }

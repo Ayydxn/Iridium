@@ -8,7 +8,7 @@ public class PathUtils
 {
     public static Path getShaderCacheDirectory()
     {
-        Path shaderCacheDirectory = Path.of(System.getProperty("user.home") + "/.moonblast/cache/shaders");
+        Path shaderCacheDirectory = Path.of(System.getProperty("user.home") + "/.iridium/cache/shaders");
 
         try
         {
@@ -25,6 +25,6 @@ public class PathUtils
 
     public static Path getConfigFilePath()
     {
-        return Path.of(System.getProperty("user.home") + "/.moonblast/options.json");
+        return Path.of(System.getProperty("user.home") + "/.iridium/options.json");
     }
 }

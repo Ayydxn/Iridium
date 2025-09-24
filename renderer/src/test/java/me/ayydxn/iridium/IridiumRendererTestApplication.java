@@ -1,12 +1,14 @@
 package me.ayydxn.iridium;
 
 import me.ayydxn.iridium.buffers.IndexBuffer;
+import me.ayydxn.iridium.buffers.UniformBuffer;
 import me.ayydxn.iridium.buffers.VertexBuffer;
 import me.ayydxn.iridium.options.IridiumRendererOptions;
 import me.ayydxn.iridium.renderer.GraphicsPipeline;
 import me.ayydxn.iridium.renderer.SwapChain;
 import me.ayydxn.iridium.shaders.IridiumShader;
 import me.ayydxn.iridium.shaders.ShaderDataTypes;
+import me.ayydxn.iridium.util.OrthographicCamera;
 import me.ayydxn.iridium.vertex.VertexBufferElement;
 import me.ayydxn.iridium.vertex.VertexBufferLayout;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -62,6 +64,8 @@ public class IridiumRendererTestApplication
                 new VertexBufferElement("Colors", ShaderDataTypes.Float3)
         ));
 
+        OrthographicCamera camera = new OrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f);
+
         float[] vertices =
         {
                  -0.5f, -0.5f, 0.0f,    1.0f, 0.0f, 0.0f,
@@ -87,6 +91,9 @@ public class IridiumRendererTestApplication
         IndexBuffer indexBuffer = new IndexBuffer(MemoryUtil.memByteBuffer(indexData));
         indexBuffer.create();
 
+        UniformBuffer uniformBuffer = new UniformBuffer(camera.getViewProjectionMatrixBuffer());
+        uniformBuffer.create();
+
         glfwSetFramebufferSizeCallback(window.getHandle(), (appWindow, newWidth, newHeight) ->
         {
             isWindowMinimized = newWidth == 0 || newHeight == 0;
@@ -102,6 +109,8 @@ public class IridiumRendererTestApplication
 
             if (!isWindowMinimized)
             {
+                graphicsPipeline.bindUniformBuffer("u_Camera", uniformBuffer);
+
                 IridiumRenderer.getInstance().draw(graphicsPipeline, vertexBuffer, indexBuffer);
             }
 
@@ -112,6 +121,7 @@ public class IridiumRendererTestApplication
 
         vertexBuffer.destroy();
         indexBuffer.destroy();
+        uniformBuffer.destroy();
         graphicsPipeline.destroy();
         swapChain.destroy();
         window.cleanup();
