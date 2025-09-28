@@ -13,14 +13,18 @@ import me.ayydxn.iridium.vertex.VertexBufferElement;
 import me.ayydxn.iridium.vertex.VertexBufferLayout;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.system.MemoryUtil;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -94,6 +98,20 @@ public class IridiumRendererTestApplication
         UniformBuffer uniformBuffer = new UniformBuffer(camera.getViewProjectionMatrixBuffer());
         uniformBuffer.create();
 
+        Vector3f selectedColor = new Vector3f(1.0f, 1.0f, 1.0f);
+
+        glfwSetKeyCallback(window.getHandle(), (appWindow, key, scancode, action, mods) ->
+        {
+            if (key == GLFW_KEY_SPACE && (action == GLFW_PRESS || action == GLFW_REPEAT))
+            {
+                ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
+                Vector3f randomColor = new Vector3f(threadLocalRandom.nextFloat(1.0f), threadLocalRandom.nextFloat(1.0f),
+                        threadLocalRandom.nextFloat(1.0f));
+
+                selectedColor.set(randomColor);
+            }
+        });
+
         glfwSetFramebufferSizeCallback(window.getHandle(), (appWindow, newWidth, newHeight) ->
         {
             isWindowMinimized = newWidth == 0 || newHeight == 0;
@@ -109,7 +127,15 @@ public class IridiumRendererTestApplication
 
             if (!isWindowMinimized)
             {
+                ByteBuffer frameDataPushConstant = ByteBuffer.allocateDirect(12)
+                        .order(ByteOrder.nativeOrder());
+                frameDataPushConstant.putFloat(selectedColor.x);
+                frameDataPushConstant.putFloat(selectedColor.y);
+                frameDataPushConstant.putFloat(selectedColor.z);
+                frameDataPushConstant.flip();
+
                 graphicsPipeline.bindUniformBuffer("u_Camera", uniformBuffer);
+                graphicsPipeline.setPushConstant("u_FrameData", frameDataPushConstant);
 
                 IridiumRenderer.getInstance().draw(graphicsPipeline, vertexBuffer, indexBuffer);
             }

@@ -11,6 +11,7 @@ import me.ayydxn.iridium.utils.IridiumConstants;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
 
+import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ public class DescriptorSetManager
     private final VkDevice logicalDevice = IridiumRenderer.getInstance().getGraphicsContext().getGraphicsDevice().getLogicalDevice();
     private final Map<Integer, Integer> descriptorPoolSizes; // Descriptor Type -> Size
     private final Map<String, ShaderResourceBinding> resourceBindings; // Resource Name -> Shader Resource
+    private final Map<String, ByteBuffer> pushConstantsData; // Push Constant Name -> Push Constant Data
     private final Map<Integer, Long> allocatedDescriptorSets; // Descriptor Set Index -> Descriptor Set Handle
     private final int maxDescriptorSets;
 
@@ -33,6 +35,7 @@ public class DescriptorSetManager
     {
         this.descriptorPoolSizes = Maps.newHashMap();
         this.resourceBindings = Maps.newConcurrentMap();
+        this.pushConstantsData = Maps.newConcurrentMap();
         this.allocatedDescriptorSets = Maps.newConcurrentMap();
         this.maxDescriptorSets = 1000; // (Ayydxn) Maybe make this configurable by the caller?
         this.areDescriptorSetsDirty = true;
@@ -44,6 +47,7 @@ public class DescriptorSetManager
     public void destroy()
     {
         this.resourceBindings.clear();
+        this.pushConstantsData.clear();
         this.allocatedDescriptorSets.clear();
 
         vkDestroyDescriptorPool(logicalDevice, descriptorPool, null);
@@ -139,6 +143,31 @@ public class DescriptorSetManager
         }
     }
 
+    public void updatePushConstants(VkCommandBuffer commandBuffer, long pipelineLayout, IridiumShader shader)
+    {
+        for (IridiumShader.PushConstantRange pushConstantRange : shader.getPushConstantRanges())
+        {
+            ByteBuffer pushConstantData = this.pushConstantsData.get(pushConstantRange.name());
+            if (pushConstantData != null)
+            {
+                pushConstantData.rewind();
+
+                int oldLimit =  pushConstantData.limit();
+                if (oldLimit < pushConstantRange.size())
+                {
+                    IridiumConstants.LOGGER.error("Not enough data was provided to push constant '{}'!", pushConstantRange.name());
+                    continue;
+                }
+
+                pushConstantData.limit(pushConstantRange.size());
+
+                vkCmdPushConstants(commandBuffer, pipelineLayout, pushConstantRange.shaderStageFlags(), pushConstantRange.offset(), pushConstantData);
+
+                pushConstantData.limit(oldLimit);
+            }
+        }
+    }
+
     public void bindUniformBuffer(String name, UniformBuffer uniformBuffer)
     {
         ShaderResourceBinding resourceBinding = this.resourceBindings.computeIfAbsent(name, resourceName ->
@@ -146,6 +175,14 @@ public class DescriptorSetManager
         resourceBinding.setUniformBuffer(uniformBuffer);
 
         this.areDescriptorSetsDirty = true;
+    }
+
+    public void setPushConstant(String name, ByteBuffer data)
+    {
+        if (data == null)
+            throw new IllegalArgumentException("Cannot set the value of a push constant to null!");
+
+        this.pushConstantsData.put(name, data);
     }
 
     private void initializeDefaultDescriptorPoolSizes()

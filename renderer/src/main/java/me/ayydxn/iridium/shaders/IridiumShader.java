@@ -15,6 +15,7 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
 
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -91,6 +92,12 @@ public class IridiumShader
             this.descriptorSetManager.bindUniformBuffer(name, uniformBuffer);
     }
 
+    public void setPushConstant(String name, ByteBuffer value)
+    {
+        if (this.descriptorSetManager != null)
+            this.descriptorSetManager.setPushConstant(name, value);
+    }
+
     @ApiStatus.Internal
     public void updateResources() {
         if (this.descriptorSetManager != null) {
@@ -102,7 +109,10 @@ public class IridiumShader
     public void bindResources(VkCommandBuffer commandBuffer, long pipelineLayout, int pipelineBindPoint)
     {
         if (this.descriptorSetManager != null)
+        {
             this.descriptorSetManager.bindDescriptorSets(commandBuffer, pipelineLayout, pipelineBindPoint);
+            this.descriptorSetManager.updatePushConstants(commandBuffer, pipelineLayout, this);
+        }
     }
 
     private void createShaderModules()

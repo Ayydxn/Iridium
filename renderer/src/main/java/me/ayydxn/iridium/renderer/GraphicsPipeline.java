@@ -7,9 +7,12 @@ import me.ayydxn.iridium.shaders.ShaderStage;
 import me.ayydxn.iridium.vertex.VertexBufferElement;
 import me.ayydxn.iridium.vertex.VertexBufferLayout;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
 
+import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
 import java.util.List;
 import java.util.Map;
@@ -229,11 +232,14 @@ public class GraphicsPipeline
         this.shader.getDescriptorSetManager().destroy();
     }
 
-    public GraphicsPipeline bindUniformBuffer(String name, UniformBuffer uniformBuffer)
+    public void bindUniformBuffer(String name, UniformBuffer uniformBuffer)
     {
         this.shader.bindUniformBuffer(name, uniformBuffer);
+    }
 
-        return this;
+    public void setPushConstant(String name, ByteBuffer value)
+    {
+        this.shader.setPushConstant(name, value);
     }
 
     public long getHandle()

@@ -13,5 +13,15 @@
         "vertex"
       ]
     }
+  ],
+  "push_constants": [
+    {
+      "name": "u_FrameData",
+      "size": 12,
+      "offset": 0,
+      "stages": [
+        "fragment"
+      ]
+    }
   ]
 }
