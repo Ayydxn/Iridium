@@ -36,6 +36,7 @@ public class GraphicsDevice
     private final int depthFormat;
 
     private VkQueue graphicsQueue;
+    private VkQueue computeQueue;
 
     public GraphicsDevice(VkInstance vulkanInstance)
     {
@@ -154,6 +155,7 @@ public class GraphicsDevice
             VkDevice logicalDevice = new VkDevice(pLogicalDevice.get(0), physicalDevice, logicalDeviceCreateInfo, VK_API_VERSION_1_2);
 
             this.graphicsQueue = this.createQueue(logicalDevice, queueFamilyIndices.getGraphicsFamily(), memoryStack);
+            this.computeQueue = this.createQueue(logicalDevice, queueFamilyIndices.getComputeFamily(), memoryStack);
 
             return logicalDevice;
         }
@@ -200,6 +202,11 @@ public class GraphicsDevice
     public VkQueue getGraphicsQueue()
     {
         return this.graphicsQueue;
+    }
+
+    public VkQueue getComputeQueue()
+    {
+        return this.computeQueue;
     }
 
     public DeviceInfo getDeviceInfo()

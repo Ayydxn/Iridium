@@ -1,14 +1,13 @@
 package me.ayydxn.iridium.shaders;
 
-import static org.lwjgl.util.shaderc.Shaderc.shaderc_glsl_fragment_shader;
-import static org.lwjgl.util.shaderc.Shaderc.shaderc_glsl_vertex_shader;
-import static org.lwjgl.vulkan.VK10.VK_SHADER_STAGE_FRAGMENT_BIT;
-import static org.lwjgl.vulkan.VK10.VK_SHADER_STAGE_VERTEX_BIT;
+import static org.lwjgl.util.shaderc.Shaderc.*;
+import static org.lwjgl.vulkan.VK10.*;
 
 public enum ShaderStage
 {
     VERTEX("Vertex Shader", shaderc_glsl_vertex_shader, VK_SHADER_STAGE_VERTEX_BIT, ".vsh", "VertexCache"),
-    FRAGMENT("Fragment Shader", shaderc_glsl_fragment_shader, VK_SHADER_STAGE_FRAGMENT_BIT, ".fsh", "FragmentCache");
+    FRAGMENT("Fragment Shader", shaderc_glsl_fragment_shader, VK_SHADER_STAGE_FRAGMENT_BIT, ".fsh", "FragmentCache"),
+    COMPUTE("Compute Shader", shaderc_glsl_compute_shader, VK_SHADER_STAGE_COMPUTE_BIT, ".comp", "ComputeCache");
 
     private final String name;
     private final int id;
@@ -31,6 +30,7 @@ public enum ShaderStage
         {
             case "vertex" -> VERTEX;
             case "fragment" -> FRAGMENT;
+            case "compute" -> COMPUTE;
             default -> throw new IllegalArgumentException(String.format("Unknown shader stage '%s'!", shaderStage));
         };
     }

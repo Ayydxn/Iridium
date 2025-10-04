@@ -1,0 +1,16 @@
+{
+  "stages": {
+    "compute": "default_compute"
+  },
+  "resources": [
+    {
+      "name": "u_OutputImage",
+      "type": "storage_image",
+      "binding": 0,
+      "set": 0,
+      "stages": [
+        "compute"
+      ]
+    }
+  ]
+}

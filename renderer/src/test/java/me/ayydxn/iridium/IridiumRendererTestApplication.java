@@ -1,30 +1,16 @@
 package me.ayydxn.iridium;
 
-import me.ayydxn.iridium.buffers.IndexBuffer;
-import me.ayydxn.iridium.buffers.UniformBuffer;
-import me.ayydxn.iridium.buffers.VertexBuffer;
+import me.ayydxn.iridium.layer.Layer;
+import me.ayydxn.iridium.layer.LayerStack;
 import me.ayydxn.iridium.options.IridiumRendererOptions;
-import me.ayydxn.iridium.renderer.GraphicsPipeline;
 import me.ayydxn.iridium.renderer.SwapChain;
-import me.ayydxn.iridium.shaders.IridiumShader;
-import me.ayydxn.iridium.shaders.ShaderDataTypes;
-import me.ayydxn.iridium.util.OrthographicCamera;
-import me.ayydxn.iridium.vertex.VertexBufferElement;
-import me.ayydxn.iridium.vertex.VertexBufferLayout;
+import me.ayydxn.iridium.util.ComputeTestLayer;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.joml.Vector3f;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.system.MemoryUtil;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -33,6 +19,7 @@ import static org.lwjgl.glfw.GLFWVulkan.glfwVulkanSupported;
 public class IridiumRendererTestApplication
 {
     private static final Pair<Integer, Integer> WINDOW_SIZE = new ImmutablePair<>(800, 600);
+    private static final LayerStack LAYER_STACK = new LayerStack();
     private static final String VERSION = "2025.1.0";
 
     /* -- Config Options -- */
@@ -44,6 +31,7 @@ public class IridiumRendererTestApplication
     /*----------------------*/
 
     private static boolean isWindowMinimized = false;
+    private static boolean usingCompute = false;
 
     public static void main(String[] args)
     {
@@ -63,52 +51,29 @@ public class IridiumRendererTestApplication
         swapChain.initialize();
         swapChain.create(WINDOW_SIZE.getLeft(), WINDOW_SIZE.getRight());
 
-        VertexBufferLayout vertexBufferLayout = new VertexBufferLayout(List.of(
-                new VertexBufferElement("Positions", ShaderDataTypes.Float3),
-                new VertexBufferElement("Colors", ShaderDataTypes.Float3)
-        ));
+        GraphicsTestLayer graphicsTestLayer = new GraphicsTestLayer(swapChain, window.getHandle());
+        ComputeTestLayer computeTestLayer = new ComputeTestLayer();
 
-        OrthographicCamera camera = new OrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f);
+        LAYER_STACK.pushLayer(graphicsTestLayer);
 
-        float[] vertices =
-        {
-                 -0.5f, -0.5f, 0.0f,    1.0f, 0.0f, 0.0f,
-                  0.5f, -0.5f, 0.0f,    0.0f, 1.0f, 0.0f,
-                  0.5f,  0.5f, 0.0f,    0.0f, 0.0f, 1.0f,
-                 -0.5f,  0.5f, 0.0f,    1.0f, 0.0f, 0.0f,
-        };
-
-        int[] indices = { 0, 1, 2, 2, 3, 0 };
-
-        FloatBuffer vertexData = BufferUtils.createFloatBuffer(vertices.length);
-        vertexData.put(vertices).flip();
-
-        IntBuffer indexData = BufferUtils.createIntBuffer(indices.length);
-        indexData.put(indices).flip();
-
-        GraphicsPipeline graphicsPipeline = new GraphicsPipeline(new IridiumShader("shaders/default_shader"), vertexBufferLayout, swapChain);
-        graphicsPipeline.create();
-
-        VertexBuffer vertexBuffer = new VertexBuffer(MemoryUtil.memByteBuffer(vertexData));
-        vertexBuffer.create();
-
-        IndexBuffer indexBuffer = new IndexBuffer(MemoryUtil.memByteBuffer(indexData));
-        indexBuffer.create();
-
-        UniformBuffer uniformBuffer = new UniformBuffer(camera.getViewProjectionMatrixBuffer());
-        uniformBuffer.create();
-
-        Vector3f selectedColor = new Vector3f(1.0f, 1.0f, 1.0f);
-
+        // (Ayydxn) Basic toggling between graphics and compute. Going to need a better way to do this.
+        // Also, it doesn't work after changing the quad's color once for some reason.
         glfwSetKeyCallback(window.getHandle(), (appWindow, key, scancode, action, mods) ->
         {
-            if (key == GLFW_KEY_SPACE && (action == GLFW_PRESS || action == GLFW_REPEAT))
+            if (key == GLFW_KEY_ENTER && action == GLFW_PRESS)
             {
-                ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
-                Vector3f randomColor = new Vector3f(threadLocalRandom.nextFloat(1.0f), threadLocalRandom.nextFloat(1.0f),
-                        threadLocalRandom.nextFloat(1.0f));
+                usingCompute = !usingCompute;
 
-                selectedColor.set(randomColor);
+                if (usingCompute)
+                {
+                    LAYER_STACK.pushLayer(computeTestLayer);
+                    LAYER_STACK.popLayer(graphicsTestLayer);
+                }
+                else
+                {
+                    LAYER_STACK.pushLayer(graphicsTestLayer);
+                    LAYER_STACK.popLayer(computeTestLayer);
+                }
             }
         });
 
@@ -121,23 +86,17 @@ public class IridiumRendererTestApplication
 
         while (!window.shouldWindowClose())
         {
+            for (Layer layer : LAYER_STACK)
+                layer.onUpdate();
+
             window.update();
 
             IridiumRenderer.getInstance().beginFrame(swapChain);
 
             if (!isWindowMinimized)
             {
-                ByteBuffer frameDataPushConstant = ByteBuffer.allocateDirect(12)
-                        .order(ByteOrder.nativeOrder());
-                frameDataPushConstant.putFloat(selectedColor.x);
-                frameDataPushConstant.putFloat(selectedColor.y);
-                frameDataPushConstant.putFloat(selectedColor.z);
-                frameDataPushConstant.flip();
-
-                graphicsPipeline.bindUniformBuffer("u_Camera", uniformBuffer);
-                graphicsPipeline.setPushConstant("u_FrameData", frameDataPushConstant);
-
-                IridiumRenderer.getInstance().draw(graphicsPipeline, vertexBuffer, indexBuffer);
+                for (Layer layer : LAYER_STACK)
+                    layer.onRender();
             }
 
             IridiumRenderer.getInstance().endFrame();
@@ -145,10 +104,9 @@ public class IridiumRendererTestApplication
             swapChain.present();
         }
 
-        vertexBuffer.destroy();
-        indexBuffer.destroy();
-        uniformBuffer.destroy();
-        graphicsPipeline.destroy();
+        for (Layer layer : LAYER_STACK)
+            layer.onDetach();
+
         swapChain.destroy();
         window.cleanup();
     }

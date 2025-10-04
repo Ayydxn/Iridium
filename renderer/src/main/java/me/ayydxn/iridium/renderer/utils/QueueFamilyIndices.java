@@ -7,12 +7,12 @@ import org.lwjgl.vulkan.VkQueueFamilyProperties;
 import java.nio.IntBuffer;
 import java.util.stream.IntStream;
 
-import static org.lwjgl.vulkan.VK10.VK_QUEUE_GRAPHICS_BIT;
-import static org.lwjgl.vulkan.VK10.vkGetPhysicalDeviceQueueFamilyProperties;
+import static org.lwjgl.vulkan.VK10.*;
 
 public class QueueFamilyIndices
 {
     private Integer graphicsFamily;
+    private Integer computeFamily;
 
     public static QueueFamilyIndices findQueueFamilies(VkPhysicalDevice physicalDevice)
     {
@@ -28,8 +28,14 @@ public class QueueFamilyIndices
 
             for (int i = 0; i < queueFamilyProperties.capacity() || !queueFamilyIndices.isComplete(); i++)
             {
-                if ((queueFamilyProperties.get(i).queueFlags() & VK_QUEUE_GRAPHICS_BIT) == VK_QUEUE_GRAPHICS_BIT)
+                VkQueueFamilyProperties familyProperties = queueFamilyProperties.get(i);
+
+                if ((familyProperties.queueFlags() & VK_QUEUE_GRAPHICS_BIT) == VK_QUEUE_GRAPHICS_BIT)
                     queueFamilyIndices.graphicsFamily = i;
+
+                // For compute, we want a queue that supports compute, but not graphics.
+                if ((familyProperties.queueFlags() & VK_QUEUE_COMPUTE_BIT) == VK_QUEUE_COMPUTE_BIT && (familyProperties.queueFlags() & VK_QUEUE_GRAPHICS_BIT) == 0)
+                    queueFamilyIndices.computeFamily = i;
             }
         }
 
@@ -38,16 +44,21 @@ public class QueueFamilyIndices
 
     public int[] toArray()
     {
-        return IntStream.of(this.graphicsFamily).toArray();
+        return IntStream.of(this.graphicsFamily, this.computeFamily).toArray();
     }
 
     public boolean isComplete()
     {
-        return this.graphicsFamily != null;
+        return this.graphicsFamily != null && this.computeFamily != null;
     }
 
     public Integer getGraphicsFamily()
     {
         return this.graphicsFamily;
+    }
+
+    public Integer getComputeFamily()
+    {
+        return this.computeFamily;
     }
 }

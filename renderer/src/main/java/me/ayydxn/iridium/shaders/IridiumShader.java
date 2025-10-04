@@ -36,9 +36,9 @@ public class IridiumShader
     private final Map<ShaderStage, Long> shaderStageToShaderModule = Maps.newHashMap();
     private final List<PushConstantRange> pushConstantRanges;
     private final DescriptorSetInfo descriptorSetInfo;
-    private final DescriptorSetManager descriptorSetManager;
 
     private ShaderDefinition shaderDefinition;
+    private DescriptorSetManager descriptorSetManager;
 
     public IridiumShader(String filepath)
     {
@@ -76,7 +76,9 @@ public class IridiumShader
 
         this.descriptorSetInfo = this.createDescriptorSetLayout(shaderResources);
         this.pushConstantRanges = this.parsePushConstantsFromDefinition(shaderDefinition);
-        this.descriptorSetManager = new DescriptorSetManager();
+
+        if (!this.descriptorSetInfo.descriptorSetLayouts().isEmpty() && !this.descriptorSetInfo.resources().isEmpty())
+            this.descriptorSetManager = new DescriptorSetManager();
     }
 
     public void destroy()
