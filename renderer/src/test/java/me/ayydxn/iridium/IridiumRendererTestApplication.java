@@ -51,7 +51,7 @@ public class IridiumRendererTestApplication
         swapChain.initialize();
         swapChain.create(WINDOW_SIZE.getLeft(), WINDOW_SIZE.getRight());
 
-        GraphicsTestLayer graphicsTestLayer = new GraphicsTestLayer(swapChain, window.getHandle());
+        GraphicsTestLayer graphicsTestLayer = new GraphicsTestLayer(swapChain);
         ComputeTestLayer computeTestLayer = new ComputeTestLayer();
 
         LAYER_STACK.pushLayer(graphicsTestLayer);

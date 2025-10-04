@@ -20,28 +20,28 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFW.GLFW_REPEAT;
 
 public class GraphicsTestLayer extends Layer
 {
     private final Vector3f selectedQuadColor = new Vector3f(1.0f, 1.0f, 1.0f);
     private final SwapChain swapChain;
-    private final long windowHandle;
+    private final Timer timer = new Timer();
 
     private GraphicsPipeline graphicsPipeline;
     private VertexBuffer vertexBuffer;
     private IndexBuffer indexBuffer;
     private UniformBuffer uniformBuffer;
 
-    public GraphicsTestLayer(SwapChain swapChain, long windowHandle)
+    public GraphicsTestLayer(SwapChain swapChain)
     {
         super("Graphics Test");
 
         this.swapChain = swapChain;
-        this.windowHandle = windowHandle;
     }
 
     @Override
@@ -84,17 +84,18 @@ public class GraphicsTestLayer extends Layer
         this.uniformBuffer = new UniformBuffer(camera.getViewProjectionMatrixBuffer());
         uniformBuffer.create();
 
-        glfwSetKeyCallback(this.windowHandle, (appWindow, key, scancode, action, mods) ->
+        this.timer.scheduleAtFixedRate(new TimerTask()
         {
-            if (key == GLFW_KEY_SPACE && (action == GLFW_PRESS || action == GLFW_REPEAT))
+            @Override
+            public void run()
             {
                 ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
                 Vector3f randomColor = new Vector3f(threadLocalRandom.nextFloat(1.0f), threadLocalRandom.nextFloat(1.0f),
                         threadLocalRandom.nextFloat(1.0f));
 
-                this.selectedQuadColor.set(randomColor);
+                GraphicsTestLayer.this.selectedQuadColor.set(randomColor);
             }
-        });
+        }, 0L, 3000L);
     }
 
     @Override
@@ -125,5 +126,7 @@ public class GraphicsTestLayer extends Layer
         this.indexBuffer.destroy();
         this.uniformBuffer.destroy();
         this.graphicsPipeline.destroy();
+
+        this.timer.cancel();
     }
 }
