@@ -21,7 +21,6 @@ import static org.lwjgl.vulkan.KHRPushDescriptor.VK_KHR_PUSH_DESCRIPTOR_EXTENSIO
 import static org.lwjgl.vulkan.KHRSwapchain.VK_KHR_SWAPCHAIN_EXTENSION_NAME;
 import static org.lwjgl.vulkan.KHRSynchronization2.VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME;
 import static org.lwjgl.vulkan.VK10.*;
-import static org.lwjgl.vulkan.VK10.VK_VERSION_PATCH;
 import static org.lwjgl.vulkan.VK12.VK_API_VERSION_1_2;
 import static org.lwjgl.vulkan.VK13.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
 
@@ -75,7 +74,7 @@ public class GraphicsDevice
             for (int i = 0; i < physicalDeviceCount.get(0); i++)
             {
                 VkPhysicalDevice physicalDevice = new VkPhysicalDevice(pPhysicalDevices.get(i), vulkanInstance);
-                if (this.isPhysicalDeviceSuitable(physicalDevice))
+                if (this.isPhysicalDeviceSuitable(physicalDevice, memoryStack))
                     return physicalDevice;
             }
         }
@@ -83,30 +82,26 @@ public class GraphicsDevice
         return null;
     }
 
-    private boolean isPhysicalDeviceSuitable(VkPhysicalDevice physicalDevice)
+    private boolean isPhysicalDeviceSuitable(VkPhysicalDevice physicalDevice, MemoryStack memoryStack)
     {
-        try (MemoryStack memoryStack = MemoryStack.stackPush())
-        {
-            VkPhysicalDeviceProperties physicalDeviceProperties = VkPhysicalDeviceProperties.calloc(memoryStack);
-            vkGetPhysicalDeviceProperties(physicalDevice, physicalDeviceProperties);
+        VkPhysicalDeviceProperties physicalDeviceProperties = VkPhysicalDeviceProperties.calloc(memoryStack);
+        vkGetPhysicalDeviceProperties(physicalDevice, physicalDeviceProperties);
 
-            boolean isDeviceDiscreteOrIntegrated = physicalDeviceProperties.deviceType() == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU ||
-                    physicalDeviceProperties.deviceType() == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU;
+        boolean isDeviceDiscreteOrIntegrated = physicalDeviceProperties.deviceType() == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU ||
+                physicalDeviceProperties.deviceType() == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU;
 
-            boolean doesDeviceSupportRequiredExtensions = this.doesPhysicalDeviceSupportRequiredExtensions(physicalDevice);
+        boolean doesDeviceSupportRequiredExtensions = this.doesPhysicalDeviceSupportRequiredExtensions(physicalDevice, memoryStack);
 
-            return isDeviceDiscreteOrIntegrated && doesDeviceSupportRequiredExtensions;
-        }
+        return isDeviceDiscreteOrIntegrated && doesDeviceSupportRequiredExtensions;
     }
 
-    private boolean doesPhysicalDeviceSupportRequiredExtensions(VkPhysicalDevice physicalDevice)
+    private boolean doesPhysicalDeviceSupportRequiredExtensions(VkPhysicalDevice physicalDevice, MemoryStack memoryStack)
     {
-        try (MemoryStack memoryStack = MemoryStack.stackPush())
-        {
-            IntBuffer physicalDeviceExtensionCount = memoryStack.ints(0);
-            vkEnumerateDeviceExtensionProperties(physicalDevice, (String) null, physicalDeviceExtensionCount, null);
+        IntBuffer physicalDeviceExtensionCount = memoryStack.ints(0);
+        vkEnumerateDeviceExtensionProperties(physicalDevice, (String) null, physicalDeviceExtensionCount, null);
 
-            VkExtensionProperties.Buffer physicalDeviceExtensions = VkExtensionProperties.calloc(physicalDeviceExtensionCount.get(0), memoryStack);
+        try (VkExtensionProperties.Buffer physicalDeviceExtensions = VkExtensionProperties.calloc(physicalDeviceExtensionCount.get(0)))
+        {
             vkEnumerateDeviceExtensionProperties(physicalDevice, (String) null, physicalDeviceExtensionCount, physicalDeviceExtensions);
 
             return physicalDeviceExtensions.stream()
