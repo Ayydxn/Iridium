@@ -56,7 +56,7 @@
   "iridium.options.group.advancedGraphics": "Advanced Graphics",
   "iridium.options.advancedGraphics.showFPSOverlay": "Show FPS",
   "iridium.options.advancedGraphics.showFPSOverlay.description": "If enabled, your current FPS, as well as your average, highest and lowest, will be displayed.",
-  "iridium.advancedGraphics.fpsOverlay": "%d FPS (Average: %d | Highest: %d | Lowest: %d)",
+  "iridium.advancedGraphics.fpsOverlay": "%d FPS (Average: %d | 1%% Low: %d | 0.1%% Low: %d)",
   "iridium.options.advancedGraphics.showCoordinates": "Show Coordinates",
   "iridium.options.advancedGraphics.showCoordinates.description": "If enabled, your current coordinates in the world will be displayed.",
   "iridium.advancedGraphics.coordinatesOverlay": "X: %s, Y: %s, Z: %s",

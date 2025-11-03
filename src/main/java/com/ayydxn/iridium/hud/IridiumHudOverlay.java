@@ -3,6 +3,8 @@ package com.ayydxn.iridium.hud;
 import com.ayydxn.iridium.IridiumClientMod;
 import com.ayydxn.iridium.options.IridiumGameOptions;
 import com.ayydxn.iridium.util.ClientFramerateTracker;
+import com.google.common.collect.Queues;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.fabricmc.fabric.api.client.rendering.v1.LayeredDrawerWrapper;
@@ -11,14 +13,44 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.awt.*;
+import java.util.Deque;
+import java.util.List;
 
-public class IridiumHudOverlay implements HudLayerRegistrationCallback
+public class IridiumHudOverlay implements ClientTickEvents.StartTick, HudLayerRegistrationCallback
 {
+    private final List<Component> overlayTextQueue = Lists.newArrayList();
     private final Minecraft client = Minecraft.getInstance();
     private final IridiumGameOptions iridiumGameOptions = IridiumClientMod.getInstance().getGameOptions();
+
+    @Override
+    public void onStartTick(Minecraft client)
+    {
+        this.overlayTextQueue.clear();
+
+        if (this.iridiumGameOptions.advancedGraphicsOptions.showFPSOverlay)
+        {
+            ClientFramerateTracker clientFramerateTracker = ClientFramerateTracker.getInstance();
+
+            Component fpsOverlayText = Component.translatable("iridium.advancedGraphics.fpsOverlay", clientFramerateTracker.getSmoothFPS(),
+                    clientFramerateTracker.getAverageFPS(), clientFramerateTracker.getOnePercentLowFPS(), clientFramerateTracker.getPointOnePercentLowFPS());
+
+            this.overlayTextQueue.add(fpsOverlayText);
+        }
+
+        if (this.iridiumGameOptions.advancedGraphicsOptions.showCoordinates && client.player != null && !client.showOnlyReducedInfo())
+        {
+            Vec3 playerPosition = client.player.position();
+
+            Component coordinatesOverlayText = Component.translatable("iridium.advancedGraphics.coordinatesOverlay", String.format("%.2f", playerPosition.x()),
+                    String.format("%.2f", playerPosition.y()), String.format("%.2f", playerPosition.z()));
+
+            this.overlayTextQueue.add(coordinatesOverlayText);
+        }
+    }
 
     @Override
     public void register(LayeredDrawerWrapper layeredDrawer)
@@ -30,94 +62,41 @@ public class IridiumHudOverlay implements HudLayerRegistrationCallback
     {
         if (!this.client.getDebugOverlay().showDebugScreen())
         {
-            if (this.iridiumGameOptions.advancedGraphicsOptions.showFPSOverlay)
-                this.renderFramerateOverlay(guiGraphics);
+            IridiumGameOptions.OverlayPosition overlayPosition = this.iridiumGameOptions.advancedGraphicsOptions.overlayPosition;
+            int xPosition;
+            int yPosition = 2;
 
-            if (this.iridiumGameOptions.advancedGraphicsOptions.showCoordinates)
-                this.renderCoordinatesOverlay(guiGraphics);
-        }
-    }
-
-    private void renderFramerateOverlay(GuiGraphics guiGraphics)
-    {
-        ClientFramerateTracker clientFramerateTracker = IridiumClientMod.getInstance().getClientFramerateTracker();
-        Component fpsOverlayText = Component.translatable("iridium.advancedGraphics.fpsOverlay", this.client.getFps(), clientFramerateTracker.getAverageFPS(),
-                clientFramerateTracker.getHighestFPS(), clientFramerateTracker.getLowestFPS());
-        int xPosition = 0;
-        int yPosition = 0;
-
-        switch (this.iridiumGameOptions.advancedGraphicsOptions.overlayPosition)
-        {
-            case TopLeft ->
-            {
-                xPosition = 2;
-                yPosition = 2;
-            }
-
-            case TopRight ->
-            {
-                xPosition = this.client.getWindow().getGuiScaledWidth() - this.client.font.width(fpsOverlayText) - 2;
-                yPosition = 2;
-            }
-
-            case BottomLeft ->
-            {
-                xPosition = 2;
+            if (overlayPosition == IridiumGameOptions.OverlayPosition.BottomRight || overlayPosition == IridiumGameOptions.OverlayPosition.BottomLeft)
                 yPosition = this.client.getWindow().getGuiScaledHeight() - this.client.font.lineHeight - 2;
-            }
 
-            case BottomRight ->
+            // In order to keep the text order consistent across all positions, we reverse the list
+            // or else the FPS and coordinates will swap places in the bottom corners.
+            List<Component> overlayTextList = (overlayPosition == IridiumGameOptions.OverlayPosition.BottomRight ||
+                    overlayPosition == IridiumGameOptions.OverlayPosition.BottomLeft) ? this.overlayTextQueue.reversed() : this.overlayTextQueue;
+
+            for (Component overlayText : overlayTextList)
             {
-                xPosition = this.client.getWindow().getGuiScaledWidth() - this.client.font.width(fpsOverlayText) - 2;
-                yPosition = this.client.getWindow().getGuiScaledHeight() - this.client.font.lineHeight - 2;
+                if (overlayPosition == IridiumGameOptions.OverlayPosition.TopRight || overlayPosition == IridiumGameOptions.OverlayPosition.BottomRight)
+                {
+                    xPosition = this.client.getWindow().getGuiScaledWidth() - this.client.font.width(overlayText) - 2;
+                }
+                else
+                {
+                    xPosition = 2;
+                }
+
+                this.drawString(guiGraphics, overlayText, xPosition, yPosition);
+
+                if (overlayPosition == IridiumGameOptions.OverlayPosition.BottomLeft || overlayPosition == IridiumGameOptions.OverlayPosition.BottomRight)
+                {
+                    yPosition -= this.client.font.lineHeight + 2;
+                }
+                else
+                {
+                    yPosition += this.client.font.lineHeight + 2;
+                }
             }
         }
-
-        this.drawString(guiGraphics, fpsOverlayText, xPosition, yPosition);
-    }
-
-    private void renderCoordinatesOverlay(GuiGraphics guiGraphics)
-    {
-        if (this.client.player == null)
-            return;
-
-        if (this.client.showOnlyReducedInfo())
-            return;
-
-        Vec3 playerPosition = this.client.player.position();
-        Component coordinatesOverlay = Component.translatable("iridium.advancedGraphics.coordinatesOverlay", String.format("%.2f", playerPosition.x()),
-                String.format("%.2f", playerPosition.y()), String.format("%.2f", playerPosition.z()));
-        int xPosition = 0;
-        int yPosition = 0;
-
-        switch (this.iridiumGameOptions.advancedGraphicsOptions.overlayPosition)
-        {
-            case TopLeft ->
-            {
-                xPosition = 2;
-                yPosition = 12;
-            }
-
-            case TopRight ->
-            {
-                xPosition = this.client.getWindow().getGuiScaledWidth() - this.client.font.width(coordinatesOverlay) - 2;
-                yPosition = 12;
-            }
-
-            case BottomLeft ->
-            {
-                xPosition = 2;
-                yPosition = this.client.getWindow().getGuiScaledWidth() - this.client.font.lineHeight - 12;
-            }
-
-            case BottomRight ->
-            {
-                xPosition = this.client.getWindow().getGuiScaledWidth() - this.client.font.width(coordinatesOverlay) - 2;
-                yPosition = this.client.getWindow().getGuiScaledHeight() - this.client.font.lineHeight - 12;
-            }
-        }
-
-        this.drawString(guiGraphics, coordinatesOverlay, xPosition, yPosition);
     }
 
     private void drawString(GuiGraphics guiGraphics, Component text, int xPosition, int yPosition)

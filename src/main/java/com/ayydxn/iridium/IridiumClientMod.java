@@ -11,6 +11,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
@@ -25,7 +26,6 @@ public class IridiumClientMod implements ClientModInitializer
     private static final String MOD_ID = "iridium";
 
     private IridiumGameOptions iridiumGameOptions;
-    private ClientFramerateTracker clientFramerateTracker;
     private String modVersion = "Unknown";
 
     @Override
@@ -39,7 +39,8 @@ public class IridiumClientMod implements ClientModInitializer
         LOGGER.info("Initializing Iridium... (Version: {})", this.modVersion);
 
         this.iridiumGameOptions = IridiumGameOptions.load();
-        this.clientFramerateTracker = new ClientFramerateTracker();
+
+        IridiumHudOverlay iridiumHudOverlay = new IridiumHudOverlay();
 
         OptionCategoryRegistry.register("video", IridiumVideoOptionsCategory::new, 1);
         OptionCategoryRegistry.register("audio", IridiumAudioOptionsCategory::new, 2);
@@ -50,8 +51,12 @@ public class IridiumClientMod implements ClientModInitializer
         OptionCategoryRegistry.register("online", IridiumOnlineOptionsCategory::new, 7);
         OptionCategoryRegistry.register("extras", IridiumExtraOptionsCategory::new, 8);
 
-        ClientTickEvents.START_CLIENT_TICK.register(this.clientFramerateTracker::tick);
-        HudLayerRegistrationCallback.EVENT.register(new IridiumHudOverlay());
+        /* -- Event Registration -- */
+        WorldRenderEvents.START.register(ClientFramerateTracker.getInstance());
+
+        ClientTickEvents.START_CLIENT_TICK.register(iridiumHudOverlay);
+
+        HudLayerRegistrationCallback.EVENT.register(iridiumHudOverlay);
     }
 
     public static IridiumClientMod getInstance()
@@ -75,11 +80,6 @@ public class IridiumClientMod implements ClientModInitializer
     public IridiumGameOptions getGameOptions()
     {
         return this.iridiumGameOptions;
-    }
-
-    public ClientFramerateTracker getClientFramerateTracker()
-    {
-        return this.clientFramerateTracker;
     }
 
     public String getModVersion()
