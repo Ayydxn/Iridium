@@ -1,6 +1,7 @@
 package me.ayydxn.iridium.shaders;
 
 import me.ayydxn.iridium.buffers.UniformBuffer;
+import me.ayydxn.iridium.texture.VulkanTexture;
 
 public class ShaderResourceBinding
 {
@@ -8,6 +9,7 @@ public class ShaderResourceBinding
     private final ShaderResource.Type resourceType;
 
     private UniformBuffer boundUniformBuffer;
+    private VulkanTexture boundTexture;
     private boolean isDirty;
 
     public ShaderResourceBinding(String name, ShaderResource.Type resourceType)
@@ -31,6 +33,17 @@ public class ShaderResourceBinding
     public void setUniformBuffer(UniformBuffer newUniformBuffer)
     {
         this.boundUniformBuffer = newUniformBuffer;
+        this.isDirty = true;
+    }
+
+    public VulkanTexture getTexture()
+    {
+        return this.boundTexture;
+    }
+
+    public void setTexture(VulkanTexture boundTexture)
+    {
+        this.boundTexture = boundTexture;
         this.isDirty = true;
     }
 

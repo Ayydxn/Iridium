@@ -88,9 +88,9 @@ public class IridiumRenderer
             swapChain.beginFrame(memoryStack);
 
             VkClearColorValue clearColorValue = VkClearColorValue.calloc(memoryStack)
-                    .float32(0, 0.2f)
-                    .float32(1, 0.2f)
-                    .float32(2, 0.2f)
+                    .float32(0, 0.05f)
+                    .float32(1, 0.05f)
+                    .float32(2, 0.05f)
                     .float32(3, 1.0f);
 
             VkRect2D renderingArea = VkRect2D.calloc(memoryStack)

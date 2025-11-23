@@ -4,6 +4,7 @@ import me.ayydxn.iridium.IridiumRenderer;
 import me.ayydxn.iridium.buffers.UniformBuffer;
 import me.ayydxn.iridium.shaders.IridiumShader;
 import me.ayydxn.iridium.shaders.ShaderStage;
+import me.ayydxn.iridium.texture.VulkanTexture;
 import me.ayydxn.iridium.vertex.VertexBufferElement;
 import me.ayydxn.iridium.vertex.VertexBufferLayout;
 import org.jetbrains.annotations.NotNull;
@@ -235,6 +236,11 @@ public class GraphicsPipeline
     public void bindUniformBuffer(String name, UniformBuffer uniformBuffer)
     {
         this.shader.bindUniformBuffer(name, uniformBuffer);
+    }
+
+    public void bindTexture(String name, VulkanTexture texture)
+    {
+        this.shader.bindTexture(name, texture);
     }
 
     public void setPushConstant(String name, ByteBuffer value)

@@ -437,22 +437,22 @@ public class SwapChain
             VkSurfaceFormatKHR.Buffer surfaceFormats = VkSurfaceFormatKHR.calloc(surfaceFormatCount.get(0), memoryStack);
             vkGetPhysicalDeviceSurfaceFormatsKHR(this.graphicsDevice.getPhysicalDevice(), this.windowSurface, surfaceFormatCount, surfaceFormats);
 
-            boolean foundB8G8R8A8Format = false;
+            boolean foundPreferredFormat = false;
             for (VkSurfaceFormatKHR surfaceFormat : surfaceFormats)
             {
-                // If we find VK_FORMAT_B8G8R8A8_UNORM, we use that and the associated color space.
-                if (surfaceFormat.format() == VK_FORMAT_B8G8R8A8_UNORM)
+                // If we find VK_FORMAT_B8G8R8A8_SRGB, we use that and the associated color space.
+                if (surfaceFormat.format() == VK_FORMAT_B8G8R8A8_SRGB && surfaceFormat.colorSpace() == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
                 {
                     this.swapChainImageFormat = surfaceFormat.format();
                     this.swapChainColorSpace = surfaceFormat.colorSpace();
 
-                    foundB8G8R8A8Format = true;
+                    foundPreferredFormat = true;
                     break;
                 }
             }
 
-            // If we failed to find VK_FORMAT_B8G8R8A8_UNORM, we use the image format and color space of the first surface format.
-            if (!foundB8G8R8A8Format)
+            // If we failed to find VK_FORMAT_B8G8R8A8_SRGB, we use the image format and color space of the first surface format.
+            if (!foundPreferredFormat)
             {
                 this.swapChainImageFormat = surfaceFormats.get(0).format();
                 this.swapChainColorSpace = surfaceFormats.get(0).colorSpace();

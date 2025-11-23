@@ -12,6 +12,15 @@
       "stages": [
         "vertex"
       ]
+    },
+    {
+      "name": "u_Texture",
+      "type": "combined_image_sampler",
+      "binding": 1,
+      "set": 0,
+      "stages": [
+        "fragment"
+      ]
     }
   ],
   "push_constants": [

@@ -4,8 +4,8 @@ import static org.lwjgl.vulkan.VK10.*;
 
 public enum ShaderDataTypes
 {
-    Float(3, VK_FORMAT_R32_SFLOAT),
-    Float2(4 * 2, VK_FORMAT_R32_SFLOAT),
+    Float(4, VK_FORMAT_R32_SFLOAT),
+    Float2(4 * 2, VK_FORMAT_R32G32_SFLOAT),
     Float3(4 * 3, VK_FORMAT_R32G32B32_SFLOAT),
     Float4(4 * 4, VK_FORMAT_R32G32B32A32_SFLOAT),
 

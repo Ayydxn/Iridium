@@ -7,6 +7,7 @@ import me.ayydxn.iridium.buffers.UniformBuffer;
 import me.ayydxn.iridium.shaders.IridiumShader;
 import me.ayydxn.iridium.shaders.ShaderResource;
 import me.ayydxn.iridium.shaders.ShaderResourceBinding;
+import me.ayydxn.iridium.texture.VulkanTexture;
 import me.ayydxn.iridium.utils.IridiumConstants;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
@@ -177,6 +178,15 @@ public class DescriptorSetManager
         this.areDescriptorSetsDirty = true;
     }
 
+    public void bindTexture(String name, VulkanTexture texture)
+    {
+        ShaderResourceBinding resourceBinding = this.resourceBindings.computeIfAbsent(name, resourceName ->
+                new ShaderResourceBinding(resourceName, ShaderResource.Type.COMBINED_IMAGE_SAMPLER));
+        resourceBinding.setTexture(texture);
+
+        this.areDescriptorSetsDirty = true;
+    }
+
     public void setPushConstant(String name, ByteBuffer data)
     {
         if (data == null)
@@ -248,6 +258,22 @@ public class DescriptorSetManager
                             .offset(0L);
 
                     writeDescriptorSet.pBufferInfo(descriptorBufferInfo);
+
+                    return writeDescriptorSet;
+                }
+            }
+
+            case COMBINED_IMAGE_SAMPLER ->
+            {
+                if (shaderResourceBinding.getTexture() != null)
+                {
+                    VulkanTexture vulkanTexture =  shaderResourceBinding.getTexture();
+                    VkDescriptorImageInfo.Buffer descriptorImageInfo = VkDescriptorImageInfo.calloc(1, memoryStack)
+                            .imageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+                            .imageView(vulkanTexture.getImageView())
+                            .sampler(vulkanTexture.getSampler());
+
+                    writeDescriptorSet.pImageInfo(descriptorImageInfo);
 
                     return writeDescriptorSet;
                 }

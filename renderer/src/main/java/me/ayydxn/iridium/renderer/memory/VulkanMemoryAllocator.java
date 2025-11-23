@@ -9,10 +9,7 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.util.vma.VmaAllocationCreateInfo;
 import org.lwjgl.util.vma.VmaAllocatorCreateInfo;
 import org.lwjgl.util.vma.VmaVulkanFunctions;
-import org.lwjgl.vulkan.VkBufferCreateInfo;
-import org.lwjgl.vulkan.VkDevice;
-import org.lwjgl.vulkan.VkInstance;
-import org.lwjgl.vulkan.VkPhysicalDevice;
+import org.lwjgl.vulkan.*;
 
 import java.nio.LongBuffer;
 
@@ -91,6 +88,26 @@ public class VulkanMemoryAllocator
     public void destroyBuffer(AllocatedBuffer buffer)
     {
         vmaDestroyBuffer(this.vmaAllocator, buffer.buffer(), buffer.bufferAllocation());
+    }
+
+    public AllocatedImage allocateImage(VkImageCreateInfo imageCreateInfo, int vmaMemoryUsage)
+    {
+        try (MemoryStack memoryStack = MemoryStack.stackPush())
+        {
+            VmaAllocationCreateInfo allocationCreateInfo = VmaAllocationCreateInfo.calloc(memoryStack)
+                    .usage(vmaMemoryUsage);
+
+            LongBuffer pBuffer = memoryStack.longs(VK_NULL_HANDLE);
+            PointerBuffer pAllocation = memoryStack.pointers(VK_NULL_HANDLE);
+            vkCheckResult(vmaCreateImage(this.vmaAllocator, imageCreateInfo, allocationCreateInfo, pBuffer, pAllocation, null));
+
+            return new AllocatedImage(pBuffer.get(0), pAllocation.get(0));
+        }
+    }
+
+    public void destroyImage(AllocatedImage image)
+    {
+        vmaDestroyImage(this.vmaAllocator, image.image(), image.imageAllocation());
     }
 
     public PointerBuffer mapMemory(long allocation)

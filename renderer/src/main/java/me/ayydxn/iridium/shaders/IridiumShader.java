@@ -7,6 +7,7 @@ import me.ayydxn.iridium.IridiumRenderer;
 import me.ayydxn.iridium.buffers.UniformBuffer;
 import me.ayydxn.iridium.renderer.DescriptorSetManager;
 import me.ayydxn.iridium.renderer.exceptions.IridiumRendererException;
+import me.ayydxn.iridium.texture.VulkanTexture;
 import me.ayydxn.iridium.utils.IridiumConstants;
 import net.minecraft.util.GsonHelper;
 import org.apache.commons.io.FilenameUtils;
@@ -92,6 +93,12 @@ public class IridiumShader
     {
         if (this.descriptorSetManager != null)
             this.descriptorSetManager.bindUniformBuffer(name, uniformBuffer);
+    }
+
+    public void bindTexture(String name, VulkanTexture texture)
+    {
+        if (this.descriptorSetManager != null)
+            this.descriptorSetManager.bindTexture(name, texture);
     }
 
     public void setPushConstant(String name, ByteBuffer value)
