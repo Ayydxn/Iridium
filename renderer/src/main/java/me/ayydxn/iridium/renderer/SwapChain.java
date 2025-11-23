@@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import me.ayydxn.iridium.IridiumRenderer;
 import me.ayydxn.iridium.renderer.exceptions.IridiumRendererException;
+import me.ayydxn.iridium.renderer.memory.AllocatedImage;
+import me.ayydxn.iridium.renderer.memory.VulkanMemoryAllocator;
 import me.ayydxn.iridium.renderer.utils.QueueFamilyIndices;
 import me.ayydxn.iridium.utils.IridiumConstants;
 import org.jetbrains.annotations.ApiStatus;
@@ -17,6 +19,7 @@ import java.util.stream.Stream;
 
 import static me.ayydxn.iridium.renderer.debug.VulkanDebugUtils.vkCheckResult;
 import static org.lwjgl.glfw.GLFWVulkan.glfwCreateWindowSurface;
+import static org.lwjgl.util.vma.Vma.VMA_MEMORY_USAGE_GPU_ONLY;
 import static org.lwjgl.vulkan.KHRSurface.*;
 import static org.lwjgl.vulkan.KHRSwapchain.*;
 import static org.lwjgl.vulkan.VK10.*;
@@ -25,10 +28,13 @@ public class SwapChain
 {
     private final GraphicsContext graphicsContext;
     private final GraphicsDevice graphicsDevice;
+    private VulkanMemoryAllocator vulkanMemoryAllocator;
     private final int framesInFlight;
 
     private List<Long> swapChainImages;
+    private AllocatedImage swapChainDepthImage;
     private List<Long> swapChainImageViews;
+    private long swapChainDepthImageView;
     private VkExtent2D swapChainExtent;
     private List<Long> presentCompleteSemaphores;
     private List<Long> renderCompleteSemaphores;
@@ -51,6 +57,7 @@ public class SwapChain
     {
         this.graphicsContext = IridiumRenderer.getInstance().getGraphicsContext();
         this.graphicsDevice = graphicsContext.getGraphicsDevice();
+        this.vulkanMemoryAllocator = VulkanMemoryAllocator.getInstance();
         this.framesInFlight = IridiumRenderer.getInstance().getOptions().rendererOptions.framesInFlight;
 
         this.width = 0;
@@ -232,6 +239,12 @@ public class SwapChain
                     vkDestroyImageView(this.graphicsDevice.getLogicalDevice(), imageView, null);
             }
 
+            if (this.swapChainDepthImage != null && this.swapChainDepthImageView != VK_NULL_HANDLE)
+            {
+                this.vulkanMemoryAllocator.destroyImage(this.swapChainDepthImage);
+                vkDestroyImageView(this.graphicsDevice.getLogicalDevice(), this.swapChainDepthImageView, null);
+            }
+
             IntBuffer swapChainImageCount = memoryStack.ints(0);
             vkGetSwapchainImagesKHR(this.graphicsDevice.getLogicalDevice(), this.swapChainHandle, swapChainImageCount, null);
 
@@ -244,6 +257,7 @@ public class SwapChain
                 this.swapChainImages.add(pSwapChainImages.get(i));
 
             this.createImageViews();
+            this.createDepthImage();
 
             if (this.presentCompleteSemaphores == null || this.renderCompleteSemaphores == null)
             {
@@ -301,6 +315,9 @@ public class SwapChain
 
         for (long swapChainImageView : this.swapChainImageViews)
             vkDestroyImageView(this.graphicsDevice.getLogicalDevice(), swapChainImageView, null);
+
+        this.vulkanMemoryAllocator.destroyImage(this.swapChainDepthImage);
+        vkDestroyImageView(this.graphicsDevice.getLogicalDevice(), this.swapChainDepthImageView, null);
         
         this.graphicsDevice.waitIdle();
     }
@@ -493,6 +510,47 @@ public class SwapChain
         }
     }
 
+    private void createDepthImage()
+    {
+        try (MemoryStack memoryStack = MemoryStack.stackPush())
+        {
+            // Create the depth image
+            VkImageCreateInfo depthImageCreateInfo = VkImageCreateInfo.calloc(memoryStack)
+                    .sType(VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO)
+                    .imageType(VK_IMAGE_TYPE_2D)
+                    .extent(VkExtent3D.calloc(memoryStack)
+                            .set(this.swapChainExtent.width(), this.swapChainExtent.height(), 1))
+                    .mipLevels(1)
+                    .arrayLayers(1)
+                    .format(this.graphicsDevice.getDepthFormat())
+                    .tiling(VK_IMAGE_TILING_OPTIMAL)
+                    .initialLayout(VK_IMAGE_LAYOUT_UNDEFINED)
+                    .usage(VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT)
+                    .samples(VK_SAMPLE_COUNT_1_BIT)
+                    .sharingMode(VK_SHARING_MODE_EXCLUSIVE);
+
+            this.swapChainDepthImage = this.vulkanMemoryAllocator.allocateImage(depthImageCreateInfo, VMA_MEMORY_USAGE_GPU_ONLY);
+
+            // Create the associated image view
+            VkImageViewCreateInfo imageViewCreateInfo = VkImageViewCreateInfo.calloc(memoryStack)
+                    .sType(VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO)
+                    .image(this.swapChainDepthImage.image())
+                    .viewType(VK_IMAGE_VIEW_TYPE_2D)
+                    .format(this.graphicsDevice.getDepthFormat());
+
+            imageViewCreateInfo.subresourceRange().aspectMask(VK_IMAGE_ASPECT_DEPTH_BIT)
+                    .baseMipLevel(0)
+                    .levelCount(1)
+                    .baseArrayLayer(0)
+                    .layerCount(1);
+
+            LongBuffer pDepthImageView = memoryStack.longs(VK_NULL_HANDLE);
+            vkCheckResult(vkCreateImageView(this.graphicsDevice.getLogicalDevice(), imageViewCreateInfo, null, pDepthImageView));
+
+            this.swapChainDepthImageView = pDepthImageView.get(0);
+        }
+    }
+
     public int getWidth()
     {
         return this.width;
@@ -511,6 +569,16 @@ public class SwapChain
     public long getCurrentImageView()
     {
         return this.swapChainImageViews.get(this.swapChainImageIndex);
+    }
+
+    public long getDepthImage()
+    {
+        return this.swapChainDepthImage.image();
+    }
+
+    public long getDepthImageView()
+    {
+        return this.swapChainDepthImageView;
     }
 
     public VkExtent2D getExtent()

@@ -25,7 +25,7 @@ public class VulkanUtils
                     .image(image);
 
             imageMemoryBarrier.subresourceRange()
-                    .aspectMask(newImageLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT)
+                    .aspectMask(newImageLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL ? (VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT) : VK_IMAGE_ASPECT_COLOR_BIT)
                     .baseMipLevel(0)
                     .levelCount(1)
                     .baseArrayLayer(0)

@@ -105,11 +105,22 @@ public class IridiumRenderer
                     .storeOp(VK_ATTACHMENT_STORE_OP_STORE)
                     .clearValue(VkClearValue.calloc(memoryStack).color(clearColorValue));
 
+            VkRenderingAttachmentInfoKHR depthRenderingAttachmentInfo = VkRenderingAttachmentInfoKHR.calloc(memoryStack)
+                    .sType(VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR)
+                    .imageView(swapChain.getDepthImageView())
+                    .imageLayout(VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+                    .loadOp(VK_ATTACHMENT_LOAD_OP_CLEAR)
+                    .storeOp(VK_ATTACHMENT_STORE_OP_STORE)
+                    .clearValue(VkClearValue.calloc(memoryStack)
+                            .depthStencil(VkClearDepthStencilValue.calloc(memoryStack).set(1.0f, 0)));
+
             VkRenderingInfoKHR renderingInfo = VkRenderingInfoKHR.calloc(memoryStack)
                     .sType(VK_STRUCTURE_TYPE_RENDERING_INFO_KHR)
                     .renderArea(renderingArea)
                     .layerCount(1)
-                    .pColorAttachments(colorRenderingAttachmentInfo);
+                    .pColorAttachments(colorRenderingAttachmentInfo)
+                    .pDepthAttachment(depthRenderingAttachmentInfo)
+                    .pStencilAttachment(depthRenderingAttachmentInfo);
 
             VkViewport.Buffer viewport = VkViewport.calloc(1, memoryStack)
                     .width((float) swapChainWidth)
@@ -122,12 +133,18 @@ public class IridiumRenderer
                     .offset(VkOffset2D.calloc(memoryStack).set(0, 0));
 
             long swapChainImage = swapChain.getCurrentImage();
+            long swapChainDepthImage = swapChain.getDepthImage();
 
             this.rendererCommandBuffer.begin();
 
             VulkanUtils.transitionImageLayout(commandBuffer, swapChainImage, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
                     VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED,
                     VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+
+            VulkanUtils.transitionImageLayout(commandBuffer, swapChainDepthImage,
+                    VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
+                    VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT, 0,
+                    VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 
             vkCmdBeginRenderingKHR(commandBuffer, renderingInfo);
             vkCmdSetViewport(commandBuffer, 0, viewport);
