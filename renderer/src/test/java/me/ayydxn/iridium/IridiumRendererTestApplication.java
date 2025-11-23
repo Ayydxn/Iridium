@@ -4,7 +4,6 @@ import me.ayydxn.iridium.layer.Layer;
 import me.ayydxn.iridium.layer.LayerStack;
 import me.ayydxn.iridium.options.IridiumRendererOptions;
 import me.ayydxn.iridium.renderer.SwapChain;
-import me.ayydxn.iridium.util.ComputeTestLayer;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFWErrorCallback;

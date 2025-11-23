@@ -1,4 +1,4 @@
-package me.ayydxn.iridium.util;
+package me.ayydxn.iridium;
 
 import me.ayydxn.iridium.layer.Layer;
 import me.ayydxn.iridium.renderer.ComputePipeline;
