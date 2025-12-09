@@ -1,0 +1,45 @@
+{
+  "stages": {
+    "vertex": "entity",
+    "fragment": "entity"
+  },
+  "resources": [
+    {
+      "name": "u_SceneData",
+      "type": "uniform_buffer",
+      "set": 0,
+      "binding": 0,
+      "stages": [
+        "vertex",
+        "fragment"
+      ]
+    },
+    {
+      "name": "Sampler0",
+      "type": "combined_image_sampler",
+      "set": 0,
+      "binding": 3,
+      "stages": [
+        "fragment"
+      ]
+    },
+    {
+      "name": "Sampler2",
+      "type": "combined_image_sampler",
+      "set": 0,
+      "binding": 2,
+      "stages": [
+        "vertex"
+      ]
+    }
+  ],
+  "defines": [
+    {
+      "name": "ALPHA_CUTOUT",
+      "value": 0.1
+    },
+    {
+      "name": "NO_OVERLAY"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "stages": {
+    "vertex": "blit_screen",
+    "fragment": "lightmap"
+  },
+  "resources": [
+    {
+      "name": "u_LightmapSettings",
+      "type": "uniform_buffer",
+      "binding": 0,
+      "set": 0,
+      "stages": [
+        "fragment"
+      ]
+    }
+  ]
+}

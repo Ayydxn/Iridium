@@ -1,0 +1,18 @@
+{
+  "stages": {
+    "vertex": "rendertype_clouds",
+    "fragment": "rendertype_clouds"
+  },
+  "resources": [
+    {
+      "name": "u_CloudsSettings",
+      "type": "uniform_buffer",
+      "set": 0,
+      "binding": 0,
+      "stages": [
+        "vertex",
+        "fragment"
+      ]
+    }
+  ]
+}

@@ -1,20 +1,13 @@
 #version 450
 
-layout (binding = 1) uniform UniformBufferObject {
-    vec4 ColorModulator;
-};
+layout(location = 0) out vec4 fragColor;
 
-layout (location = 0) out vec4 fragColor;
+layout(set = 0, binding = 0) uniform UniformBufferObject {
+    uniform mat4 ModelViewMat;
+    uniform mat4 ProjMat;
+    uniform vec4 ColorModulator;
+};
 
 void main() {
     fragColor = ColorModulator;
 }
-
-/*
-#version 450
-
-uniform vec4 ColorModulator;
-
-out vec4 fragColor;
-*/
-

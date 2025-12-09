@@ -2,6 +2,7 @@ package me.ayydxn.iridium.shaders;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.gson.GsonBuilder;
 import me.ayydxn.iridium.IridiumRenderer;
 import me.ayydxn.iridium.buffers.UniformBuffer;
@@ -12,6 +13,8 @@ import me.ayydxn.iridium.utils.IridiumConstants;
 import net.minecraft.util.GsonHelper;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
 
@@ -25,6 +28,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import static me.ayydxn.iridium.renderer.debug.VulkanDebugUtils.vkCheckResult;
 import static org.lwjgl.vulkan.VK10.*;
@@ -55,13 +59,15 @@ public class IridiumShader
             String shaderJSONFileContent = Files.readString(shaderJSONFilePath, StandardCharsets.UTF_8);
 
             this.shaderDefinition = GsonHelper.fromJson(new GsonBuilder().create(), shaderJSONFileContent, ShaderDefinition.class);
+
+            List<ShaderDefinition.ShaderDefine> defines = this.parseDefinesFromDefinition(shaderDefinition);
             String baseShaderFilepath = FilenameUtils.getPath(filepath);
 
             for (Map.Entry<String, String> shaderStage : this.shaderDefinition.getShaderStages().entrySet())
             {
                 ShaderStage stage = ShaderStage.getFromString(shaderStage.getKey());
                 String shaderFilepath = baseShaderFilepath + shaderStage.getValue() + stage.getFileExtension();
-                ShaderSPIRV shaderSPIRV = shaderCompiler.compileShaderFromFile(shaderFilepath, stage);
+                ShaderSPIRV shaderSPIRV = shaderCompiler.compileShaderFromFile(shaderFilepath, stage, defines);
 
                 shaderStageToSPIRV.put(stage, shaderSPIRV);
             }
@@ -108,8 +114,10 @@ public class IridiumShader
     }
 
     @ApiStatus.Internal
-    public void updateResources() {
-        if (this.descriptorSetManager != null) {
+    public void updateResources()
+    {
+        if (this.descriptorSetManager != null)
+        {
             this.descriptorSetManager.updateDescriptorSets(this);
         }
     }
@@ -232,6 +240,37 @@ public class IridiumShader
         return combinedShaderStageFlag;
     }
 
+    private List<ShaderDefinition.ShaderDefine> parseDefinesFromDefinition(ShaderDefinition shaderDefinition)
+    {
+        List<ShaderDefinition.ShaderDefine> shaderDefines = Lists.newArrayList();
+
+        if (shaderDefinition.getDefines() != null)
+        {
+            for (ShaderDefinition.ShaderDefine shaderDefine : shaderDefinition.getDefines())
+                shaderDefines.add(this.createShaderDefine(shaderDefine));
+        }
+
+        return shaderDefines;
+    }
+
+    private @NotNull ShaderDefinition.ShaderDefine createShaderDefine(ShaderDefinition.ShaderDefine shaderDefine)
+    {
+        ShaderDefinition.ShaderDefine define;
+
+        if (shaderDefine.value() == null || shaderDefine.value().isEmpty())
+        {
+            // Boolean flag
+            define = new ShaderDefinition.ShaderDefine(shaderDefine.name(), null);
+        }
+        else
+        {
+            // Value define
+            define = new ShaderDefinition.ShaderDefine(shaderDefine.name(), shaderDefine.value());
+        }
+
+        return define;
+    }
+
     public Map<ShaderStage, Long> getShaderStagesAndModules()
     {
         return this.shaderStageToShaderModule;
@@ -256,7 +295,8 @@ public class IridiumShader
      * @param descriptorSetLayouts Set Index -> Descriptor Set Layout Handle
      * @param resources            Set Index -> Resources
      */
-    public record DescriptorSetInfo(Map<Integer, Long> descriptorSetLayouts, Map<Integer, List<ShaderResource>> resources)
+    public record DescriptorSetInfo(Map<Integer, Long> descriptorSetLayouts,
+                                    Map<Integer, List<ShaderResource>> resources)
     {
         public void cleanup(VkDevice logicalDevice)
         {

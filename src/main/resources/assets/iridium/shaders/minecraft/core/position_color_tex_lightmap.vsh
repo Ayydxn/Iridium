@@ -9,13 +9,14 @@ layout(location = 0) out vec4 vertexColor;
 layout(location = 1) out vec2 texCoord0;
 layout(location = 2) out vec2 texCoord2;
 
-layout(binding = 0) uniform UniformBufferObject
-{
-    mat4 MVP;
+layout (set = 0, binding = 0) uniform UniformBufferObject {
+    uniform mat4 ModelViewMat;
+    uniform mat4 ProjMat;
+    uniform vec4 ColorModulator;
 };
 
 void main() {
-    gl_Position = MVP * vec4(Position, 1.0);
+    gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0);
 
     vertexColor = Color;
     texCoord0 = UV0;

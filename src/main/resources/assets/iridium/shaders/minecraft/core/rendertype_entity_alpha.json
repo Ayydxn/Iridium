@@ -1,103 +1,25 @@
 {
-  "blend": {
-    "func": "add",
-    "srcrgb": "srcalpha",
-    "dstrgb": "1-srcalpha"
-  },
   "stages": {
     "vertex": "rendertype_entity_alpha",
     "fragment": "rendertype_entity_alpha"
   },
-  "attributes": [
-    "Position",
-    "Color",
-    "UV0",
-    "UV1",
-    "UV2",
-    "Normal"
-  ],
-  "samplers": [
+  "resources": [
     {
-      "name": "Sampler0",
-      "binding": 1
-    }
-  ],
-  "uniforms": [
-    {
-      "name": "ModelViewMat",
-      "type": "matrix4x4",
-      "count": 16,
-      "values": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0
+      "name": "u_RenderSettings",
+      "type": "uniform_buffer",
+      "set": 0,
+      "binding": 0,
+      "stages": [
+        "vertex"
       ]
     },
     {
-      "name": "ProjMat",
-      "type": "matrix4x4",
-      "count": 16,
-      "values": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0
-      ]
-    }
-  ],
-  "UBOs": [
-    {
-      "type": "vertex",
-      "binding": 0,
-      "fields": [
-        {
-          "name": "MVP",
-          "type": "matrix4x4",
-          "count": 16,
-          "values": [
-            1.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            1.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            1.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            1.0
-          ]
-        }
+      "name": "Sampler0",
+      "type": "combined_image_sampler",
+      "set": 0,
+      "binding": 1,
+      "stages": [
+        "fragment"
       ]
     }
   ]

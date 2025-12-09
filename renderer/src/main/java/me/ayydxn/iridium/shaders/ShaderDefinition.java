@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ShaderDefinition
 {
@@ -15,6 +16,8 @@ public class ShaderDefinition
 
     @SerializedName("push_constants")
     private final List<PushConstantDefinition> pushConstants = Lists.newArrayList();
+
+    private final List<ShaderDefine> defines = Lists.newArrayList();
 
     public static class ResourceDefinition
     {
@@ -49,6 +52,19 @@ public class ShaderDefinition
         public List<String> stages;
     }
 
+    public record ShaderDefine(String name, String value)
+    {
+        public boolean isFlag()
+        {
+            return this.value == null;
+        }
+
+        public String toDefineString()
+        {
+            return this.isFlag() ? String.format("#define %s", name) : String.format("#define %s %s", name, value);
+        }
+    }
+
     /**
      * Returns a map of a shader stage to its corresponding GLSL shader source file.
      *
@@ -67,5 +83,10 @@ public class ShaderDefinition
     public List<PushConstantDefinition> getPushConstants()
     {
         return this.pushConstants;
+    }
+
+    public List<ShaderDefine> getDefines()
+    {
+        return this.defines;
     }
 }

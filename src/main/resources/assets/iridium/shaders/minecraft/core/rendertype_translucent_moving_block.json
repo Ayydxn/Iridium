@@ -1,134 +1,36 @@
 {
-  "blend": {
-    "func": "add",
-    "srcrgb": "srcalpha",
-    "dstrgb": "1-srcalpha"
-  },
   "stages": {
     "vertex": "rendertype_translucent_moving_block",
     "fragment": "rendertype_translucent_moving_block"
   },
-  "attributes": [
-    "Position",
-    "Color",
-    "UV0",
-    "UV2",
-    "Normal"
-  ],
-  "samplers": [
+  "resources": [
+    {
+      "name": "u_RenderSettings",
+      "type": "uniform_buffer",
+      "set": 0,
+      "binding": 0,
+      "stages": [
+        "vertex",
+        "fragment"
+      ]
+    },
     {
       "name": "Sampler0",
-      "binding": 2
+      "type": "combined_image_sampler",
+      "set": 0,
+      "binding": 2,
+      "stages": [
+        "fragment"
+      ]
     },
     {
       "name": "Sampler2",
-      "binding": 3
-    }
-  ],
-  "uniforms": [
-    {
-      "name": "ModelViewMat",
-      "type": "matrix4x4",
-      "count": 16,
-      "values": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0
-      ]
-    },
-    {
-      "name": "ProjMat",
-      "type": "matrix4x4",
-      "count": 16,
-      "values": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0
-      ]
-    },
-    {
-      "name": "ColorModulator",
-      "type": "float",
-      "count": 4,
-      "values": [
-        1.0,
-        1.0,
-        1.0,
-        1.0
-      ]
-    }
-  ],
-  "UBOs": [
-    {
-      "type": "vertex",
-      "binding": 0,
-      "fields": [
-        {
-          "name": "MVP",
-          "type": "matrix4x4",
-          "count": 16,
-          "values": [
-            1.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            1.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            1.0,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            1.0
-          ]
-        }
-      ]
-    },
-    {
-      "type": "fragment",
+      "type": "combined_image_sampler",
+      "set": 0,
       "binding": 1,
-      "fields": [
-        {
-          "name": "ColorModulator",
-          "type": "float",
-          "count": 4,
-          "values": [
-            1.0,
-            1.0,
-            1.0,
-            1.0
-          ]
-        }
+      "stages": [
+        "vertex",
+        "fragment"
       ]
     }
   ]

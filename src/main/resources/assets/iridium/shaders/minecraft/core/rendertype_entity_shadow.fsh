@@ -1,52 +1,27 @@
 #version 450
 
-vec4 linear_fog(vec4 inColor, float vertexDistance, float fogStart, float fogEnd, vec4 fogColor) {
-    if (vertexDistance <= fogStart) {
-        return inColor;
-    }
+#include <fog.glsl>
 
-    float fogValue = vertexDistance < fogEnd ? smoothstep(fogStart, fogEnd, vertexDistance) : 1.0;
-    return vec4(mix(inColor.rgb, fogColor.rgb, fogValue * fogColor.a), inColor.a);
-}
+layout(location = 0) in float vertexDistance;
+layout(location = 1) in vec4 vertexColor;
+layout(location = 2) in vec2 texCoord0;
 
-layout (binding = 2) uniform sampler2D Sampler0;
+layout(location = 0) out vec4 fragColor;
 
-layout (binding = 1) uniform UBO {
-    vec4 ColorModulator;
-    vec4 FogColor;
-    float FogStart;
-    float FogEnd;
+layout(set = 0, binding = 0) uniform UniformBufferObject {
+    uniform mat4 ModelViewMat;
+    uniform mat4 ProjMat;
+    uniform int FogShape;
+    uniform vec4 ColorModulator;
+    uniform float FogStart;
+    uniform float FogEnd;
+    uniform vec4 FogColor;
 };
 
-layout (location = 0) in vec4 vertexColor;
-layout (location = 1) in vec2 texCoord0;
-layout (location = 2) in float vertexDistance;
-
-layout (location = 0) out vec4 fragColor;
+layout(binding = 1) uniform sampler2D Sampler0;
 
 void main() {
     vec4 color = texture(Sampler0, clamp(texCoord0, 0.0, 1.0));
     color *= vertexColor * ColorModulator;
     fragColor = linear_fog(color, vertexDistance, FogStart, FogEnd, FogColor);
 }
-
-/*
-#version 450
-
-#moj_import <fog.glsl>
-
-uniform sampler2D Sampler0;
-
-uniform vec4 ColorModulator;
-uniform float FogStart;
-uniform float FogEnd;
-uniform vec4 FogColor;
-
-in float vertexDistance;
-in vec4 vertexColor;
-in vec2 texCoord0;
-
-out vec4 fragColor;
-*/
-
-

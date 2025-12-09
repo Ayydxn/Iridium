@@ -1,16 +1,23 @@
 #version 450
 
-layout (location = 0) in vec3 Position;
+#include <fog.glsl>
 
-layout (binding = 0) uniform UniformBufferObject {
-    mat4 MVP;
+layout(location = 0) in vec3 Position;
+
+layout(location = 0) out float vertexDistance;
+
+layout(set = 0, binding = 0) uniform UniformBufferObject {
+    mat4 ProjMat;
     mat4 ModelViewMat;
+    int FogShape;
+    vec4 ColorModulator;
+    float FogStart;
+    float FogEnd;
+    vec4 FogColor;
 };
 
-layout (location = 0) out float vertexDistance;
-
 void main() {
-    gl_Position = MVP * vec4(Position, 1.0);
+    gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0);
 
-    vertexDistance = length((ModelViewMat * vec4(Position, 1.0)).xyz);
+    vertexDistance = fog_distance(Position, FogShape);
 }

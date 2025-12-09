@@ -1,18 +1,25 @@
 #version 450
 
-layout (location = 0) in vec3 Position;
-layout (location = 1) in vec4 Color;
-layout (location = 2) in vec3 Normal;
+#include <fog.glsl>
 
-layout (binding = 0) uniform UniformBufferObject {
-    mat4 ModelViewMat;
-    mat4 ProjMat;
-    vec2 ScreenSize;
-    float LineWidth;
+layout(location = 0) in vec3 Position;
+layout(location = 1) in vec4 Color;
+layout(location = 2) in vec3 Normal;
+
+layout(location = 0) out float vertexDistance;
+layout(location = 1) out vec4 vertexColor;
+
+layout(set = 0, binding = 0) uniform UniformBufferObject {
+    uniform mat4 ModelViewMat;
+    uniform mat4 ProjMat;
+    uniform float LineWidth;
+    uniform vec2 ScreenSize;
+    uniform int FogShape;
+    uniform vec4 ColorModulator;
+    uniform float FogStart;
+    uniform float FogEnd;
+    uniform vec4 FogColor;
 };
-
-layout (location = 1) out float vertexDistance;
-layout (location = 0) out vec4 vertexColor;
 
 const float VIEW_SHRINK = 1.0 - (1.0 / 256.0);
 const mat4 VIEW_SCALE = mat4(
@@ -36,29 +43,12 @@ void main() {
         lineOffset *= -1.0;
     }
 
-    int div = (gl_VertexIndex / 2);
-    if (gl_VertexIndex - div * 2 == 0) {
+    if (gl_VertexID % 2 == 0) {
         gl_Position = vec4((ndc1 + vec3(lineOffset, 0.0)) * linePosStart.w, linePosStart.w);
     } else {
         gl_Position = vec4((ndc1 - vec3(lineOffset, 0.0)) * linePosStart.w, linePosStart.w);
     }
 
-    vertexDistance = length((ModelViewMat * vec4(Position, 1.0)).xyz);
+    vertexDistance = fog_distance(Position, FogShape);
     vertexColor = Color;
 }
-
-// #version 450
-//
-// in vec3 Position;
-// in vec4 Color;
-// in vec3 Normal;
-//
-// uniform mat4 ModelViewMat;
-// uniform mat4 ProjMat;
-// uniform float LineWidth;
-// uniform vec2 ScreenSize;
-//
-// out float vertexDistance;
-// out vec4 vertexColor;
-
-

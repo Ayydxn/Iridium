@@ -1,10 +1,14 @@
 #version 450
 
-uniform vec4 ColorModulator;
+layout(location = 0) in vec4 vertexColor;
 
-in vec4 vertexColor;
+layout(location = 0) out vec4 fragColor;
 
-out vec4 fragColor;
+layout(set = 0, binding = 0) uniform UniformBufferObject {
+    uniform mat4 ModelViewMat;
+    uniform mat4 ProjMat;
+    uniform vec4 ColorModulator;
+};
 
 void main() {
     vec4 color = vertexColor;
