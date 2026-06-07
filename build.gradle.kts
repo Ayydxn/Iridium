@@ -8,6 +8,11 @@ group = providers.gradleProperty("maven_group").get()
 
 base.archivesName.set("${providers.gradleProperty("archives_base_name").get()}-fabric")
 
+val ffm by sourceSets.creating {
+	compileClasspath += sourceSets.main.get().output
+	runtimeClasspath += sourceSets.main.get().output
+}
+
 repositories {
 	// Add repositories to retrieve artifacts from in here.
 	// You should only use this when depending on other mods because
@@ -24,19 +29,14 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation("net.fabricmc.fabric-api:fabric-api:${providers.gradleProperty("fabric_api_version").get()}")
-}
 
-tasks.processResources {
-	val version = version
-	inputs.property("version", version)
+	// JUnit
+	testImplementation(platform("org.junit:junit-bom:${providers.gradleProperty("junit_version").get()}"))
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-	filesMatching("fabric.mod.json") {
-		expand("version" to version)
-	}
-}
-
-tasks.withType<JavaCompile>().configureEach {
-	options.release = 17
+	// FFM source set sees the main output
+	"ffmImplementation"(sourceSets.main.get().output)
 }
 
 java {
@@ -49,10 +49,41 @@ java {
 	targetCompatibility = JavaVersion.VERSION_17
 }
 
+tasks.withType<JavaCompile>().configureEach {
+	when (name) {
+		"compileFfmJava" -> options.release = 22
+		else -> options.release = 17
+	}
+}
+
+tasks.processResources {
+	val version = version
+	inputs.property("version", version)
+
+	filesMatching("fabric.mod.json") {
+		expand("version" to version)
+	}
+}
+
+tasks.test {
+	useJUnitPlatform()
+
+	// Expose sun.misc.Unsafe to test code (needed by ByteBufferNativeBuffer tests).
+	jvmArgs("--add-opens", "java.base/sun.misc=ALL-UNNAMED")
+
+	// Point to the native library output location (populated after CMake build).
+	jvmArgs("-Djava.library.path=${layout.buildDirectory.get()}/native/alignment")
+
+	// FFM test class must be on the test classpath.
+	testClassesDirs = files(sourceSets.test.get().output.classesDirs, ffm.output.classesDirs)
+	classpath = files(sourceSets.test.get().runtimeClasspath, ffm.output)
+}
+
 tasks.jar {
 	val projectName = project.name
 	inputs.property("projectName", projectName)
 
+	from(ffm.output)
 	from("LICENSE") {
 		rename { "${it}_$projectName" }
 	}
